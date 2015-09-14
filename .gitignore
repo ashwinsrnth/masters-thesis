@@ -3,3 +3,7 @@
 *.out
 *minted*
 *.pdf
+*.png
+*.eps
+*.svg
+*~lock*
