@@ -1,0 +1,40 @@
+
+[atrikut@node1986 lanl-implementation]$ mpiexec --mca pml ob1 -n 64 time_npts.run 1024 1024 1024 4 4 4
+Precomputing coefficients
+Done precomputing.
+LR sweep - computing phi and psi: 0.4751060009
+LR sweep - gathering phi and psi faces: 0.0259671211
+LR sweep - computing u_tilda: 0.0190620422
+LR sweep - computing u_globali: 0.1324450970
+R-L sweep - computing phi and psi: 0.2388839722
+R-L sweep - gathering phi and psi faces: 0.0258059502
+R-L sweep - computing x_tilda: 0.0136449337
+R-L sweep - computing x_global: 0.1555531025
+Time: 1.094522
+LR sweep - computing phi and psi: 0.4084730148
+LR sweep - gathering phi and psi faces: 0.0283470154
+LR sweep - computing u_tilda: 0.0174169540
+LR sweep - computing u_globali: 0.1322410107
+R-L sweep - computing phi and psi: 0.2391710281
+R-L sweep - gathering phi and psi faces: 0.0288729668
+R-L sweep - computing x_tilda: 0.0154118538
+R-L sweep - computing x_global: 0.1562008858
+Time: 1.030036
+LR sweep - computing phi and psi: 0.4099211693
+LR sweep - gathering phi and psi faces: 0.0266771317
+LR sweep - computing u_tilda: 0.0133571625
+LR sweep - computing u_globali: 0.1332309246
+R-L sweep - computing phi and psi: 0.2414669991
+R-L sweep - gathering phi and psi faces: 0.0250880718
+R-L sweep - computing x_tilda: 0.0035488605
+R-L sweep - computing x_global: 0.1547729969
+Time: 1.011829
+LR sweep - computing phi and psi: 0.4073140621
+LR sweep - gathering phi and psi faces: 0.0263299942
+LR sweep - computing u_tilda: 0.0149910450
+LR sweep - computing u_globali: 0.1330738068
+R-L sweep - computing phi and psi: 0.2342779636
+R-L sweep - gathering phi and psi faces: 0.0392351151
+R-L sweep - computing x_tilda: 0.0096130371
+R-L sweep - computing x_global: 0.1553678513
+Time: 1.023977

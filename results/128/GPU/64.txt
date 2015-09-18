@@ -1,0 +1,69 @@
+
+[atrikut@node1498 compact]$ mpiexec --mca pml ob1 -n 64 python runExp.py 128 128 128 4 4 4
+
+Computing RHS - global to local communication:  0.00457692146301
+Computing RHS - copying to buffer:  0.0189020633698
+Computing RHS - kernel:  0.000588893890381
+Computing RHS - total:  0.0240678787231
+Solving for x_R: copying input buffers:  0.000822067260742 Solving for x_R: kernel:  0.000656127929688
+Solving for x_R: copying from solution buffer:  8.39233398438e-05
+Solving for x_R: total:  0.00156211853027
+Solving the reduced system:  0.0332250595093
+Summing the solutions - copying input buffers:  0.000660181045532
+Summing the solutions - kernel:  0.00059700012207
+Summing the solutions - copying solution buffer:  0.000134944915771
+Summing the solutions - total:  0.00139212608337
+Total time:  0.0609591007233
+Computing RHS - global to local communication:  0.00018310546875
+Computing RHS - copying to buffer:  0.000182867050171
+Computing RHS - kernel:  0.00055718421936
+Computing RHS - total:  0.000923156738281
+Solving for x_R: copying input buffers:  0.000625848770142 Solving for x_R: kernel:  0.000418186187744
+Solving for x_R: copying from solution buffer:  6.79492950439e-05
+Solving for x_R: total:  0.00111198425293
+Solving the reduced system:  0.00149583816528
+Summing the solutions - copying input buffers:  0.000627040863037
+Summing the solutions - kernel:  0.000663995742798
+Summing the solutions - copying solution buffer:  0.000153064727783
+Summing the solutions - total:  0.00144410133362
+Total time:  0.00569200515747
+Computing RHS - global to local communication:  0.000181913375854
+Computing RHS - copying to buffer:  0.000591993331909
+Computing RHS - kernel:  0.000568151473999
+Computing RHS - total:  0.00134205818176
+Solving for x_R: copying input buffers:  0.000645875930786 Solving for x_R: kernel:  0.000492095947266
+Solving for x_R: copying from solution buffer:  6.79492950439e-05
+Solving for x_R: total:  0.0012059211731
+Solving the reduced system:  0.00127983093262
+Summing the solutions - copying input buffers:  0.000616073608398
+Summing the solutions - kernel:  0.000597953796387
+Summing the solutions - copying solution buffer:  0.000128984451294
+Summing the solutions - total:  0.00134301185608
+Total time:  0.00591993331909
+Computing RHS - global to local communication:  0.000171899795532
+Computing RHS - copying to buffer:  0.000368118286133
+Computing RHS - kernel:  0.000556945800781
+Computing RHS - total:  0.00109696388245
+Solving for x_R: copying input buffers:  0.000580072402954 Solving for x_R: kernel:  0.000417947769165
+Solving for x_R: copying from solution buffer:  6.89029693604e-05
+Solving for x_R: total:  0.00106692314148
+Solving the reduced system:  0.00571393966675
+Summing the solutions - copying input buffers:  0.000637054443359
+Summing the solutions - kernel:  0.00059700012207
+Summing the solutions - copying solution buffer:  0.000394105911255
+Summing the solutions - total:  0.00162816047668
+Total time:  0.0102980136871
+Computing RHS - global to local communication:  0.000185966491699
+Computing RHS - copying to buffer:  0.000181913375854
+Computing RHS - kernel:  0.000564098358154
+Computing RHS - total:  0.000931978225708
+Solving for x_R: copying input buffers:  0.000631093978882 Solving for x_R: kernel:  0.000715017318726
+Solving for x_R: copying from solution buffer:  6.79492950439e-05
+Solving for x_R: total:  0.00141406059265
+Solving the reduced system:  0.00119781494141
+Summing the solutions - copying input buffers:  0.000573873519897
+Summing the solutions - kernel:  0.000591039657593
+Summing the solutions - copying solution buffer:  0.000124931335449
+Summing the solutions - total:  0.00128984451294
+Total time:  0.0053551197052
+2.76736179706e-08

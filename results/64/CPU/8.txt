@@ -1,0 +1,22 @@
+
+[atrikut@node1901 lanl-implementation]$ mpiexec --mca pml ob1 -n 8 ./time_npts.run 64 64 64 2 2 2
+Precomputing coefficients
+Done precomputing.
+LR sweep - computing phi and psi: 0.0004460812
+LR sweep - gathering phi and psi faces: 0.0002939701
+LR sweep - computing u_tilda: 0.0000422001
+LR sweep - computing u_globali: 0.0000410080
+R-L sweep - computing phi and psi: 0.0001599789
+R-L sweep - gathering phi and psi faces: 0.0001370907
+R-L sweep - computing x_tilda: 0.0000278950
+R-L sweep - computing x_global: 0.0000429153
+Time: 0.001252
+LR sweep - computing phi and psi: 0.0002510548
+LR sweep - gathering phi and psi faces: 0.0001120567
+LR sweep - computing u_tilda: 0.0000450611
+LR sweep - computing u_globali: 0.0000388622
+R-L sweep - computing phi and psi: 0.0001499653
+R-L sweep - gathering phi and psi faces: 0.0001170635
+R-L sweep - computing x_tilda: 0.0000178814
+R-L sweep - computing x_global: 0.0000410080
+Time: 0.000807

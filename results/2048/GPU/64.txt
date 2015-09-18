@@ -1,0 +1,131 @@
+
+[atrikut@node1498 compact]$ mpiexec --mca pml ob1 -n 64 python runExp.py 2048 2048 2048 4 4 4
+Rank:  34 Hostname:  node1452
+Rank:  42 Hostname:  node1755
+Rank:  54 Hostname:  node1743
+Rank:  22 Hostname:  node1935
+Rank:  62 Hostname:  node1771
+Rank:  26 Hostname:  node1965
+Rank:  30 Hostname:  node0285
+Rank:  58 Hostname:  node1770
+Rank:  38 Hostname:  node1682
+Rank:  50 Hostname:  node1785
+Rank:  6 Hostname:  node1801
+Rank:  10 Hostname:  node1917
+Rank:  14 Hostname:  node0127
+Rank:  18 Hostname:  node1476
+Rank:  23 Hostname:  node1935
+Rank:  19 Hostname:  node1476
+Rank:  27 Hostname:  node1965
+Rank:  46 Hostname:  node1717
+Rank:  47 Hostname:  node1717
+Rank:  31 Hostname:  node0285
+Rank:  39 Hostname:  node1682
+Rank:  59 Hostname:  node1770
+Rank:  35 Hostname:  node1452
+Rank:  51 Hostname:  node1785
+Rank:  7 Hostname:  node1801
+Rank:  11 Hostname:  node1917
+Rank:  43 Hostname:  node1755
+Rank:  15 Hostname:  node0127
+Rank:  63 Hostname:  node1771
+Rank:  55 Hostname:  node1743
+Rank:  0 Hostname:  node1498
+Rank:  32 Hostname:  node1178
+Rank:  12 Hostname:  node1503
+Rank:  52 Hostname:  node1693
+Rank:  36 Hostname:  node0879
+Rank:  60 Hostname:  node1767
+Rank:  24 Hostname:  node1927
+Rank:  44 Hostname:  node1692
+Rank:  48 Hostname:  node1736
+Rank:  8 Hostname:  node1807
+Rank:  40 Hostname:  node1716
+Rank:  20 Hostname:  node1901
+Rank:  56 Hostname:  node1718
+Rank:  1 Hostname:  node1498
+Rank:  5 Hostname:  node1510
+Rank:  45 Hostname:  node1692
+Rank:  4 Hostname:  node1510
+Rank:  25 Hostname:  node1927
+Rank:  61 Hostname:  node1767
+Rank:  49 Hostname:  node1736
+Rank:  9 Hostname:  node1807
+Rank:  28 Hostname:  node0011
+Rank:  29 Hostname:  node0011
+Rank:  16 Hostname:  node0619
+Rank:  17 Hostname:  node0619
+Rank:  21 Hostname:  node1901
+Rank:  41 Hostname:  node1716
+Rank:  57 Hostname:  node1718
+Rank:  53 Hostname:  node1693
+Rank:  33 Hostname:  node1178
+Rank:  13 Hostname:  node1503
+Rank:  37 Hostname:  node0879
+Rank:  2 Hostname:  node1511
+Rank:  3 Hostname:  node1511
+Computing RHS - global to local communication:  0.212975025177
+Computing RHS - copying to buffer:  0.42610502243
+Computing RHS - kernel:  0.0161299705505
+Computing RHS - total:  0.655210018158
+Solving for x_R: copying input buffers:  0.000619888305664 Solving for x_R: kernel:  0.66515994072
+Solving for x_R: copying from solution buffer:  0.160891056061
+Solving for x_R: total:  0.826670885086
+Solving the reduced system:  0.13147687912
+Summing the solutions - copying input buffers:  0.00263905525208
+Summing the solutions - kernel:  0.0155918598175
+Summing the solutions - copying solution buffer:  0.163900136948
+Summing the solutions - total:  0.182131052017
+Total time:  1.79807305336
+Computing RHS - global to local communication:  0.205259084702
+Computing RHS - copying to buffer:  0.420724868774
+Computing RHS - kernel:  0.0167851448059
+Computing RHS - total:  0.642769098282
+Solving for x_R: copying input buffers:  0.000633001327515 Solving for x_R: kernel:  0.664937019348
+Solving for x_R: copying from solution buffer:  0.161329984665
+Solving for x_R: total:  0.826900005341
+Solving the reduced system:  0.101364135742
+Summing the solutions - copying input buffers:  0.0025200843811
+Summing the solutions - kernel:  0.0152208805084
+Summing the solutions - copying solution buffer:  0.16339302063
+Summing the solutions - total:  0.181133985519
+Total time:  1.75307917595
+Computing RHS - global to local communication:  0.204467058182
+Computing RHS - copying to buffer:  0.42168879509
+Computing RHS - kernel:  0.0168130397797
+Computing RHS - total:  0.642968893051
+Solving for x_R: copying input buffers:  0.000581026077271 Solving for x_R: kernel:  0.664924860001
+Solving for x_R: copying from solution buffer:  0.161273002625
+Solving for x_R: total:  0.826778888702
+Solving the reduced system:  0.116266965866
+Summing the solutions - copying input buffers:  0.00257992744446
+Summing the solutions - kernel:  0.015280008316
+Summing the solutions - copying solution buffer:  0.163542032242
+Summing the solutions - total:  0.181401968002
+Total time:  1.76809597015
+Computing RHS - global to local communication:  0.204849004745
+Computing RHS - copying to buffer:  0.42009305954
+Computing RHS - kernel:  0.0160970687866
+Computing RHS - total:  0.641039133072
+Solving for x_R: copying input buffers:  0.00067400932312 Solving for x_R: kernel:  0.664980173111
+Solving for x_R: copying from solution buffer:  0.161942005157
+Solving for x_R: total:  0.827596187592
+Solving the reduced system:  0.116213083267
+Summing the solutions - copying input buffers:  0.00251603126526
+Summing the solutions - kernel:  0.0153698921204
+Summing the solutions - copying solution buffer:  0.163546085358
+Summing the solutions - total:  0.181432008743
+Total time:  1.76725482941
+Computing RHS - global to local communication:  0.204391002655
+Computing RHS - copying to buffer:  0.420625925064
+Computing RHS - kernel:  0.0160629749298
+Computing RHS - total:  0.641079902649
+Solving for x_R: copying input buffers:  0.000612020492554 Solving for x_R: kernel:  0.664990901947
+Solving for x_R: copying from solution buffer:  0.160957098007
+Solving for x_R: total:  0.826560020447
+Solving the reduced system:  0.119951963425
+Summing the solutions - copying input buffers:  0.00267386436462
+Summing the solutions - kernel:  0.0154011249542
+Summing the solutions - copying solution buffer:  0.164079904556
+Summing the solutions - total:  0.182154893875
+Total time:  1.77072310448

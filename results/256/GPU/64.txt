@@ -1,0 +1,31 @@
+
+
+[atrikut@node1498 compact]$ mpiexec --mca pml ob1 -n 64 python runExp.py 256 256 256 4 4 4
+
+
+Computing RHS - global to local communication:  0.000448942184448
+Computing RHS - copying to buffer:  0.00100708007812
+Computing RHS - kernel:  0.000553131103516
+Computing RHS - total:  0.00200915336609
+Solving for x_R: copying input buffers:  0.000604867935181 Solving for x_R: kernel:  0.00102615356445
+Solving for x_R: copying from solution buffer:  0.000349998474121
+Solving for x_R: total:  0.00198101997375
+Solving the reduced system:  0.00205111503601
+Summing the solutions - copying input buffers:  0.000602960586548
+Summing the solutions - kernel:  0.000609874725342
+Summing the solutions - copying solution buffer:  0.000406980514526
+Summing the solutions - total:  0.00161981582642
+Total time:  0.00868797302246
+Computing RHS - global to local communication:  0.000513792037964
+Computing RHS - copying to buffer:  0.000759124755859
+Computing RHS - kernel:  0.000577926635742
+Computing RHS - total:  0.00185084342957
+Solving for x_R: copying input buffers:  0.000617027282715 Solving for x_R: kernel:  0.000922918319702
+Solving for x_R: copying from solution buffer:  0.000364065170288
+Solving for x_R: total:  0.00190401077271
+Solving the reduced system:  0.00217199325562
+Summing the solutions - copying input buffers:  0.000644207000732
+Summing the solutions - kernel:  0.000605821609497
+Summing the solutions - copying solution buffer:  0.000414133071899
+Summing the solutions - total:  0.00166416168213
+Total time:  0.0083429813385
