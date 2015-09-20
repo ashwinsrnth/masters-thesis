@@ -144,7 +144,45 @@
     The Message Passing Interface (MPI) is used for handling communication
     between processes.
 
-\section{GPU architecture and parallelization strategies}
+\section{GPU architecture and OpenCL programming platform}
+
+    \begin{figure}[h]
+    \begin{center}
+    \includegraphics[height=200pt]{img/tesla-block-diagram.jpg}
+    \end{center}
+    \caption{Distribution of a 2-D domain among processes}
+    \label{fig:da-domain}
+    \end{figure}
+
+
+    A graphics processing unit (GPU) consists of several (thousand)
+    compute cores and is designed for high-throughput computations.
+    
+    NVIDIA cards support extensions such as CUDA and OpenCL for
+    langauages like C, C++, Fortran and Python.
+    Applications written using these extensions are launched
+    with thousands of lightweight threads,
+    each operating on a small portion the problem domain (typically a single grid point).
+    
+    Each GPU has several so-called streaming multiprocessors (SMs)---the Tesla K20M
+    has 13 SMs---each of which has its own control units, registers, caches, etc.
+    Instructions execute simultaneously on an SM.
+    
+    All SMs (and therefore all threads) have access to the GPU's ``global'' memory.
+    Access to global memory is efficient when concurrent threads access neighbouring memory locations
+    (known as \emph{coalesced memory access}).
+
+    All threads in an SM also have access to a common fast, on-chip, \emph{shared memory}.
+    Access to shared memory, in general, is much faster than access to global memory,
+    but the amount of shared memory per SM is limited, typically a few dozen KB.
+    Certain memory access patterns by concurrent threads to shared memory may result in
+    serialization of the memory accesses, known as bank conflicts. These are detailed [here].
+
+    The OpenCL programming platform
+
+
+
+\section{Parallelization strategies}
 
     The compact finite differences need to be evaluated
     at each grid point in the problem domain,
@@ -245,24 +283,6 @@
 \section{Results and performance comparison}
 
     \subsection{Results for a single node}
-
-    \begin{table}
-    \centering
-    \begin{tabular}{|l|r|r|r|r|}
-    \hline
-    Size    &      CPU (1 core) &  CPU (8 cores) & GPU (without memory transfers)  & GPU (with memory transfers) \\
-    \hline
-    32      &     0.0005        &   0.00029     &   0.00128 &   0.0014   \\
-    64      &     0.0038        &   0.0008      &   0.0018  &   0.00385  \\
-    128     &     0.042         &   0.0075      &   0.0073  &   0.02014  \\
-    256     &     0.34          &   0.062       &   0.057   &   0.148    \\
-    512     &     2.45          &   0.47        &   0.70    &   1.401    \\
-    \hline
-    \end{tabular}
-    \caption{Performance of solvers on a single GPU (Tesla k20m)}
-    \label{table:res1}
-    \end{table}
-
     The results for a single node bring up some issues in performance evaluation.
     First, it is clear that the major cost for the GPU is not in the computational
     kernels, but rather in transferring data between host (CPU) and device (GPU) buffers.
