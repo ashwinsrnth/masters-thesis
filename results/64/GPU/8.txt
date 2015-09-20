@@ -1,0 +1,274 @@
+
+Block size (8x8)
+----------------
+Solving the reduced system:  0.0169141292572
+Summing the solutions - total:  0.00183486938477
+Total time:  0.022451877594
+Solving for x_R: total:  0.00267791748047
+Solving the reduced system:  0.00193905830383
+Summing the solutions - total:  0.000740051269531
+Total time:  0.00535702705383
+Solving for x_R: total:  0.00301885604858
+Solving the reduced system:  0.00179219245911
+Summing the solutions - total:  0.00142288208008
+Total time:  0.00623393058777
+Solving for x_R: total:  0.00251483917236
+Solving the reduced system:  0.00146698951721
+Summing the solutions - total:  0.000665187835693
+Total time:  0.00464701652527
+Solving for x_R: total:  0.00285792350769
+Solving the reduced system:  0.00139999389648
+Summing the solutions - total:  0.000685930252075
+Total time:  0.00494384765625
+Solving for x_R: total:  0.002112865448
+Solving the reduced system:  0.00156021118164
+Summing the solutions - total:  0.00100779533386
+Total time:  0.0046808719635
+Solving for x_R: total:  0.00322985649109
+Solving the reduced system:  0.00229406356812
+Summing the solutions - total:  0.00108003616333
+Total time:  0.00660395622253
+Solving for x_R: total:  0.00323700904846
+Solving the reduced system:  0.00169491767883
+Summing the solutions - total:  0.000725030899048
+Total time:  0.00565695762634
+Solving for x_R: total:  0.00251698493958
+Solving the reduced system:  0.0014271736145
+Summing the solutions - total:  0.000741958618164
+Total time:  0.00468611717224
+Solving for x_R: total:  0.00284910202026
+Solving the reduced system:  0.00187206268311
+Summing the solutions - total:  0.000587940216064
+Total time:  0.00530910491943
+Solving for x_R: total:  0.00242304801941
+Solving the reduced system:  0.00205993652344
+Summing the solutions - total:  0.000797986984253
+Total time:  0.0052809715271
+Solving for x_R: total:  0.00304913520813
+Solving the reduced system:  0.00178289413452
+Summing the solutions - total:  0.000677108764648
+Total time:  0.0055091381073
+Solving for x_R: total:  0.00295519828796
+Solving the reduced system:  0.00147199630737
+Summing the solutions - total:  0.000907897949219
+Total time:  0.00533509254456
+Solving for x_R: total:  0.00242400169373
+Solving the reduced system:  0.00151991844177
+Summing the solutions - total:  0.000684022903442
+Total time:  0.00462794303894
+Solving for x_R: total:  0.00236797332764
+Solving the reduced system:  0.00168395042419
+Summing the solutions - total:  0.00096607208252
+Total time:  0.00501799583435
+Solving for x_R: total:  0.00251388549805
+Solving the reduced system:  0.00190401077271
+Summing the solutions - total:  0.000668048858643
+Total time:  0.00508594512939
+Solving for x_R: total:  0.00281691551208
+Solving the reduced system:  0.00185513496399
+Summing the solutions - total:  0.000702857971191
+Total time:  0.00537490844727
+Solving for x_R: total:  0.00296592712402
+Solving the reduced system:  0.001708984375
+Summing the solutions - total:  0.000700950622559
+Total time:  0.00537586212158
+Solving for x_R: total:  0.00309991836548
+Solving the reduced system:  0.00156998634338
+Summing the solutions - total:  0.000825881958008
+Total time:  0.00549578666687
+Solving for x_R: total:  0.00233197212219
+Solving the reduced system:  0.00143694877625
+Summing the solutions - total:  0.00056004524231
+Total time:  0.00432896614075
+1.0880361967e-06
+
+
+Block size (4x4)
+----------------
+
+[atrikut@node1185 compact]$ mpiexec --mca pml ob1 -n 8 python runExp.py 64 64 64 2 2 2
+Rank:  0 Hostname:  node1185
+Rank:  6 Hostname:  node1850
+Rank:  4 Hostname:  node1511
+Rank:  1 Hostname:  node1185
+Rank:  7 Hostname:  node1850
+Rank:  5 Hostname:  node1511
+Rank:  2 Hostname:  node1541
+Rank:  3 Hostname:  node1541
+Solving for x_R: total:  0.00304412841797
+Solving the reduced system:  0.00227284431458
+Summing the solutions - total:  0.0014660358429
+Total time:  0.00678300857544
+Solving for x_R: total:  0.00250101089478
+Solving the reduced system:  0.00191283226013
+Summing the solutions - total:  0.000894069671631
+Total time:  0.00530791282654
+Solving for x_R: total:  0.00301909446716
+Solving the reduced system:  0.00161004066467
+Summing the solutions - total:  0.000680923461914
+Total time:  0.00531005859375
+Solving for x_R: total:  0.00233292579651
+Solving the reduced system:  0.00149512290955
+Summing the solutions - total:  0.000657796859741
+Total time:  0.0044858455658
+Solving for x_R: total:  0.00231289863586
+Solving the reduced system:  0.00194716453552
+Summing the solutions - total:  0.00080680847168
+Total time:  0.00506687164307
+Solving for x_R: total:  0.00276613235474
+Solving the reduced system:  0.00187397003174
+Summing the solutions - total:  0.000659942626953
+Total time:  0.00530004501343
+Solving for x_R: total:  0.00231885910034
+Solving the reduced system:  0.00158905982971
+Summing the solutions - total:  0.000724077224731
+Total time:  0.00463199615479
+Solving for x_R: total:  0.00215196609497
+Solving the reduced system:  0.00193500518799
+Summing the solutions - total:  0.000600099563599
+Total time:  0.00468707084656
+Solving for x_R: total:  0.00245189666748
+Solving the reduced system:  0.00191807746887
+Summing the solutions - total:  0.000922918319702
+Total time:  0.00529289245605
+Solving for x_R: total:  0.00294208526611
+Solving the reduced system:  0.00145196914673
+Summing the solutions - total:  0.000710010528564
+Total time:  0.00510406494141
+Solving for x_R: total:  0.00313401222229
+Solving the reduced system:  0.00152802467346
+Summing the solutions - total:  0.000530004501343
+Total time:  0.00519204139709
+Solving for x_R: total:  0.00244402885437
+Solving the reduced system:  0.0013439655304
+Summing the solutions - total:  0.00071120262146
+Total time:  0.00449919700623
+Solving for x_R: total:  0.00230407714844
+Solving the reduced system:  0.00165796279907
+Summing the solutions - total:  0.000728845596313
+Total time:  0.00469088554382
+Solving for x_R: total:  0.00317096710205
+Solving the reduced system:  0.00153994560242
+Summing the solutions - total:  0.000581026077271
+Total time:  0.00529193878174
+Solving for x_R: total:  0.00247693061829
+Solving the reduced system:  0.00220203399658
+Summing the solutions - total:  0.000695943832397
+Total time:  0.00537490844727
+Solving for x_R: total:  0.00276708602905
+Solving the reduced system:  0.00176596641541
+Summing the solutions - total:  0.000730991363525
+Total time:  0.00526404380798
+Solving for x_R: total:  0.00246500968933
+Solving the reduced system:  0.00189900398254
+Summing the solutions - total:  0.000939846038818
+Total time:  0.00530385971069
+Solving for x_R: total:  0.00250196456909
+Solving the reduced system:  0.0013108253479
+Summing the solutions - total:  0.000588178634644
+Total time:  0.00440096855164
+Solving for x_R: total:  0.00262808799744
+Solving the reduced system:  0.00190782546997
+Summing the solutions - total:  0.000583171844482
+Total time:  0.00511908531189
+Solving for x_R: total:  0.00262689590454
+Solving the reduced system:  0.0016450881958
+Summing the solutions - total:  0.000703811645508
+Total time:  0.00497579574585
+1.0880361967e-06
+
+
+
+Block size (2x2)
+----------------
+
+[atrikut@node1185 compact]$ mpiexec --mca pml ob1 -n 8 python runExp.py 64 64 64 2 2 2
+Rank:  0 Hostname:  node1185
+Rank:  6 Hostname:  node1850
+Rank:  4 Hostname:  node1511
+Rank:  1 Hostname:  node1185
+Rank:  7 Hostname:  node1850
+Rank:  5 Hostname:  node1511
+Rank:  2 Hostname:  node1541
+Rank:  3 Hostname:  node1541
+Solving for x_R: total:  0.00304412841797
+Solving the reduced system:  0.00227284431458
+Summing the solutions - total:  0.0014660358429
+Total time:  0.00678300857544
+Solving for x_R: total:  0.00250101089478
+Solving the reduced system:  0.00191283226013
+Summing the solutions - total:  0.000894069671631
+Total time:  0.00530791282654
+Solving for x_R: total:  0.00301909446716
+Solving the reduced system:  0.00161004066467
+Summing the solutions - total:  0.000680923461914
+Total time:  0.00531005859375
+Solving for x_R: total:  0.00233292579651
+Solving the reduced system:  0.00149512290955
+Summing the solutions - total:  0.000657796859741
+Total time:  0.0044858455658
+Solving for x_R: total:  0.00231289863586
+Solving the reduced system:  0.00194716453552
+Summing the solutions - total:  0.00080680847168
+Total time:  0.00506687164307
+Solving for x_R: total:  0.00276613235474
+Solving the reduced system:  0.00187397003174
+Summing the solutions - total:  0.000659942626953
+Total time:  0.00530004501343
+Solving for x_R: total:  0.00231885910034
+Solving the reduced system:  0.00158905982971
+Summing the solutions - total:  0.000724077224731
+Total time:  0.00463199615479
+Solving for x_R: total:  0.00215196609497
+Solving the reduced system:  0.00193500518799
+Summing the solutions - total:  0.000600099563599
+Total time:  0.00468707084656
+Solving for x_R: total:  0.00245189666748
+Solving the reduced system:  0.00191807746887
+Summing the solutions - total:  0.000922918319702
+Total time:  0.00529289245605
+Solving for x_R: total:  0.00294208526611
+Solving the reduced system:  0.00145196914673
+Summing the solutions - total:  0.000710010528564
+Total time:  0.00510406494141
+Solving for x_R: total:  0.00313401222229
+Solving the reduced system:  0.00152802467346
+Summing the solutions - total:  0.000530004501343
+Total time:  0.00519204139709
+Solving for x_R: total:  0.00244402885437
+Solving the reduced system:  0.0013439655304
+Summing the solutions - total:  0.00071120262146
+Total time:  0.00449919700623
+Solving for x_R: total:  0.00230407714844
+Solving the reduced system:  0.00165796279907
+Summing the solutions - total:  0.000728845596313
+Total time:  0.00469088554382
+Solving for x_R: total:  0.00317096710205
+Solving the reduced system:  0.00153994560242
+Summing the solutions - total:  0.000581026077271
+Total time:  0.00529193878174
+Solving for x_R: total:  0.00247693061829
+Solving the reduced system:  0.00220203399658
+Summing the solutions - total:  0.000695943832397
+Total time:  0.00537490844727
+Solving for x_R: total:  0.00276708602905
+Solving the reduced system:  0.00176596641541
+Summing the solutions - total:  0.000730991363525
+Total time:  0.00526404380798
+Solving for x_R: total:  0.00246500968933
+Solving the reduced system:  0.00189900398254
+Summing the solutions - total:  0.000939846038818
+Total time:  0.00530385971069
+Solving for x_R: total:  0.00250196456909
+Solving the reduced system:  0.0013108253479
+Summing the solutions - total:  0.000588178634644
+Total time:  0.00440096855164
+Solving for x_R: total:  0.00262808799744
+Solving the reduced system:  0.00190782546997
+Summing the solutions - total:  0.000583171844482
+Total time:  0.00511908531189
+Solving for x_R: total:  0.00262689590454
+Solving the reduced system:  0.0016450881958
+Summing the solutions - total:  0.000703811645508
+Total time:  0.00497579574585
+1.0880361967e-06
