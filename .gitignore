@@ -7,3 +7,5 @@
 *.eps
 *.svg
 *~lock*
+*.bbl
+*.blg
