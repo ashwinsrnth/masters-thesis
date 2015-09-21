@@ -2,5 +2,5 @@ eps: *.odg
 	libreoffice --invisible --nologo --convert-to eps *.odg
 
 clean:
-	rm -f *.eps
+	rm -f *.eps *converted-to.pdf
 
