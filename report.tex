@@ -16,30 +16,68 @@
 \usepackage[margin=1in]{geometry}
 
 \author{Ashwin Srinath}
-\title{An OpenCL-based tridiagonal solver for evaluation
+\title{OpenCL-based tridiagonal solvers for evaluation
     of compact finite differences on parallel architectures}
+
 \begin{document}
-% \renewcommand{\bibname}{References}
+\renewcommand{\refname}{References}
+
+\maketitle
+
+
+\begin{abstract}
+    We present methods to evaluate compact finite differences in a
+    heterogeneous cluster environment
+    on two different architectures: NVIDIA GPUs and Intel multicore CPUs.
+    Our methods are compared against the CFDNS implementation,
+    which uses a parallelized version of the LU algorithm.
+    The implementations are tested on the Clemson University Palmetto supercomputer---each
+    node is equipped with 2 NVIDIA Tesla K20 GPUs and a
+    2.4 GHz 16 core Intel Xeon Processor.
+    The OpenCL framework is used to develop platform-independent code
+    so that other parallel architectures can be studied.
+    For a problem sized $2048^{3}$,
+    our GPU implementation on 64 GPUs provides a
+    5x speedup against the CFDNS implementation on the equivalent 512 CPU cores,
+    and our CPU implementation provides a 2x speedup against
+    the CFDNS implementation on 512 CPU cores.
+    The speedup is shown to increase with problem size.
+    Compiler optimizations are enabled for all three implementations.
+    Our methods achieve speedup by exploiting the parallel architecture in two ways:
+    (1) employing cyclic reduction (a parallel algorithm) for each grid line (in the case of GPU), and
+    (2) solving multiple grid lines concurrently (both CPU and GPU).
+    Our GPU implementation uses a novel strategy
+    based on precomputing coefficients,
+    to improve the memory access pattern,
+    and reduce the number of computations involved.
+    The results are of direct interest for implementing compact finite difference
+    solvers for other parallel architectures, such as MICs.
+
+
+\end{abstract}
+
 
 \section{Introduction}
 
     The motivation for this work comes from the need to evaluate
-    \emph{compact finite differences} arising in large simulations of combustion.
+    \emph{compact finite differences} arising in large CFD simulations.
     Compact finite different schemes result in
-    high-order of accuracy for relatively small stencils.
+    high order of accuracy for relatively small stencils.
     Numerical methods with small stencil widths are especially benefitial
     in managing communication costs in large-scale cluster computing.
-    This work is concerned with implementing algorithms for evaluating
-    compact finite differences to make full use of available parallel architecture.
-    The target architecture studied is the NVIDIA Tesla K20 GPU.
-    The algorithm design for this architecture is presented,
-    along with the associated issues.
-    Results are presented for domains sized up to $2048^3$ grid points,
-    using up to 64 GPUs.
+    Compact finite difference schemes lead to
+    several banded tridiagonal systems,
+    the solution of which is generally the most time-consuming step in the simulation process.
+    It is thus desirable to exploit available parallel architectures to speed up
+    the solution of the tridiagonal systems.
+    The target architectures studied are the NVIDIA Tesla K20 GPU,
+    and and a 2.4 GHz Intel Xeon processor with 16 cores.
+    Other parallel architectures are of interest---specifically the
+    Intel Xeon Phi many-integrated core.
 
-\section{Related work}
-
-    [FastTridiagonal] discuss the GPU implementation of three algorithms
+    Several recent efforts have been made to exploit massively parallel architectures
+    in the solution of tridiagonal systems.
+    \cite{Zhang:2010:FTS:1837853.1693472} discuss the GPU implementation of three algorithms
     and their hybrid variants: Cyclic Reduction, Parallel Cyclic Reduction
     and Recursive Doubling.
     Their approach utilizes the GPUs \emph{shared memory},
@@ -47,35 +85,31 @@
     A global memory implementation of their solvers
     runs about three times slower, but is able to accomodate larger systems.
     The speedups they report are 12x over a 2.5 GHz quad-core CPU.
-
-    [ScalableTridiagonal] and [Autotuned] both propose hybrid
+    \cite{kim2011scalable} and \cite{davidson2011auto} both propose hybrid
     Parallel Cyclic Reduction and thread-level parallel Thomas algorithm (p-Thomas), and
     methods to determine the switching point for the algorithms.
     The speedups reported are 8.3x and 11x over a 3.33 GHz Intel i7 quad-core
     processor and a 3.4 GHz Intel i5 dual-core respectively.
-
-    In [ScalableNumericallyStable],
+    In \cite{chang2012scalable},
     the authors implement a heterogenous (GPU+MPI) solver using the
     SPIKE algorithm for GPUs with a diagonal pivoting strategy for stability.
-    More recently, [ChunkedCyclic] propose a \emph{chunked} cyclic reduction
-    strategy for GPUss
-    In [GPUApplicationForHigherOrderCFD], the inverse of the coefficient matrix
+    More recently, \cite{zhao2015efficiently} propose a \emph{chunked} cyclic reduction
+    strategy for GPUs.
+    In \cite{tutkun2012gpu}, the inverse of the coefficient matrix
     is used to solve tridiagonal systems resulting from high-order compact
     finite difference schemes. The work here is for a single GPU.
-    [An efficient GPU implementation of cyclic reduction solver] demonstrate
+    \cite{esfahanian2014efficient} demonstrate
     a method to improve memory accesses for Cyclic Reduction
     using a reordering strategy, and apply it to compressible viscous flow
     simulations.
 
-    --- Mention the speedups
-
-    In this work, we propose a variant of Cyclic Reduction for solving
-    tridiagonal systems arising in compact finite differences
-    in a cluster environment (several GPU nodes).
-    We introduce a strategy to
-    reduce global memory accesses and decrease memory requirements by
-    pre-computing coefficients appearing in Cyclic Reduction.
-
+    In this work,
+    we demonstrate the performance of a thread-parallel Thomas algorithm
+    on multi-core CPUs.
+    For GPUs,
+    we propose novel variant of Cyclic Reduction algorithm that
+    reduces global memory accesses and decreases memory requirements by
+    pre-computing coefficients.
 
 \section{Numerical method}
 
@@ -156,14 +190,13 @@
         \item{The solution of the resulting matrix system.}
     \end{enumerate}
 
-\section{Reference approach}
-    The current approach, developed for the CFDNS[ref] Compressible Navier-Stokes,
-    and adapted to the Roadrunner[ref] architecture,
-    is a parallel solver based on the standard LU algorithm,
+\section{Reference approach} \label{sec:ref-approach}
+    The current approach, developed for the CFDNS \cite{livescu2009cfdns}
+    Direct Numerical Simulation solver,
+    uses a parallel tridiagonal solver based on the standard LU algorithm,
     but specialized for the solution of a constant matrix.
     The problem is distributed among several ``processes'' and each
     process uses a single CPU core to perform computations.
-
     Assuming the coefficients of the LU algorithm are precomputed,
     the following steps are required to solve the tridiagonal system
     (only steps for the left-right sweep are listed, the right-left sweep
@@ -187,33 +220,6 @@
     The Message Passing Interface (MPI) is used for handling communication
     between processes.
 
-\section{GPU architecture and OpenCL programming platform}
-
-    \begin{figure}[h]
-    \begin{center}
-    \includegraphics[height=200pt]{img/tesla-block-diagram.jpg}
-    \end{center}
-    \caption{Distribution of a 2-D domain among processes}
-    \label{fig:da-domain}
-    \end{figure}
-
-    GPUs afford massive parallelism by virtue of several (thousand)
-    lightweight compute \emph{threads} or \emph{work-items}.
-    The threads on a GPU are scheduled as \emph{blocks},
-    which can be 1-D, 2-D, or 3-D.
-    Each block is assigned to a \emph{streaming multiprocessor} (SM)
-    on the GPU---the Tesla K20 GPU has 13 streaming multiprocessor---and
-    all threads in a block are executed simultaneously by the SM.
-    All SMs (and therefore all threads) have access to the GPU's ``global'' memory.
-    Access to global memory is efficient when concurrent threads
-    access neighbouring memory locations
-    (known as \emph{coalesced memory access}).
-    All threads in an SM also have access to a common fast, on-chip, \emph{shared memory}.
-    Access to shared memory, in general, is much faster than access to global memory,
-    but the amount of shared memory per SM is limited, typically a few dozen KB.
-    Certain memory access patterns by concurrent threads to shared memory may result in
-    serialization of the memory accesses, known as bank conflicts. These are detailed [here].
-
 \section{Parallelization strategies}
 
     % left, lower, right, upper
@@ -228,16 +234,16 @@
     \begin{figure}[ht]
     \begin{minipage}[b]{0.40\linewidth}
     \begin{center}
-    \includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=200pt]{img/one-block.eps}
+    \includegraphics[trim={{50pt} {50pt} {50pt} {50pt}}, clip, height=200pt]{img/one-block.eps}
     \end{center}
-    \caption{A subdomain}
+    \caption{A subdomain (assigned to a process)}
     \label{fig:block}
     \end{minipage}
     %
     \hspace{0.5cm}
     \begin{minipage}[b]{0.40\linewidth}
     \begin{center}
-    \includegraphics[trim={{50pt} {150pt} {100pt} {150pt}}, clip, height=200pt]{img/one-thread.eps}
+    \includegraphics[trim={{50pt} {50pt} {50pt} {50pt}}, clip, height=200pt]{img/one-thread.eps}
     \end{center}
     \caption{Single grid line within a subdomain}
     \label{fig:grid-line}
@@ -248,7 +254,7 @@
     \begin{center}
     \includegraphics[trim={{100pt} {250pt} {100pt} {150pt}}, clip, height=200pt]{img/block-dimensions.eps}
     \end{center}
-    \caption{Domain}
+    \caption{Dimensions of subdomain}
     \label{fig:block-dimensions}
     \end{figure}
 
@@ -258,22 +264,20 @@
     at each grid point in the problem domain,
     shown in \ref{fig:domain}.
     Each grid point is represented as a cell in this representation.
-    The domain has been shown as partitioned into subdomains \ref{fig:block}.
-    The subdomains are three dimensional to facilitate
-    the computation of derivatives in all three coordinate directions
-    without incurring excessive communication costs.
+    The domain has been shown as partitioned into subdomains (Figure \ref{fig:block}).
 
     While evaluating the derivative in the x-direction (say),
     each subdomain is assigned to a \emph{compute unit}, or a \emph{process}
     which may be a single core, a multi-core processor, or a GPU.
     Each subdomain may be thought of as a collection of ``lines'' of grid points
-    \ref{fig:grid-line}---referred to as \emph{grid lines}---in the x-direction,
+    ---referred to as \emph{grid lines}---in the x-direction (Figure \ref{fig:grid-line}),
     and the entire domain may be thought of as a collection of such subdomains.
 
     In the reference approach, each subdomain is assigned to a CPU core.
     Each core operates on a subdomain with dimensions as shown
     in the figure \ref{fig:block-dimensions}.
-    The computational pattern followed by each core for the steps listed in Section[SEC]
+    The computational pattern followed by each core for the steps listed in Section
+    \ref{sec:ref-approach}
     is a triple nested loop over the grid points in the subdomain,
     followed by a communication of the ``faces'' of the subdomain with the other
     cores:
@@ -307,13 +311,15 @@
     and it is desirable to introduce a second level of parallelism to replace these loops.
     Broadly speaking, there are two forms of parallelism that can be exploited:
 
+    \pagebreak
+
     \textbf{Thread-level parallelism} \\
         In a multi-threaded environment,
         rather than having a single thread perform the local part
         of the computations for each line,
         it is beneficial to have several threads ``sweep'' through the subdomain,
         each performing the computations for a different tridiagonal system.
-        This is a sort of \emph{thread parallel} operations (Figure \ref{fig:thread-parallel}).
+        This is a sort of \emph{thread parallel} operation (Figure \ref{fig:thread-parallel}).
         Algorithms that are inherently sequential,
         such as the Thomas algorithm lend themselves easily to thread-level parallelism
         With reference to the triple-loop in Listing 1,
@@ -322,9 +328,9 @@
 
         \begin{figure}[h]
         \begin{center}
-        \includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=300pt]{img/thread-parallel.eps}
+        \includegraphics[trim={{100pt} {250pt} {100pt} {150pt}}, clip, height=200pt]{img/thread-parallel.eps}
         \end{center}
-        \caption{Parallel x}
+        \caption{Thread-level parallelism}
         \label{fig:thread-parallel}
         \end{figure}
 
@@ -342,23 +348,23 @@
 
         \begin{figure}[h]
         \begin{center}
-        \includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=300pt]{img/data-parallel.eps}
+        \includegraphics[trim={{100pt} {200pt} {100pt} {150pt}}, clip, height=200pt]{img/data-parallel.eps}
         \end{center}
-        \caption{Parallel yz}
+        \caption{Data parallelism}
         \label{fig:data-parallel}
         \end{figure}
 
-    In this work, we evaluate the performance of a variant of Cyclic Reduction
+    In this work, we evaluate the performance of a variant of cyclic reduction
     on the GPU that is both data-parallel and thread-parallel,
     and a thread-parallel implementation of the Thomas Algorithm on
     multi-core CPUs.
 
     Both implementations are compared against the reference implementation
-    described in Section [SEC].
+    described in Section \ref{sec:ref-approach}.
     The thread-parallel implementation of Thomas Algorithm is
     straightforward.
-    However, implementation Cyclic Reduction on GPUs involves several issues,
-    and our algorithm is described in detail in Section [SEC].
+    However, implementation of cyclic reduction on GPUs involves several issues,
+    and our algorithm is described in detail in Section \ref{sec:gpu-algorithm}.
     %
     % \subsection{Evaluation of the RHS}
     %
@@ -416,7 +422,9 @@
     %     value several times, it is effective to use shared memory as explicitly
     %     controlled cache.
 
-\section{Description of the algorithm}
+\section{Description of the GPU algorithm} \label{sec:gpu-algorithm}
+
+    \subsection{Cluster-level parallelization strategy}
 
     The size of the problems solved using the high-order compact finite
     difference schemes discussed is usually much larger than can be accomodated
@@ -424,6 +432,8 @@
     The problem domain is thus divided into ``subdomains'' and distributed among
     several processes.
     First, we discuss this cluster level parallelism.
+    This strategy is common to both our CPU and GPU solvers,
+    and was first proposed in \cite{mattor1995algorithm}
 
     Given N equations in N variables of the form:
 
@@ -511,9 +521,9 @@
         \item Each process solves the three equations
         \ref{eqn:local-eqn-1}-\ref{eqn:local-eqn-3}.
         \item Each process communicates the parameters required to
-        assemble the ``reduced'' system eqn:reduced-system
+        assemble the ``reduced'' system \ref{eqn:reduced-system}.
         \item The reduced system is solved for the coupling coefficients
-        $\xi_i^{UH}$ and $xi_i^{LH}$, which are sent to their respective processes
+        $\xi_i^{UH}$ and $\xi_i^{LH}$, which are sent to their respective processes
         (if required)
         \item Each process solves \ref{eqn:linear-combo} for the local part
         of the solution to the global system.
@@ -533,6 +543,37 @@
         \item Only \ref{eqn:local-eqn-3} is evaluated for each grid line
             in the subdomain. This is expected to be the most computationally expensive step.
     \end{enumerate}
+
+
+    \subsection{GPU architecture}
+
+        \begin{figure}[h]
+        \begin{center}
+        \includegraphics[height=200pt]{img/tesla-block-diagram.jpg}
+        \end{center}
+        \caption{Block diagram of the K20 GPU}
+        \label{fig:k20}
+        \end{figure}
+
+        GPUs afford massive parallelism by virtue of several (thousand)
+        lightweight compute \emph{threads} or \emph{work-items}.
+        The threads on a GPU are scheduled as \emph{blocks},
+        which can be 1-D, 2-D, or 3-D.
+        Each block is assigned to a \emph{streaming multiprocessor} (SM)
+        on the GPU---the Tesla K20 GPU (Figure \ref{fig:k20})
+        has 13 streaming multiprocessor---and
+        all threads in a block are executed simultaneously by the SM.
+        All SMs (and therefore all threads) have access to the GPU's ``global'' memory.
+        Access to global memory is efficient when concurrent threads
+        access neighbouring memory locations
+        (known as \emph{coalesced memory access}).
+        All threads in an SM also have access to a common fast, on-chip, \emph{shared memory}.
+        Access to shared memory, in general, is much faster than access to global memory,
+        but the amount of shared memory per SM is limited, typically a few dozen KB.
+        Certain memory access patterns by concurrent threads to shared memory may result in
+        serialization of the memory accesses, known as bank conflicts.
+
+
 
     \subsection{Cyclic reduction}
 
@@ -577,7 +618,7 @@
             & d^{\prime}_i = d_i - d_{i-1}k_1 &
         \end{align}
 
-        And the backward reduction step for $i=1$ is instead:
+        And the backward substitution step for $i=1$ is instead:
         \begin{align} \label{eqn:back-substitution-right}
         x_i = \frac{d^{\prime}_i - c^{\prime}_ix_{i+1}}{b^{\prime}_i}
         \end{align}
@@ -586,7 +627,7 @@
         \begin{center}
         \includegraphics[trim={{50pt} {300pt} {100pt} {50pt}}, clip, height=200pt]{img/forward-reduction.eps}
         \end{center}
-        \caption{Cyclic reduction}
+        \caption{Cyclic reduction: memory access pattern for forward reduction}
         \label{fig:forward-reduction}
         \end{figure}
 
@@ -624,6 +665,8 @@
         Rather than scheduling threads for a single system (grid line),
         we may schedule threads to perform
         forward reduction steps for every grid line.
+        This ensures that threads that would otherwise be inactive
+        now perform computations for other grid lines.
 
         To avoid non-coalesced accesses to global memory,
         we can instead have threads working with the fast, on-chip,
@@ -634,7 +677,7 @@
         and write the data back to global memory.
         Conceptually, this approach has the advantage of avoiding
         non-coalesced global memory accesses, and facilitates data reuse.
-        However, as described in [FastTridiagonalSolvers], the method
+        However, as described in \cite{Zhang:2010:FTS:1837853.1693472}, the method
         suffers from so-called \emph{bank conflicts} in which,
         for certain memory access patters,
         data access by concurrent threads from shared memory may be serialized.
@@ -710,7 +753,7 @@
             & d^{\prime}_i = d_i - d_{i-1}k_1 &
         \end{align}
 
-        The backward reduction step benefits from improved access to
+        The backward substitution step benefits from improved access to
         global memory.
 
         \subsubsection*{Boundary conditions}
@@ -732,30 +775,77 @@
         final step (2-by-2 solve) of forward reduction.
         These two scalar values may be stored separately.
 
-\section{Results and performance comparison}
-    
-    \subsection{Performance comparison}
+\section{Performance comparison}
 
-    \subsection{Major concerns}
+    The reference implementation is compared against our implementations
+    of the following algorithms:
 
-    \subsection{Performance improvement strategies}
+    \begin{enumerate}
+        \item Cyclic reduction with precomputed coefficients (described above)
+            for GPUs
+        \item p-Thomas or thread-parallel Thomas algorithm
+            for multi-core CPUs
+    \end{enumerate}
 
-\section{Computational practices}
+    In most of the literature, GPU performance is measured
+    by comparing the performance of the GPU with
+    a single CPU core, or with 2-4 CPU cores.
+    We consider a ``node-for-node'' comparison.
+    Each node on the Palmetto cluster has 16 CPU cores and 2 GPUs,
+    so we maintain a 1:8 ratio of GPUs to CPU cores in our performance evaluation.
+    \texttt{O2} level compiler optimizations are applied for the reference implementation,
+    the default OpenCL optimizations are applied for our implementations.
+    We assume that data loaded on to the GPU is used in other computations
+    (evaluation of the RHS, computation of the derivative in other directions),
+    and that the computations take long enough that
+    the cost of CPU-GPU transfers may be ignored.
 
+    \begin{figure}[h!]
+    \begin{center}
+    \includegraphics[height=200pt]{results/graphs/4-nodes.png}
+    \end{center}
+    \caption{Performance of solvers on 4 compute nodes (64 CPU cores, 8 GPUs))}
+    \label{fig:4-nodes}
+    \end{figure}
 
+    \begin{figure}[h!]
+    \begin{center}
+    \includegraphics[height=200pt]{results/graphs/32-nodes.png}
+    \end{center}
+    \caption{Performance of solvers on 32 compute nodes (512 CPU cores, 64 GPUs))}
+    \label{fig:32-nodes}
+    \end{figure}
 
+    From Figures \ref{fig:4-nodes} and \ref{fig:32-nodes},
+    it is clear that the OpenCL implementations run faster than the reference
+    implementation for larger problem sizes.
+    We also note an increase in the speedup with the problem size.
+    For smaller problem sizes,
+    the data---specifically for the communication phases of the algorithms---was
+    noted to be somewhat noisy.
 
-\begin{figure}[h]
-\begin{center}
-\includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=300pt]{img/data-and-thread-parallel.eps}
-\end{center}
-\caption{Parallel-both}
-\label{fig:parallel-both}
-\end{figure}
+\section{Performance improvement and future work}
 
+    There is much scope for even better parallel performance and future study.
+    Initial profiling results suggest that most of the time is spent solving
+    the primary tridiagonal systems,
+    but a significant portion of time is spent in assembling and solving
+    the secondary ``reduced'' system of equations.
+    Our implementations need to be carefully profiled
+    to understand where further opimization efforts are required.
+    Secondly, finite differences in the other directions can be implemented similarly
+    in a straightforward way,
+    but it is possible to use a \emph{one-shot}
+    strategy, as shown in \cite{esfahanian2014efficient}
+    to evaulate all three derivatives concurrently.
+    We would also like to develop and evaluate the performance
+    a thread-parallel version of the current CFDNS solver,
+    which will solve multiple grid lines in a single sweep.
+    Finally, we propose to evaluate the performance of our solvers
+    on the Intel Many Integrated Core architecture, where we expect to see
+    similar results.
 
-
-
-
+    \bibliography{references}
+    \bibliographystyle{abbrv}
 
 \end{document}
