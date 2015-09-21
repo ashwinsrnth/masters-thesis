@@ -99,20 +99,20 @@
         f^{\prime}_1 + 2f^{\prime}_2 = \frac{-5f_1 + 4f_2 + f_3}{dx}
     \end{equation}
 
-    The right boundary ($f^{\prime}_{n-1}$) is treated by utilizing
+    The right boundary ($f^{\prime}_{n}$) is treated by utilizing
     the negative complex-conjugate of the Fourier image of the stencil
     at $f^{\prime}_1$:
 
     \begin{equation}
-        f^{\prime}_{n-1} + 2f^{\prime}_{n-2}
+        f^{\prime}_{n} + 2f^{\prime}_{n-1s}
         =
-        \frac{5f_{n-1} - 4f_{n-2} - f_{n-3}}{dx}
+        \frac{5f_{n} - 4f_{n-2} 1 f_{n-2}}{dx}
     \end{equation}
 
     The tridiagonal system that needs to be solved for the derivatives,
-    then has an LHS of the form:
+    then has the form:
 
-    \[ %\arraycolsep=4pt
+    \begin{equation} \label{eqn:compact-tridiagonal-system}
      \begin{bmatrix}
          1&2\\
          1/4&1&1/4\\
@@ -124,11 +124,18 @@
          &&&&&&&\ddots\\
          &&&&&&&2&1
       \end{bmatrix}
-    \]
-
-    And an RHS of the form:
-
-    \[
+      \begin{bmatrix}
+          f^{\prime}_1 \\
+          f^{\prime}_2 \\
+          f^{\prime}_3 \\
+          \vdots \\
+          \vdots \\
+          \vdots \\
+          \vdots \\
+          f^{\prime}_{n-1} \\
+          f^{\prime}_n
+       \end{bmatrix}
+     =
      \begin{bmatrix}
          -5f_1 + 4f_2 + f_3\\
          f_{3} - f_{1}\\
@@ -138,9 +145,9 @@
          \vdots\\
          \vdots\\
          f_{n} - f_{n-2}\\
-         5f_{n} - 4f_{n-1} - f_{3}
+         5f_{n} - 4f_{n-1} - f_{n-2}
       \end{bmatrix}
-    \]
+    \end{equation}
 
     A solution strategy is therefore concerned with the following:
 
@@ -191,8 +198,8 @@
     \end{figure}
 
     GPUs afford massive parallelism by virtue of several (thousand)
-    lightweight compute threads, referred to as \emph{work items}.
-    The work items on a GPU are scheduled as \emph{blocks},
+    lightweight compute \emph{threads} or \emph{work-items}.
+    The threads on a GPU are scheduled as \emph{blocks},
     which can be 1-D, 2-D, or 3-D.
     Each block is assigned to a \emph{streaming multiprocessor} (SM)
     on the GPU---the Tesla K20 GPU has 13 streaming multiprocessor---and
@@ -209,180 +216,214 @@
 
 \section{Parallelization strategies}
 
-
     % left, lower, right, upper
     \begin{figure}[h]
     \begin{center}
-    \includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=250pt]{img/domain.eps}
+    \includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=200pt]{img/domain.eps}
     \end{center}
     \caption{Problem domain}
     \label{fig:domain}
     \end{figure}
-
+    %
     \begin{figure}[ht]
-    \begin{minipage}[b]{0.45\linewidth}
-    \centering
-    \includegraphics[trim={{50pt} {150pt} {50pt} {150pt}}, clip, height=200pt]{img/one-block.eps}
-    \caption{Single block assigned to a process}
+    \begin{minipage}[b]{0.40\linewidth}
+    \begin{center}
+    \includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=200pt]{img/one-block.eps}
+    \end{center}
+    \caption{A subdomain}
     \label{fig:block}
     \end{minipage}
-
+    %
     \hspace{0.5cm}
-    \begin{minipage}[b]{0.45\linewidth}
-    \centering
-    \includegraphics[trim={{50pt} {150pt} {50pt} {150pt}}, clip, height=200pt]{img/one-thread.eps}
-    \caption{Single grid line within a block}
+    \begin{minipage}[b]{0.40\linewidth}
+    \begin{center}
+    \includegraphics[trim={{50pt} {150pt} {100pt} {150pt}}, clip, height=200pt]{img/one-thread.eps}
+    \end{center}
+    \caption{Single grid line within a subdomain}
     \label{fig:grid-line}
     \end{minipage}
     \end{figure}
+    %
+    \begin{figure}[h]
+    \begin{center}
+    \includegraphics[trim={{100pt} {250pt} {100pt} {150pt}}, clip, height=200pt]{img/block-dimensions.eps}
+    \end{center}
+    \caption{Domain}
+    \label{fig:block-dimensions}
+    \end{figure}
+
+    \pagebreak
 
     The compact finite differences need to be evaluated
     at each grid point in the problem domain,
     shown in \ref{fig:domain}.
     Each grid point is represented as a cell in this representation.
-    The domain has been shown as partitioned into blocks \ref{fig:one-block}.
-    The blocks are three dimensional to facilitate
+    The domain has been shown as partitioned into subdomains \ref{fig:block}.
+    The subdomains are three dimensional to facilitate
     the computation of derivatives in all three coordinate directions
     without incurring excessive communication costs.
 
     While evaluating the derivative in the x-direction (say),
-    each block is assigned to a \emph{compute unit}, or a \emph{process}
+    each subdomain is assigned to a \emph{compute unit}, or a \emph{process}
     which may be a single core, a multi-core processor, or a GPU.
-    Each block may be thought of as a collection of ``lines'' of grid points
-    \ref{fig:one-line}---referred to as \emph{grid lines}---in the x-direction,
-    and the entire domain may be thought of as a collection of such blocks.
+    Each subdomain may be thought of as a collection of ``lines'' of grid points
+    \ref{fig:grid-line}---referred to as \emph{grid lines}---in the x-direction,
+    and the entire domain may be thought of as a collection of such subdomains.
 
-    \subsection{Evaluation of the RHS}
+    In the reference approach, each subdomain is assigned to a CPU core.
+    Each core operates on a subdomain with dimensions as shown
+    in the figure \ref{fig:block-dimensions}.
+    The computational pattern followed by each core for the steps listed in Section[SEC]
+    is a triple nested loop over the grid points in the subdomain,
+    followed by a communication of the ``faces'' of the subdomain with the other
+    cores:
 
-        The RHS is evaluated by a 3 point stencil computation of
-        the following form:
+    \begin{listing}
+    \begin{minted}{fortran}
 
-        \begin{equation*}
-            r_i = \frac{3}{4dx} (f_{i+1} - f_{i-1})
-        \end{equation*}
+       do j=1,n2
+          do i=1,n1
+             x(1,i,j) = bet(1)*x(1,i,j)
+             do k = 2, n3
+                x(k,i,j) = (x(k,i,j) - a(k)*x(k-1,i,j))*bet(k)
+             end do
+             p_loc(i,j) = x(n3,i,j)
+          end do
+       end do
 
-        This pointwise update can be performed easily in parallel
-        for the internal points (points not close to the boundary of the process).
-        Near the boundaries, the process will require information from its
-        neighbours.
+       call MPI_Allgather(p_loc,n1*n2,double_real,p,n1*n2, &
+          double_real,comm,error)
 
-        Thus, each process will require information from its
-        neighbouring processes every time the derivative needs to be evaluated.
+    \end{minted}
+    \caption{Computational pattern in reference approach}
+    \label{listing:triple-loop}
+    \end{listing}
 
-        \begin{figure}[h]
-        \begin{center}
-        \includegraphics[trim={{100pt} {250pt} {100pt} {200pt}}, clip, height=200pt]{img/da-domain.eps}
-        \end{center}
-        \caption{Distribution of a 2-D domain among processes}
-        \label{fig:da-domain}
-        \end{figure}
+    Conceptually, the innermost loop solves the tridiagonal system
+    for a single grid line,
+    while the outer loops navigate the different grid lines.
+    The evalution of such triple loops are found to be the most time-consuming steps
+    in the solution process,
+    and it is desirable to introduce a second level of parallelism to replace these loops.
+    Broadly speaking, there are two forms of parallelism that can be exploited:
 
-        \begin{figure}[h]
-        \begin{center}
-        \includegraphics[trim={{100pt} {250pt} {100pt} {200pt}}, clip, height=200pt]{img/da-local-portion.eps}
-        \end{center}
-        \caption{Elements required by a process to evaluate RHS}
-        \label{fig:da-local-portion}
-        \end{figure}
-
-        Thus, the RHS is evaluated in two steps:
-
-        \begin{enumerate}
-            \item Exchange boundary information with neighbouring processes
-            \item Evaluate the RHS at each grid point (in parallel)
-        \end{enumerate}
-
-        The GPU is specialized for performing such a large number of independent
-        computations as required in step 2.
-        The RHS at each grid point is computing by a single work item
-        (GPU thread).
-        Therefore the number of work items scheduled is
-        equal to the number of points in the local domain.
-
-        Another popular strategy is to take advantage of
-        shared memory, by launching 2-dimensional blocks of work-items,
-        loading each into shared memory, and streaming the third dimension
-        in registers.
-        This approach is discussed in [ref], and is much more effective
-        for larger stencils---as each thread in a block will access the same
-        value several times, it is effective to use shared memory as explicitly
-        controlled cache.
-
-    \subsection{Solving the tridiagonal system}
-
-        In the reference approach, a significantly larger portion of time is spent in solving
-        the tridiagonal system in parallel.
-        Because the problem does not exhibit the same degree of parallelism as
-        the pointwise stencil update,
-        the algorithms are necessarily more involved.
-
-        \begin{figure}[h]
-        \begin{center}
-        \includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=250pt]{img/block-dimensions.eps}
-        \end{center}
-        \caption{Domain}
-        \label{fig:block-dimensions}
-        \end{figure}
-
-        In the reference approach, the domain is decomposed into several blocks,
-        and each block is assigned to a CPU core.
-        Each core operates on a block with dimensions as shown
-        in the figure \ref{fig:block-dimensions}.
-        The computational pattern followed by each core for the steps listed in Section[SEC]
-        is a triple nested loop over the grid points in the block,
-        followed by a communication of the ``faces'' of the block with the other
-        cores:
-
-        \begin{listing}
-        \begin{minted}{fortran}
-           do j=1,n2
-              do i=1,n1
-                 x(1,i,j) = bet(1)*x(1,i,j)
-                 do k = 2, n3
-                    x(k,i,j) = (x(k,i,j) - a(k)*x(k-1,i,j))*bet(k)
-                 end do
-                 p_loc(i,j) = x(n3,i,j)
-              end do
-           end do
-
-           call MPI_Allgather(p_loc,n1*n2,double_real,p,n1*n2, &
-              double_real,comm,error)
-
-        \end{minted}
-        \caption{Computational pattern in reference approach}
-        \end{listing}
-
-        Conceptually, the innermost loop solves the tridiagonal system
-        for a single ``line'' of grid points.
-
+    \textbf{Thread-level parallelism} \\
         In a multi-threaded environment,
         rather than having a single thread perform the local part
         of the computations for each line,
-        it is beneficial to have several threads ``sweep'' through the domain,
+        it is beneficial to have several threads ``sweep'' through the subdomain,
         each performing the computations for a different tridiagonal system.
-        This is shown in Figure \ref{fig:block-multi-threaded} for a 4-core processor.
-        In each iteration of the inner-most loop,
-        4 lines of grid points are solved.
+        This is a sort of \emph{thread parallel} operations (Figure \ref{fig:thread-parallel}).
+        Algorithms that are inherently sequential,
+        such as the Thomas algorithm lend themselves easily to thread-level parallelism
+        With reference to the triple-loop in Listing 1,
+        algorithms employing thread-level parallelism reduce the
+        size of the outer two loops.
 
         \begin{figure}[h]
         \begin{center}
-        \includegraphics[trim={{50pt} {250pt} {50pt} {150pt}}, clip, height=300pt]{img/block-multi-threaded.eps}
+        \includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=300pt]{img/thread-parallel.eps}
         \end{center}
-        \caption{Domain}
-        \label{fig:block-multi-threaded}
+        \caption{Parallel x}
+        \label{fig:thread-parallel}
         \end{figure}
 
-        Algorithms like LU and the Thomas Algorithm are inherently sequential.
-        While thread level parallelism can be used to solve several systems at once,
-        the number of steps to solve each system remains large.
+    \textbf{Data parallelism} \\
+        Algorithms like Cyclic Reduction and Parallel Cyclic Reduction
+        use parallel processors to perform
+        perform the same operation at different points in the tridiagonal system.
+        They are said to exhibit \emph{data parallelism} (Figure \ref{fig:data-parallel}).
+        Although these algorithms perform a larger number of computations
+        per step compared to the Thomas algorithm,
+        they can take far fewer steps to run,
+        depending on the number of available parallel processors.
+        With reference to the triple-loop in Listing 1,
+        algorithms employing data parallelism reduce the size of the innermost loop.
 
-        Algorithms like Cyclic Reduction and Parallel Cyclic Reduction use
-        several parallel processors to solve a tridiagonal system.
-        Cyclic reduction
+        \begin{figure}[h]
+        \begin{center}
+        \includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=300pt]{img/data-parallel.eps}
+        \end{center}
+        \caption{Parallel yz}
+        \label{fig:data-parallel}
+        \end{figure}
+
+    In this work, we evaluate the performance of a variant of Cyclic Reduction
+    on the GPU that is both data-parallel and thread-parallel,
+    and a thread-parallel implementation of the Thomas Algorithm on
+    multi-core CPUs.
+
+    Both implementations are compared against the reference implementation
+    described in Section [SEC].
+    The thread-parallel implementation of Thomas Algorithm is
+    straightforward.
+    However, implementation Cyclic Reduction on GPUs involves several issues,
+    and our algorithm is described in detail in Section [SEC].
+    %
+    % \subsection{Evaluation of the RHS}
+    %
+    %     The RHS is evaluated by a 3 point stencil computation of
+    %     the following form:
+    %
+    %     \begin{equation*}
+    %         r_i = \frac{3}{4dx} (f_{i+1} - f_{i-1})
+    %     \end{equation*}
+    %
+    %     This pointwise update can be performed easily in parallel
+    %     for the internal points (points not close to the boundary of the process).
+    %     Near the boundaries, the process will require information from its
+    %     neighbours.
+    %
+    %     Thus, each process will require information from its
+    %     neighbouring processes every time the derivative needs to be evaluated.
+    %
+    %     \begin{figure}[h]
+    %     \begin{center}
+    %     \includegraphics[trim={{100pt} {250pt} {100pt} {200pt}}, clip, height=200pt]{img/da-domain.eps}
+    %     \end{center}
+    %     \caption{Distribution of a 2-D domain among processes}
+    %     \label{fig:da-domain}
+    %     \end{figure}
+    %
+    %     \begin{figure}[h]
+    %     \begin{center}
+    %     \includegraphics[trim={{100pt} {250pt} {100pt} {200pt}}, clip, height=200pt]{img/da-local-portion.eps}
+    %     \end{center}
+    %     \caption{Elements required by a process to evaluate RHS}
+    %     \label{fig:da-local-portion}
+    %     \end{figure}
+    %
+    %     Thus, the RHS is evaluated in two steps:
+    %
+    %     \begin{enumerate}
+    %         \item Exchange boundary information with neighbouring processes
+    %         \item Evaluate the RHS at each grid point (in parallel)
+    %     \end{enumerate}
+    %
+    %     The GPU is specialized for performing such a large number of independent
+    %     computations as required in step 2.
+    %     The RHS at each grid point is computing by a single work item
+    %     (GPU thread).
+    %     Therefore the number of work items scheduled is
+    %     equal to the number of points in the local domain.
+    %
+    %     Another popular strategy is to take advantage of
+    %     shared memory, by launching 2-dimensional blocks of work-items,
+    %     loading each into shared memory, and streaming the third dimension
+    %     in registers.
+    %     This approach is discussed in [ref], and is much more effective
+    %     for larger stencils---as each thread in a block will access the same
+    %     value several times, it is effective to use shared memory as explicitly
+    %     controlled cache.
 
 \section{Description of the algorithm}
 
-    First, we discuss the cluster level parallelism.
+    The size of the problems solved using the high-order compact finite
+    difference schemes discussed is usually much larger than can be accomodated
+    on a single compute node.
+    The problem domain is thus divided into ``subdomains'' and distributed among
+    several processes.
+    First, we discuss this cluster level parallelism.
 
     Given N equations in N variables of the form:
 
@@ -451,7 +492,7 @@
         \vdots \\
         \xi_P^{UH} \\
      \end{bmatrix}
-     =
+     = -
      \begin{bmatrix}
          x_{1,M}^R \\
          x_{2,1}^R \\
@@ -472,7 +513,7 @@
         \item Each process communicates the parameters required to
         assemble the ``reduced'' system eqn:reduced-system
         \item The reduced system is solved for the coupling coefficients
-        $\xi_i^{UH}$ and $_i^{LH}$, which are sent to their respective processes
+        $\xi_i^{UH}$ and $xi_i^{LH}$, which are sent to their respective processes
         (if required)
         \item Each process solves \ref{eqn:linear-combo} for the local part
         of the solution to the global system.
@@ -482,56 +523,217 @@
     we note the following:
 
     \begin{enumerate}
-        \item Each process is involved in solving \emph{several} equations,
-            one for each grid line.
-        \item
-        \item
+        \item Each process solves equations \ref{eqn:local-eqn-1}-\ref{eqn:local-eqn-3}
+            for \emph{each grid line} in its subdomain.
+        \item The left-hand side of these equations is the same
+            for each grid line, coming from equation \ref{eqn:compact-tridiagonal-system}).
+        \item The right-hand side for equations \ref{eqn:local-eqn-1} and
+            \ref{eqn:local-eqn-2} are the same for each grid line.
+            Thus, the equations need only be solved for a single grid line.
+        \item Only \ref{eqn:local-eqn-3} is evaluated for each grid line
+            in the subdomain. This is expected to be the most computationally expensive step.
     \end{enumerate}
 
+    \subsection{Cyclic reduction}
 
-    * Each process is involved in solving a number of equations, and not a single one
-    * The left hand side for all the equations is the same,
-        - LHS of \ref{eqn:local-eqn-1}-\ref{eqn:local-eqn-3}
-        - RHS of \ref{eqn:local-eqn-2} and \ref{eqn:local-eqn-3} are the same
-        - The above two equations need only be solved for a single grid line
-    * Only equation \ref{eqn:local-eqn-3} is solved for every grid line,
-    which amounts to solving the same equation for several different RHS
+        The classic Cyclic Reduction algorithm consists of two phases:
+        forward reduction and backward substitution.
+        The forward substitution phase begins with a system of size $N$,
+        and by expressing every even-indexed equation $i$ as a linear
+        combination of equations $i$, $i-1$ and $i+1$, reduces it to a
+        system of size $N/2$.
+        The process is repeated until a system of 2 equations in 2 unknowns
+        is left.
 
-    Cyclic Reduction
-    Precomputing coefficients in cyclic reduction
-    OpenCL implementations
-    Shared memory and associated issues
-    Repeated kernel invocations
-    Final kernel listings
+        For each even-indexed $i$, we define:
 
-    Overall solution strategy
+        \begin{equation*}
+        k_1 = \frac{a_i}{b_{i-1}},
+        k_2 = \frac{c_i}{b_{i+1}}
+        \end{equation*}
 
+        Then, we update the values of $a$, $b$, $c$ and $d$ as:
 
-\section{Code design}
+        \begin{align} \label{eqn:forward-reduction}
+        & a^{\prime}_i = -a_{i-1}k_1 & \\
+        & b^{\prime}_i = b_i - c_{i-1}k_1 - a_{i+1}k_2 & \\
+        & c^{\prime}_i = -c_{i+1}k_2 & \\
+        & d^{\prime}_i = d_i - d_{i-1}k_1  - d_{i+1}k_2 &
+        \end{align}
+
+        The two equations are solved, yielding $x_N$ and $x_{N/2}$.
+        In the backward substitution phase, every odd-indexed unknown $x_i$
+        is solved for by substituting the known values of $x_{i-1}$ and $x_{i+1}$:
+
+        \begin{align} \label{eqn:back-substitution}
+        x_i = \frac{d^{\prime}_i - a^{\prime}_ix_{i-1} - c^{\prime}_ix_{i+1}}{b^{\prime}_i}
+        \end{align}
+
+        At each step, for the last index $i$, the forward reduction step is
+        instead:
+        \begin{align} \label{eqn:forward-reduction-right}
+            & a^{\prime}_i = -a_{i-1}k_1 & \\
+            & b^{\prime}_i = b_i - c_{i-1}k_1 & \\
+            & d^{\prime}_i = d_i - d_{i-1}k_1 &
+        \end{align}
+
+        And the backward reduction step for $i=1$ is instead:
+        \begin{align} \label{eqn:back-substitution-right}
+        x_i = \frac{d^{\prime}_i - c^{\prime}_ix_{i+1}}{b^{\prime}_i}
+        \end{align}
+
+        \begin{figure}[h]
+        \begin{center}
+        \includegraphics[trim={{50pt} {300pt} {100pt} {50pt}}, clip, height=200pt]{img/forward-reduction.eps}
+        \end{center}
+        \caption{Cyclic reduction}
+        \label{fig:forward-reduction}
+        \end{figure}
+
+        The cyclic reduction algorithm is well suited to the massively
+        parallel architecture of the GPU.
+        In the most straightforward implementation,
+        we may launch a number of threads equal to
+        half the number of equations,
+        and assign each thread the task of
+        solving the equations \ref{eqn:forward-reduction} for each even-indexed
+        $i$.
+        We can then perform the successive steps of forward reduction
+        by halving the number of threads at each step.
+        The backward substitution phase is completed in a similar way,
+        with the number of threads doubling at each step.
+
+        This naive approach leads to the following issues:
+
+        \begin{enumerate}
+            \item Most of the threads are inactive,
+            except at the very beginning of forward reduction
+            and the very end of backward substitution.
+
+            \item The later steps of forward reduction and the first few
+            steps of backward substitution involve memory accesses with
+            large strides (see Figure \ref{fig:forward-reduction})
+            If the threads are accessing global memory,
+            this can lead to poor performance.
+        \end{enumerate}
+
+        The first issue is fairly straightforward to tackle.
+        The OpenCL API allows \emph{scheduling} of a large number of
+        threads---far more than the number of threads actually available
+        on the computing device.
+        Rather than scheduling threads for a single system (grid line),
+        we may schedule threads to perform
+        forward reduction steps for every grid line.
+
+        To avoid non-coalesced accesses to global memory,
+        we can instead have threads working with the fast, on-chip,
+        \emph{shared memory}. In this case, the threads in each
+        \emph{block} read data from global memory on to the block's
+        shared memory.
+        The threads then perform cyclic reduction on shared memory
+        and write the data back to global memory.
+        Conceptually, this approach has the advantage of avoiding
+        non-coalesced global memory accesses, and facilitates data reuse.
+        However, as described in [FastTridiagonalSolvers], the method
+        suffers from so-called \emph{bank conflicts} in which,
+        for certain memory access patters,
+        data access by concurrent threads from shared memory may be serialized.
+        This can seriously affect performance.
+        Several approaches for avoiding bank conflicts have been proposed,
+        this is at the cost of additional code complexity.
+        Besides, an approach using shared memory suffers from the penalty
+        of \emph{synchronization} between blocks and inactive threads.
+
+    \subsection{Precomputing scheme}
+
+        \begin{figure}[h]
+        \begin{center}
+        \includegraphics[trim={{50pt} {300pt} {100pt} {50pt}}, clip, height=200pt]{img/forward-reduction-coefficients.eps}
+        \end{center}
+        \caption{Forward reduction: indices with identical coefficients are shown in color}
+        \label{fig:forward-reduction-coefficients}
+        \end{figure}
+
+        We introduce a variant of cyclic reduction,
+        specialized for constant tridiagonal systems, that:
+
+        \begin{enumerate}
+        \item Reduces the number of accesses to global memory
+        \item Reduces the memory requirement
+        \item Reduces the number of computations in the forward reduction step
+        \end{enumerate}
+
+        We recall the form of the tridiagonal matrix:
+
+        \[
+        \begin{bmatrix}
+            1&2\\
+            1/4&1&1/4\\
+            &1/4&1&1/4\\
+            &&1/4&1&1/4\\
+            &&&1/4&1&1/4\\
+            &&&&&\ddots\\
+            &&&&&&\ddots\\
+            &&&&&&&\ddots\\
+            &&&&&&&2&1
+         \end{bmatrix}
+         \]
+
+        The matrix is the same for each grid line in the subdomain.
+        Thus,
+        the first three equations in \ref{eqn:forward-reduction}
+        are the same for every grid line.
+        For each forward reduction step,
+        the parameters $a^{\prime}_i$, $b^{\prime}_i$ and $c^{\prime}_i$
+        can be pre-computed.
+        For a general tridiagonal system, this would require storage for
+        $N/2 + N/4 + ... = 2N-2$ coefficients.
+        However, it is readily apparent that,
+        with the exception of the boundaries (near the first and last equations),
+        the coefficients $k_1$, $k_2$,
+        $a_i$, $b_i$ and $c_i$ are the same for each $i$.
+
+        The size of the precomputed coefficient arrays is then $log_2(N)-1$
+        (with an additional element for $a_N$ and $b_N$ as described below).
+        For event modestly sized $N$ such as 512, this represents large savings
+        in the memory requirements for the coefficient arrays.
+
+        More importantly, at each forward reduction step,
+        the number of non-coalesced memory accesses is greatly reduced.
+        With the above precomputed coefficients,
+        the forward reduction step now involves solving only a single equation
+        for $d_i$ at each $i$.
+
+        \begin{align} \label{eqn:forward-reduction-right}
+            & a^{\prime}_i = -a_{i-1}k_1 & \\
+            & b^{\prime}_i = b_i - c_{i-1}k_1 & \\
+            & d^{\prime}_i = d_i - d_{i-1}k_1 &
+        \end{align}
+
+        The backward reduction step benefits from improved access to
+        global memory.
+
+        \subsubsection*{Boundary conditions}
+
+        The tridiagonal systems for all grid lines are the same for all subdomains,
+        except near the boundaries.
+        From \ref{eqn:forward-reduction}, it is clear that
+        to handle the boundaries, three additional sets of coefficients
+        need to be stored:
+
+        \begin{enumerate}
+         \item The values for $b_1$ at each step
+         \item The values for $k_1$ evaluated at $i=1$ for each step
+         \item The values for $k_1$ evaluated at $i=n$ for each step,
+            where $n$ is the last index of the reduction step.
+        \end{enumerate}
+
+        The values of $a_N$ and $b_N$ are required only for the
+        final step (2-by-2 solve) of forward reduction.
+        These two scalar values may be stored separately.
 
 \section{Results and performance comparison}
-    Notes on performance comparison
-        - Fair comparisons
-        - Memory transfers
-        - Time spent on writing code
-        - Compiler optimizations
-    Problem size v/s solution time
-    Breakup of time taken for various problem sizes and nprocs
-    Results for CPU
-
-    \subsection{Results for a single node}
-    The results for a single node bring up some issues in performance evaluation.
-    First, it is clear that the major cost for the GPU is not in the computational
-    kernels, but rather in transferring data between host (CPU) and device (GPU) buffers.
-    In the context of a larger piece of software,
-    if only the computation of the compact finite difference was offloaded
-    to the GPU, then considering this cost is absolutely essential.
-    However, if the rest of the problem is also written to be solved on the GPU,
-    then there is no need for transfers to and from the host at each
-    time step.
-
-    \subsection{Results for multi-node}
-
+    
     \subsection{Performance comparison}
 
     \subsection{Major concerns}
@@ -542,35 +744,17 @@
 
 
 
-\begin{figure}[h]
-\begin{center}
-\includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=300pt]{img/parallel-x.eps}
-\end{center}
-\caption{Parallel x}
-\label{fig:parallel-x}
-\end{figure}
-
-
-
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=300pt]{img/parallel-yz.eps}
-\end{center}
-\caption{Parallel yz}
-\label{fig:parallel-yz}
-\end{figure}
-
-
-
-
-\begin{figure}[h]
-\begin{center}
-\includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=300pt]{img/parallel-both.eps}
+\includegraphics[trim={{100pt} {150pt} {100pt} {150pt}}, clip, height=300pt]{img/data-and-thread-parallel.eps}
 \end{center}
 \caption{Parallel-both}
 \label{fig:parallel-both}
 \end{figure}
+
+
+
 
 
 
