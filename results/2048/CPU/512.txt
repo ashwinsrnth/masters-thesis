@@ -1,31 +1,196 @@
-
-[atrikut@node1986 lanl-implementation]$ mpiexec --mca pml ob1 -n 512 time_npts.run 2048 2048 2048 8 8 8
+[atrikut@node1185 lanl-implementation]$ mpiexec --mca pml ob1 -n 512 ./time_npts.run 2048 2048 2048 8 8 8
 Precomputing coefficients
 Done precomputing.
-LR sweep - computing phi and psi: 0.8562121391
-LR sweep - gathering phi and psi faces: 0.0645620823
-LR sweep - computing u_tilda: 0.0227310658
-LR sweep - computing u_globali: 0.2983560562
-R-L sweep - computing phi and psi: 0.4078588486
-R-L sweep - gathering phi and psi faces: 0.0595369339
-R-L sweep - computing x_tilda: 0.0123758316
-R-L sweep - computing x_global: 0.3007998466
-Time: 2.030328
-LR sweep - computing phi and psi: 0.6881921291
-LR sweep - gathering phi and psi faces: 0.0559160709
-LR sweep - computing u_tilda: 0.0210859776
-LR sweep - computing u_globali: 0.2946519852
-R-L sweep - computing phi and psi: 0.3868501186
-R-L sweep - gathering phi and psi faces: 0.1293969154
-R-L sweep - computing x_tilda: 0.0138561726
-R-L sweep - computing x_global: 0.3011801243
-Time: 1.897163
-LR sweep - computing phi and psi: 0.6838591099
-LR sweep - gathering phi and psi faces: 0.0600829124
-LR sweep - computing u_tilda: 0.0207309723
-LR sweep - computing u_globali: 0.2978510857
-R-L sweep - computing phi and psi: 0.3864569664
-R-L sweep - gathering phi and psi faces: 0.0764009953
-R-L sweep - computing x_tilda: 0.0195682049
-R-L sweep - computing x_global: 0.3005890846
-Time: 1.846205
+LR sweep - computing phi and psi: 0.8403189182
+LR sweep - gathering phi and psi faces: 0.0410001278
+LR sweep - computing u_tilda: 0.0129351616
+LR sweep - computing u_globali: 0.2878570557
+R-L sweep - computing phi and psi: 0.3812251091
+R-L sweep - gathering phi and psi faces: 0.0625000000
+R-L sweep - computing x_tilda: 0.0256459713
+R-L sweep - computing x_global: 0.2898721695
+Time: 1.947127
+LR sweep - computing phi and psi: 0.6633031368
+LR sweep - gathering phi and psi faces: 0.0473999977
+LR sweep - computing u_tilda: 0.0136618614
+LR sweep - computing u_globali: 0.2852280140
+R-L sweep - computing phi and psi: 0.3739759922
+R-L sweep - gathering phi and psi faces: 0.0497519970
+R-L sweep - computing x_tilda: 0.0169301033
+R-L sweep - computing x_global: 0.2882881165
+Time: 1.743395
+LR sweep - computing phi and psi: 0.6618790627
+LR sweep - gathering phi and psi faces: 0.0422430038
+LR sweep - computing u_tilda: 0.0169351101
+LR sweep - computing u_globali: 0.2848629951
+R-L sweep - computing phi and psi: 0.3732399940
+R-L sweep - gathering phi and psi faces: 0.0451149940
+R-L sweep - computing x_tilda: 0.0085070133
+R-L sweep - computing x_global: 0.2880330086
+Time: 1.725693
+LR sweep - computing phi and psi: 0.6648550034
+LR sweep - gathering phi and psi faces: 0.0490770340
+LR sweep - computing u_tilda: 0.0175950527
+LR sweep - computing u_globali: 0.2847728729
+R-L sweep - computing phi and psi: 0.3723909855
+R-L sweep - gathering phi and psi faces: 0.0375490189
+R-L sweep - computing x_tilda: 0.0061259270
+R-L sweep - computing x_global: 0.2883648872
+Time: 1.725485
+LR sweep - computing phi and psi: 0.6622350216
+LR sweep - gathering phi and psi faces: 0.0411009789
+LR sweep - computing u_tilda: 0.0291230679
+LR sweep - computing u_globali: 0.2769110203
+R-L sweep - computing phi and psi: 0.3732709885
+R-L sweep - gathering phi and psi faces: 0.0660359859
+R-L sweep - computing x_tilda: 0.0062251091
+R-L sweep - computing x_global: 0.2887978554
+Time: 1.748555
+LR sweep - computing phi and psi: 0.6629710197
+LR sweep - gathering phi and psi faces: 0.0539550781
+LR sweep - computing u_tilda: 0.0142049789
+LR sweep - computing u_globali: 0.2849659920
+R-L sweep - computing phi and psi: 0.3741559982
+R-L sweep - gathering phi and psi faces: 0.0432071686
+R-L sweep - computing x_tilda: 0.0066730976
+R-L sweep - computing x_global: 0.2874641418
+Time: 1.732594
+LR sweep - computing phi and psi: 0.6626420021
+LR sweep - gathering phi and psi faces: 0.0503880978
+LR sweep - computing u_tilda: 0.0136721134
+LR sweep - computing u_globali: 0.2852170467
+R-L sweep - computing phi and psi: 0.3716211319
+R-L sweep - gathering phi and psi faces: 0.0369000435
+R-L sweep - computing x_tilda: 0.0063378811
+R-L sweep - computing x_global: 0.2875571251
+Time: 1.719110
+LR sweep - computing phi and psi: 0.6617538929
+LR sweep - gathering phi and psi faces: 0.0396859646
+LR sweep - computing u_tilda: 0.0152168274
+LR sweep - computing u_globali: 0.2852141857
+R-L sweep - computing phi and psi: 0.3734381199
+R-L sweep - gathering phi and psi faces: 0.0431759357
+R-L sweep - computing x_tilda: 0.0064699650
+R-L sweep - computing x_global: 0.2874548435
+Time: 1.717386
+LR sweep - computing phi and psi: 0.6625230312
+LR sweep - gathering phi and psi faces: 0.0385580063
+LR sweep - computing u_tilda: 0.0127010345
+LR sweep - computing u_globali: 0.2833909988
+R-L sweep - computing phi and psi: 0.3729510307
+R-L sweep - gathering phi and psi faces: 0.0385518074
+R-L sweep - computing x_tilda: 0.0062038898
+R-L sweep - computing x_global: 0.2889440060
+Time: 1.708562
+LR sweep - computing phi and psi: 0.6617329121
+LR sweep - gathering phi and psi faces: 0.0486860275
+LR sweep - computing u_tilda: 0.0151469707
+LR sweep - computing u_globali: 0.2848708630
+R-L sweep - computing phi and psi: 0.4973990917
+R-L sweep - gathering phi and psi faces: 0.1398100853
+R-L sweep - computing x_tilda: 0.8277559280
+R-L sweep - computing x_global: 0.6590199471
+Time: 3.270633
+LR sweep - computing phi and psi: 0.9980928898
+--------------------------------------------------------------------------
+The OpenFabrics stack has reported a network error event.  Open MPI
+will try to continue, but your job may end up failing.
+
+  Local host:        node1762
+  MPI process PID:   54808
+  Error number:      10 (IBV_EVENT_PORT_ERR)
+
+This error may indicate connectivity problems within the fabric;
+please contact your system administrator.
+--------------------------------------------------------------------------
+LR sweep - gathering phi and psi faces: 1.1164989471
+LR sweep - computing u_tilda: 1.1891891956
+LR sweep - computing u_globali: 0.7705609798
+R-L sweep - computing phi and psi: 0.5001180172
+R-L sweep - gathering phi and psi faces: 0.0752320290
+R-L sweep - computing x_tilda: 0.0106439590
+R-L sweep - computing x_global: 0.2872347832
+Time: 4.952544
+LR sweep - computing phi and psi: 0.6676688194
+LR sweep - gathering phi and psi faces: 0.0523090363
+LR sweep - computing u_tilda: 0.0240919590
+LR sweep - computing u_globali: 0.2843201160
+R-L sweep - computing phi and psi: 0.3738169670
+R-L sweep - gathering phi and psi faces: 0.0345470905
+R-L sweep - computing x_tilda: 0.0063519478
+R-L sweep - computing x_global: 0.2890009880
+Time: 1.737037
+[node1185:26959] 15 more processes have sent help message help-mpi-btl-openib.txt / of error event
+[node1185:26959] Set MCA parameter "orte_base_help_aggregate" to 0 to see all help / error messages
+LR sweep - computing phi and psi: 0.6602230072
+LR sweep - gathering phi and psi faces: 0.0385799408
+LR sweep - computing u_tilda: 0.0130519867
+LR sweep - computing u_globali: 0.2850430012
+R-L sweep - computing phi and psi: 0.3731110096
+R-L sweep - gathering phi and psi faces: 0.0346300602
+R-L sweep - computing x_tilda: 0.0063169003
+R-L sweep - computing x_global: 0.2882351875
+Time: 1.704959
+LR sweep - computing phi and psi: 0.6648159027
+LR sweep - gathering phi and psi faces: 0.0391640663
+LR sweep - computing u_tilda: 0.0130360126
+LR sweep - computing u_globali: 0.2849659920
+R-L sweep - computing phi and psi: 0.3754088879
+R-L sweep - gathering phi and psi faces: 0.0347878933
+R-L sweep - computing x_tilda: 0.0128800869
+R-L sweep - computing x_global: 0.2877120972
+Time: 1.718203
+LR sweep - computing phi and psi: 0.6626279354
+LR sweep - gathering phi and psi faces: 0.0388281345
+LR sweep - computing u_tilda: 0.0128328800
+LR sweep - computing u_globali: 0.2843670845
+R-L sweep - computing phi and psi: 0.3735439777
+R-L sweep - gathering phi and psi faces: 0.1625239849
+R-L sweep - computing x_tilda: 0.0065441132
+R-L sweep - computing x_global: 0.2885711193
+Time: 1.834551
+LR sweep - computing phi and psi: 0.6622920036
+LR sweep - gathering phi and psi faces: 0.0384771824
+LR sweep - computing u_tilda: 0.0131430626
+LR sweep - computing u_globali: 0.2849380970
+R-L sweep - computing phi and psi: 0.3741700649
+R-L sweep - gathering phi and psi faces: 0.0346529484
+R-L sweep - computing x_tilda: 0.0066378117
+R-L sweep - computing x_global: 0.2881951332
+Time: 1.707233
+LR sweep - computing phi and psi: 0.6621642113
+LR sweep - gathering phi and psi faces: 0.0381720066
+LR sweep - computing u_tilda: 0.0129420757
+LR sweep - computing u_globali: 0.2867410183
+R-L sweep - computing phi and psi: 0.5844922066
+R-L sweep - gathering phi and psi faces: 0.0369122028
+R-L sweep - computing x_tilda: 0.0064051151
+R-L sweep - computing x_global: 0.2886760235
+Time: 1.921361
+LR sweep - computing phi and psi: 0.7141740322
+LR sweep - gathering phi and psi faces: 0.0400509834
+LR sweep - computing u_tilda: 0.0129029751
+LR sweep - computing u_globali: 0.2850668430
+R-L sweep - computing phi and psi: 0.3748829365
+R-L sweep - gathering phi and psi faces: 0.0377080441
+R-L sweep - computing x_tilda: 0.0066690445
+R-L sweep - computing x_global: 0.2886130810
+Time: 1.764778
+LR sweep - computing phi and psi: 0.6668710709
+LR sweep - gathering phi and psi faces: 0.0563180447
+LR sweep - computing u_tilda: 0.0127880573
+LR sweep - computing u_globali: 0.3328468800
+R-L sweep - computing phi and psi: 0.5851130486
+R-L sweep - gathering phi and psi faces: 0.0376608372
+R-L sweep - computing x_tilda: 0.0065460205
+R-L sweep - computing x_global: 0.2881329060
+Time: 1.991121
+LR sweep - computing phi and psi: 0.6670260429
+LR sweep - gathering phi and psi faces: 0.0535669327
+LR sweep - computing u_tilda: 0.0131609440
+LR sweep - computing u_globali: 0.2847421169
+R-L sweep - computing phi and psi: 0.3750231266
+R-L sweep - gathering phi and psi faces: 0.0469119549
+R-L sweep - computing x_tilda: 0.0063722134
+R-L sweep - computing x_global: 0.2892990112
+Time: 1.741075
