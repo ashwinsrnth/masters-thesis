@@ -6,4 +6,4 @@ report:
 	evince report.pdf
 
 clean:
-	rm -rf *.log *.aux *.out _minted*
+	rm -rf *.pdf *.log *.aux *.out _minted* *.blg *.bbl
