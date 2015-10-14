@@ -1,0 +1,20 @@
+[atrikut@node0608 PyCUDA]$ mpiexec --mca mpi_warn_on_fork 0 --mca pml ob1 -n 64 --mca btl_openib_want_cuda_gdr 0 python run.py 64 64 64 4 4 4
+Total time:  0.0679619312286
+Total time:  0.00576496124268
+Total time:  0.00543880462646
+Total time:  0.00538802146912
+Total time:  0.0101099014282
+Total time:  0.00543999671936
+Total time:  0.00544714927673
+Total time:  0.00521111488342
+Total time:  0.00531911849976
+Total time:  0.0108358860016
+Total time:  0.00506711006165
+Total time:  0.00663685798645
+Total time:  0.00901198387146
+Total time:  0.00528001785278
+Total time:  0.00530099868774
+Total time:  0.00593996047974
+Total time:  0.00724506378174
+Total time:  0.00529885292053
+

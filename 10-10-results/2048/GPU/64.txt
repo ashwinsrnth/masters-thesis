@@ -1,0 +1,37 @@
+[atrikut@node0608 PyCUDA]$ mpiexec --mca pml ob1 -n 64 --mca btl_openib_want_cuda_gdr 0 python run.py 512 512 512 4 4 4
+--------------------------------------------------------------------------
+An MPI process has executed an operation involving a call to the
+"fork()" system call to create a child process.  Open MPI is currently
+operating in a condition that could result in memory corruption or
+other system errors; your MPI job may hang, crash, or produce silent
+data corruption.  The use of fork() (or system() or other calls that
+create child processes) is strongly discouraged.  
+
+The process that invoked fork was:
+
+  Local host:          node1216 (PID 55075)
+  MPI_COMM_WORLD rank: 16
+
+If you are *absolutely sure* that your application will successfully
+and correctly survive a call to fork(), you may disable this warning
+by setting the mpi_warn_on_fork MCA parameter to 0.
+--------------------------------------------------------------------------
+[node0608:36905] 10 more processes have sent help message help-mpi-runtime.txt / mpi_init:warn-fork
+[node0608:36905] Set MCA parameter "orte_base_help_aggregate" to 0 to see all help / error messages
+[node0608:36905] 40 more processes have sent help message help-mpi-runtime.txt / mpi_init:warn-fork
+[node0608:36905] 9 more processes have sent help message help-mpi-runtime.txt / mpi_init:warn-fork
+[node0608:36905] 1 more process has sent help message help-mpi-runtime.txt / mpi_init:warn-fork
+[node0608:36905] 1 more process has sent help message help-mpi-runtime.txt / mpi_init:warn-fork
+Total time:  0.407142877579
+[node0608:36905] 2 more processes have sent help message help-mpi-runtime.txt / mpi_init:warn-fork
+Total time:  0.237995147705
+Total time:  0.245409965515
+Total time:  0.237931966782
+Total time:  0.404719829559
+Total time:  0.251039981842
+Total time:  0.254448890686
+Total time:  0.238379955292
+Total time:  0.238933086395
+Total time:  0.24626994133
+Total time:  0.258479118347
+
