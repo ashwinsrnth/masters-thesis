@@ -1,0 +1,173 @@
+Solving a 64 x 64 x 64 system on 2 x 2 x 2 processors
+------------------------------------------------------
+Run 1
+compute_RHS :  0.0219230651855
+solve_secondary_systems :  0.00116395950317
+solve_primary_system :  0.000571012496948
+solve_reduced_system :  0.00275802612305
+sum_solutions :  0.000547170639038
+Total time for this run:  0.0272500514984
+------------------------------
+Run 2
+compute_RHS :  0.000738859176636
+solve_secondary_systems :  0.000895023345947
+solve_primary_system :  0.000587940216064
+solve_reduced_system :  0.00262594223022
+sum_solutions :  0.000426054000854
+Total time for this run:  0.00542998313904
+------------------------------
+Run 3
+compute_RHS :  0.000607013702393
+solve_secondary_systems :  0.00101900100708
+solve_primary_system :  0.000515937805176
+solve_reduced_system :  0.00215697288513
+sum_solutions :  0.000457048416138
+Total time for this run:  0.00498104095459
+------------------------------
+Run 4
+compute_RHS :  0.000612020492554
+solve_secondary_systems :  0.000771999359131
+solve_primary_system :  0.000716924667358
+solve_reduced_system :  0.00306510925293
+sum_solutions :  0.000432968139648
+Total time for this run:  0.00577402114868
+------------------------------
+Run 5
+compute_RHS :  0.000647068023682
+solve_secondary_systems :  0.00089693069458
+solve_primary_system :  0.000558853149414
+solve_reduced_system :  0.00269508361816
+sum_solutions :  0.000377893447876
+Total time for this run:  0.00532507896423
+------------------------------
+Run 6
+compute_RHS :  0.000575065612793
+solve_secondary_systems :  0.000771045684814
+solve_primary_system :  0.000581979751587
+solve_reduced_system :  0.00236105918884
+sum_solutions :  0.000298976898193
+Total time for this run:  0.00476002693176
+------------------------------
+Run 7
+compute_RHS :  0.000630140304565
+solve_secondary_systems :  0.000844955444336
+solve_primary_system :  0.000448942184448
+solve_reduced_system :  0.00239515304565
+sum_solutions :  0.000387907028198
+Total time for this run:  0.00487899780273
+------------------------------
+Run 8
+compute_RHS :  0.000439882278442
+solve_secondary_systems :  0.000962018966675
+solve_primary_system :  0.00049901008606
+solve_reduced_system :  0.00230479240417
+sum_solutions :  0.000447988510132
+Total time for this run:  0.00481915473938
+------------------------------
+Run 9
+compute_RHS :  0.000639915466309
+solve_secondary_systems :  0.000798940658569
+solve_primary_system :  0.000673055648804
+solve_reduced_system :  0.00196003913879
+sum_solutions :  0.000285863876343
+Total time for this run:  0.00461792945862
+------------------------------
+Run 10
+compute_RHS :  0.000526905059814
+solve_secondary_systems :  0.000935077667236
+solve_primary_system :  0.000746011734009
+solve_reduced_system :  0.00274991989136
+sum_solutions :  0.000463962554932
+Total time for this run:  0.0055980682373
+------------------------------
+Run 11
+compute_RHS :  0.000555038452148
+solve_secondary_systems :  0.000841856002808
+solve_primary_system :  0.000684022903442
+solve_reduced_system :  0.00162506103516
+sum_solutions :  0.000460863113403
+Total time for this run:  0.00433897972107
+------------------------------
+Run 12
+compute_RHS :  0.000613927841187
+solve_secondary_systems :  0.00104904174805
+solve_primary_system :  0.000564098358154
+solve_reduced_system :  0.00243401527405
+sum_solutions :  0.000354051589966
+Total time for this run:  0.00521302223206
+------------------------------
+Run 13
+compute_RHS :  0.000412940979004
+solve_secondary_systems :  0.000799894332886
+solve_primary_system :  0.000626087188721
+solve_reduced_system :  0.00230813026428
+sum_solutions :  0.000383853912354
+Total time for this run:  0.00469708442688
+------------------------------
+Run 14
+compute_RHS :  0.000553846359253
+solve_secondary_systems :  0.00110697746277
+solve_primary_system :  0.000699996948242
+solve_reduced_system :  0.00271511077881
+sum_solutions :  0.000447034835815
+Total time for this run:  0.00579595565796
+------------------------------
+Run 15
+compute_RHS :  0.000427007675171
+solve_secondary_systems :  0.000786066055298
+solve_primary_system :  0.000498056411743
+solve_reduced_system :  0.00270199775696
+sum_solutions :  0.000381946563721
+Total time for this run:  0.00493311882019
+------------------------------
+Run 16
+compute_RHS :  0.000428915023804
+solve_secondary_systems :  0.00104784965515
+solve_primary_system :  0.000646114349365
+solve_reduced_system :  0.0033860206604
+sum_solutions :  0.000373125076294
+Total time for this run:  0.00618815422058
+------------------------------
+Run 17
+compute_RHS :  0.000581979751587
+solve_secondary_systems :  0.000833988189697
+solve_primary_system :  0.00062084197998
+solve_reduced_system :  0.00229692459106
+sum_solutions :  0.000346183776855
+Total time for this run:  0.00484299659729
+------------------------------
+Run 18
+compute_RHS :  0.000724077224731
+solve_secondary_systems :  0.000832080841064
+solve_primary_system :  0.000576019287109
+solve_reduced_system :  0.00256586074829
+sum_solutions :  0.000375032424927
+Total time for this run:  0.00525903701782
+------------------------------
+Run 19
+compute_RHS :  0.000412940979004
+solve_secondary_systems :  0.00107002258301
+solve_primary_system :  0.000777959823608
+solve_reduced_system :  0.00253009796143
+sum_solutions :  0.000364065170288
+Total time for this run:  0.00532388687134
+------------------------------
+Run 20
+compute_RHS :  0.000630140304565
+solve_secondary_systems :  0.00090503692627
+solve_primary_system :  0.000481128692627
+solve_reduced_system :  0.00174617767334
+sum_solutions :  0.000428915023804
+Total time for this run:  0.00439810752869
+------------------------------
+-------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code.. Per user-direction, the job has been aborted.
+-------------------------------------------------------
+--------------------------------------------------------------------------
+mpiexec detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[4554,1],3]
+  Exit code:    1
+--------------------------------------------------------------------------
