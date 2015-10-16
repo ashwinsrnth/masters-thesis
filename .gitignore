@@ -5,7 +5,6 @@
 *.pdf
 *.png
 *.eps
-*.svg
 *.spl
 *~lock*
 *.bbl

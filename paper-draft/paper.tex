@@ -31,6 +31,8 @@
 \end{frontmatter}
     
 \section{Introduction}
+
+\section{Related work}
       
 \section{Compact Finite Difference Schemes}
 
@@ -112,6 +114,126 @@ i.e., the left-hand-side matrix is tridiagonal with
 constant coefficients along each diagonal,
 except for the first and last equations.
 
+\section{Evaluation of compact finite differences}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[height=200pt]{img/computational-domain.eps}
+\end{center}
+\caption{Computational domain in 3-D}
+\label{fig:computational-domain}
+\end{figure}
+
+The computational domain (Figure \ref{fig:computational-domain})
+is a structured grid comprised of $nx \times ny \times nz$ grid points.
+While evaluating the derivative in, say, the x-direction,
+the computational domain is thought of as
+a collection of \emph{grid lines}---each consisting of
+$nx$ grid points---oriented in the x-direction.
+For each grid line, we may assemble the system in
+Equation \ref{eqn:compact-tridiagonal-system}.
+Solving for the derivatives in the $x$ direction
+at each grid point in the domain then entails
+solving a tridiagonal system for each of the $ny \times nz$ grid lines.
+We note immediately that the left-hand-side (LHS) matrix
+is the same for each of the tridiagonal systems,
+and only the right-hand-side (RHS) vector is different.
+
+
+\section{Cyclic reduction}
+
+The main step in evaluating compact-finite differences is the
+solution of tridiagonal systems
+for each grid line in the computational domain.
+The standard approach for solving tridiagonal systems is
+the Thomas algorithm.
+However, on parallel architectures such as GPUs,
+it is advantageous to use other algorithms like
+cyclic reduction \cite{Zhang2010FTS}.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[height=200pt]{img/cyclic-reduction.eps}
+\end{center}
+\caption{Cyclic reduction -
+the values that are solved for at each step of backward reduction
+are highlighted}
+\label{fig:cyclic-reduction}
+\end{figure}
+
+The Cyclic Reduction algorithm consists of two phases:
+\emph{forward reduction} and \emph{backward substitution}
+(see Figure \ref{fig:cyclic-reduction}).
+The forward substitution phase begins with a system of size $n$,
+and by expressing every even-indexed equation $i$ as a linear
+combination of equations $i$, $i-1$ and $i+1$, reduces it to a
+system of size $n/2$.
+The process is repeated until a system of 2 equations in 2 unknowns
+is left.
+
+For each even-indexed $i$, we define:
+
+\begin{equation*}
+k_1 = \frac{a_i}{b_{i-1}},
+k_2 = \frac{c_i}{b_{i+1}}
+\end{equation*}
+
+Then, we update the values of $a$, $b$, $c$ and $d$ as:
+
+\begin{align} \label{eqn:forward-reduction}
+& a^{\prime}_i = -a_{i-1}k_1 & \\
+& b^{\prime}_i = b_i - c_{i-1}k_1 - a_{i+1}k_2 & \\
+& c^{\prime}_i = -c_{i+1}k_2 & \\
+& d^{\prime}_i = d_i - d_{i-1}k_1  - d_{i+1}k_2 &
+\end{align}
+
+The 2-by-2 system of equations is solved trivially,
+yielding $x_n$ and $x_{n/2}$.
+In the backward substitution phase,
+every odd-indexed unknown $x_i$ is solved for by
+substituting the known values of $x_{i-1}$ and $x_{i+1}$:
+
+\begin{align} \label{eqn:back-substitution}
+x_i = \frac{d^{\prime}_i - a^{\prime}_ix_{i-1} - c^{\prime}_ix_{i+1}}{b^{\prime}_i}
+\end{align}
+
+At each step, for the last index $i=n$,
+the forward reduction step is instead:
+\begin{align} \label{eqn:forward-reduction-last}
+    & a^{\prime}_n = -a_{n-1}k_1 & \\
+    & b^{\prime}_n = b_n - c_{n-1}k_1 & \\
+    & d^{\prime}_n = d_n - d_{n-1}k_1 &
+\end{align}
+
+And the backward substitution step for $i=1$ is instead:
+\begin{align} \label{eqn:back-substitution-first}
+x_1 = \frac{d^{\prime}_1 - c^{\prime}_1x_{2}}{b^{\prime}_1}
+\end{align}
+
+While cyclic reduction performs far more work per step
+compared to the Thomas algorithm,
+it is able to solve the system in far fewer steps
+on massively parallel architectures.
+As pointed out by \cite{Zhang2010FTS},
+$n$ parallel processors can solve a tridiagonal system
+of size $n$ in $2log(n) - 1$ steps.
+The Thomas algorithm, on the other hand,
+requires $2n$ steps.
+
+\section{Cyclic reduction for near-Toeplitz systems}
+
+We note from
+Equations \ref{eqn:forward-reduction}-\ref{eqn:back-substitution-last}
+that each forward reduction step involves 12 operations.
+As the LHS matrix is constant,
+it is advantageous to pre-compute the coefficients appearing
+in the forward reduction step.
+For a general tridiagonal matrix,
+this requires a substantial amount of storage
+(2$n$ for each of the arrays $a$, $b$ and $c$):
+$\frac{n}{2} + \frac{n}{4} + \frac{n}{8} + ... = n$
+for the reduction steps,
+and an additional $n$ for the original coefficients.
 \section{Distributed compact-finite difference solution} 
 
 We use the algorithm discussed by Mattor et al.
@@ -302,7 +424,6 @@ The general solution procedure is then:
     \item The local solution is computed from Equation \ref{eqn:sum-of-systems}
 \end{enumerate}
 
-
 \subsection{Evaluation of the right-hand side}
 
 \subsection{Evaluation of the right-hand side}
@@ -314,7 +435,6 @@ The general solution procedure is then:
 \subsection{Solution of secondary systems}
 
 \section{Results}
-
 
 \section*{References}
 

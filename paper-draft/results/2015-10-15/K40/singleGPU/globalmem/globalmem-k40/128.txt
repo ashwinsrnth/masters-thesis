@@ -1,0 +1,17 @@
+Solving a system sized 128 x 128 x 128
+--------------------------------------
+Run  1
+Total time for this run:  0.0034989759922
+--------------------------
+Run  2
+Total time for this run:  0.00302780795097
+--------------------------
+Run  3
+Total time for this run:  0.00301923203468
+--------------------------
+Run  4
+Total time for this run:  0.00302332806587
+--------------------------
+Run  5
+Total time for this run:  0.00301753592491
+--------------------------

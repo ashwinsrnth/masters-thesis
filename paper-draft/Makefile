@@ -1,11 +1,11 @@
 view: paper.pdf
 	evince paper.pdf
 
-paper.pdf: paper.tex
+paper.pdf: paper.tex img/*.eps
 	pdflatex paper.tex
 	bibtex paper.aux
 	pdflatex paper.tex
 	pdflatex paper.tex
 
 clean:
-	rm -rf *.pdf *.log *.aux *.out _minted* *.blg *.bbl
+	rm -rf *.pdf *.log *.aux *.out _minted* *.blg *.bbl *.spl
