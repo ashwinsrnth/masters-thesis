@@ -11,30 +11,188 @@
 \maketitle
 
 \begin{abstract}
-    We present a computation strategy for evaluating
-    compact finite differences efficiently on GPU clusters.
-    We describe a novel algorithm for solving the
-    near-Toeplitz tridiagonal systems associated with
-    the compact finite difference schemes.
-    Our specialized tridiagonal solver
-    takes advantage of the near-Toeplitz nature of the
-    tridiagonal system to precompute the coefficients
-    appearing in the Cyclic Reduction algorithm.
-    This allows us to solve the tridiagonal systems
-    up to 2 times faster than with the NVIDIA CUSPARSE
-    gtsvStridedBatch routine.
-    Additionally, we present a methodology to solve for
-    compact finite differences fully on multiple GPUs on a cluster
-    without intermediate host-device transfers.
+We present a computation strategy for evaluating
+compact finite differences efficiently on GPU clusters.
+We describe a novel algorithm for solving the
+near-Toeplitz tridiagonal systems associated with
+the compact finite difference schemes.
+Our specialized tridiagonal solver
+takes advantage of the near-Toeplitz nature of the
+tridiagonal system to precompute the coefficients
+appearing in the Cyclic Reduction algorithm.
+This allows us to solve the tridiagonal systems
+up to 2 times faster than with the NVIDIA CUSPARSE
+gtsvStridedBatch routine.
+Additionally, we present a methodology to solve for
+compact finite differences fully on multiple GPUs on a cluster
+without intermediate host-device transfers.
 \end{abstract}
 
 \end{frontmatter}
+
+%----------------------------------------------------------------------%
     
 \section{Introduction}
 
-\section{Related work}
-      
-\section{Compact Finite Difference Schemes}
+Compact finite difference schemes, developed by
+Lele\cite{lele1992compact} 
+are extremely popular in the computational fluid dynamics community
+for their high order of accuracy at relatively small stencil widths.
+These schemes require the solution of
+linear systems that are
+in general, \emph{banded}, and specifically,
+for several popular schemes, \emph{tridiagonal} in nature.
+Tridiagonal systems also appear in other numerical schemes
+such as
+Alternating Direction Implicit (ADI) methods
+\cite{1955ADI}
+and numerical solutions to one-dimensional differential equations.
+In such CFD codes,
+the evaluation of these tridiagonal systems constitute
+a significant portion of the runtime.
+Recently, there has been considerable interest in
+the CFD community
+in developing tridiagonal solvers
+that exploit the massive parallelism afforded by
+Graphics Processing Units (GPUs)
+to speed up the computations
+\cite{tutkun2012gpu}
+\cite{esfahanian2014efficient}
+\cite{GoSt11CR}.
+The performance of tridiagonal solvers on the GPU is
+dependent on several factors,
+such as
+choice of algorithm and the associated complexity,
+thread utilization,
+use of the available memory heirarchy,
+and synchronization and control costs
+\cite{Zhang2010FTS}.
+The different approaches described in the literature
+seek to make tradeoffs between these factors
+to arrive at a solver that best fits the requirements.
+But to our knowledge, the algorithms proposed so far
+are applicable to general tridiagonal systems,
+and make no attempt to take advantage of the known structure
+of the tridiagonal matrix.
+The tridiagonal systems that appear in several numerical schemes
+are known to have a \emph{near-Toeplitz} structure.
+We describe the implementation of a GPU solver that
+makes use of this fact to
+reduce the number of computations and
+improve memory access.
+The resulting solver is thus able to perform twice as fast as
+the NVIDIA CUSPARSE equivalent
+and $<$add a comparison to the CPU Thomas algorithm$>$.
+
+This paper is organized as follows:
+
+Section \ref{sec:preliminaries}
+lists related works,
+describes the cyclic reduction algorithm
+and the specific issues in its implementation on GPUs.
+Section \ref{sec:proposed-algorithm}
+describes our proposed solver for near-Toeplitz tridiagonal systems.
+Section \ref{sec:results-single-gpu}
+provides an overview of the performance of our solver,
+and compares it with other implementations.
+
+%----------------------------------------------------------------------%
+\section{Preliminaries} \label{sec:preliminaries}
+
+The classical algorithm for solving tridiagonal systems is
+the Thomas algorithm.
+The algorithm itself exhibits no parallelism,
+and while the GPU can still be exploited to solve
+several independent tridiagonal systems,
+the performance remains poor.
+Zhang et al. \cite{Zhange2010FTS}
+describe the implementation of three different algorithms:
+cyclic reduction, parallel cyclic reduction, and
+recursive doubling,
+along with hybrid variants,
+on GPUs.
+These algorithms perform more work per step than
+the Thomas algorithm,
+but exhibit more fine-grained parallelism
+that allows them to finish in
+far fewer than the $2n$ steps required by the Thomas algorithm.
+In the best case ($n$ parallel processors),
+cyclic reduction requires 
+$2log(n) - 1$ steps,
+and parallel cyclic reduction requires
+$log(n)$ steps
+(while doing more work per step than cyclic reduction).
+This feature makes them a natural choice for
+implementation on GPUs.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[height=200pt]{img/cyclic-reduction.eps}
+\end{center}
+\caption{Cyclic reduction - the highlighted elements
+show the order in which values are solved for}
+\label{fig:cyclic-reduction}
+\end{figure}
+
+The Cyclic Reduction algorithm consists of two phases:
+\emph{forward reduction} and \emph{backward substitution}
+(see Figure \ref{fig:cyclic-reduction}).
+The forward substitution phase begins with a system of size $n$,
+and by expressing every even-indexed equation $i$ as a linear
+combination of equations $i$, $i-1$ and $i+1$, reduces it to a
+system of size $n/2$.
+The process is repeated until a system of 2 equations in 2 unknowns
+is left.
+
+For each even-indexed $i$, we define:
+
+\begin{equation*}
+k_1 = \frac{a_i}{b_{i-1}},
+k_2 = \frac{c_i}{b_{i+1}}
+\end{equation*}
+
+Then, we update the values of $a$, $b$, $c$ and $d$ as:
+
+\begin{align} \label{eqn:forward-reduction}
+& a^{\prime}_i = -a_{i-1}k_1 & \\
+& b^{\prime}_i = b_i - c_{i-1}k_1 - a_{i+1}k_2 & \\
+& c^{\prime}_i = -c_{i+1}k_2 & \\
+& d^{\prime}_i = d_i - d_{i-1}k_1  - d_{i+1}k_2 \
+    \label{eqn:forward-reduction-rhs}&
+\end{align}
+
+The 2-by-2 system of equations is solved trivially,
+yielding $x_n$ and $x_{n/2}$.
+In the backward substitution phase,
+every odd-indexed unknown $x_i$ is solved for by
+substituting the known values of $x_{i-1}$ and $x_{i+1}$:
+
+\begin{align} \label{eqn:back-substitution}
+x_i = \frac{d^{\prime}_i - a^{\prime}_ix_{i-1} - \
+    c^{\prime}_ix_{i+1}}{b^{\prime}_i}
+\end{align}
+
+At each step, for the last index $i=n$,
+the forward reduction step is instead:
+\begin{align} \label{eqn:forward-reduction-last}
+    & a^{\prime}_n = -a_{n-1}k_1 & \\
+    & b^{\prime}_n = b_n - c_{n-1}k_1 & \\
+    & d^{\prime}_n = d_n - d_{n-1}k_1&
+\end{align}
+
+And the backward substitution step for $i=1$ is instead:
+\begin{align} \label{eqn:back-substitution-first}
+x_1 = \frac{d^{\prime}_1 - c^{\prime}_1x_{2}}{b^{\prime}_1}
+\end{align}
+
+
+%----------------------------------------------------------------------%
+\section{Proposed algorithm} \label{sec:proposed-algorithm}
+
+%----------------------------------------------------------------------%
+\section{Results: single GPU} \label{sec:results-single-gpu}
+
+%----------------------------------------------------------------------%
 
 For example,
 in a uniformly spaced one-dimensional grid with spacing $dx$,
@@ -91,7 +249,7 @@ has the general form:
 \begin{bmatrix}
     f^{\prime}_1 \\
     f^{\prime}_2 \\
-    f^{\prime}_3 \\
+    f^{\prime}_3 
     \vdots \\
     \vdots \\
     f^{\prime}_{n-1} \\
@@ -114,7 +272,7 @@ i.e., the left-hand-side matrix is tridiagonal with
 constant coefficients along each diagonal,
 except for the first and last equations.
 
-\section{Evaluation of compact finite differences}
+%----------------------------------------------------------------------%
 
 \begin{figure}[h!]
 \begin{center}
@@ -139,8 +297,7 @@ We note immediately that the left-hand-side (LHS) matrix
 is the same for each of the tridiagonal systems,
 and only the right-hand-side (RHS) vector is different.
 
-
-\section{Cyclic reduction}
+%----------------------------------------------------------------------%
 
 The main step in evaluating compact-finite differences is the
 solution of tridiagonal systems
@@ -151,90 +308,25 @@ However, on parallel architectures such as GPUs,
 it is advantageous to use other algorithms like
 cyclic reduction \cite{Zhang2010FTS}.
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[height=200pt]{img/cyclic-reduction.eps}
-\end{center}
-\caption{Cyclic reduction -
-the values that are solved for at each step of backward reduction
-are highlighted}
-\label{fig:cyclic-reduction}
-\end{figure}
+%----------------------------------------------------------------------%
 
-The Cyclic Reduction algorithm consists of two phases:
-\emph{forward reduction} and \emph{backward substitution}
-(see Figure \ref{fig:cyclic-reduction}).
-The forward substitution phase begins with a system of size $n$,
-and by expressing every even-indexed equation $i$ as a linear
-combination of equations $i$, $i-1$ and $i+1$, reduces it to a
-system of size $n/2$.
-The process is repeated until a system of 2 equations in 2 unknowns
-is left.
 
-For each even-indexed $i$, we define:
-
-\begin{equation*}
-k_1 = \frac{a_i}{b_{i-1}},
-k_2 = \frac{c_i}{b_{i+1}}
-\end{equation*}
-
-Then, we update the values of $a$, $b$, $c$ and $d$ as:
-
-\begin{align} \label{eqn:forward-reduction}
-& a^{\prime}_i = -a_{i-1}k_1 & \\
-& b^{\prime}_i = b_i - c_{i-1}k_1 - a_{i+1}k_2 & \\
-& c^{\prime}_i = -c_{i+1}k_2 & \\
-& d^{\prime}_i = d_i - d_{i-1}k_1  - d_{i+1}k_2 &
-\end{align}
-
-The 2-by-2 system of equations is solved trivially,
-yielding $x_n$ and $x_{n/2}$.
-In the backward substitution phase,
-every odd-indexed unknown $x_i$ is solved for by
-substituting the known values of $x_{i-1}$ and $x_{i+1}$:
-
-\begin{align} \label{eqn:back-substitution}
-x_i = \frac{d^{\prime}_i - a^{\prime}_ix_{i-1} - c^{\prime}_ix_{i+1}}{b^{\prime}_i}
-\end{align}
-
-At each step, for the last index $i=n$,
-the forward reduction step is instead:
-\begin{align} \label{eqn:forward-reduction-last}
-    & a^{\prime}_n = -a_{n-1}k_1 & \\
-    & b^{\prime}_n = b_n - c_{n-1}k_1 & \\
-    & d^{\prime}_n = d_n - d_{n-1}k_1 &
-\end{align}
-
-And the backward substitution step for $i=1$ is instead:
-\begin{align} \label{eqn:back-substitution-first}
-x_1 = \frac{d^{\prime}_1 - c^{\prime}_1x_{2}}{b^{\prime}_1}
-\end{align}
-
-While cyclic reduction performs far more work per step
-compared to the Thomas algorithm,
-it is able to solve the system in far fewer steps
-on massively parallel architectures.
-As pointed out by \cite{Zhang2010FTS},
-$n$ parallel processors can solve a tridiagonal system
-of size $n$ in $2log(n) - 1$ steps.
-The Thomas algorithm, on the other hand,
-requires $2n$ steps.
-
-\section{Cyclic reduction for near-Toeplitz systems}
+%----------------------------------------------------------------------%
 
 We note from
-Equations \ref{eqn:forward-reduction}-\ref{eqn:back-substitution-last}
+Equations \ref{eqn:forward-reduction}-\ref{eqn:forward-reduction-rhs}
 that each forward reduction step involves 12 operations.
 As the LHS matrix is constant,
 it is advantageous to pre-compute the coefficients appearing
 in the forward reduction step.
 For a general tridiagonal matrix,
-this requires a substantial amount of storage
-(2$n$ for each of the arrays $a$, $b$ and $c$):
-$\frac{n}{2} + \frac{n}{4} + \frac{n}{8} + ... = n$
-for the reduction steps,
-and an additional $n$ for the original coefficients.
-\section{Distributed compact-finite difference solution} 
+in addition to the $3n$ original coefficient arrays
+$a$, $b$ and $c$,
+this requires extra storage of 
+$3(\frac{n}{2}+\frac{n}{4}+\frac{n}{8}+...)=3n$
+coefficients.
+This storage cost is greatly amortized
+when solving multiple right-hand sides.
 
 We use the algorithm discussed by Mattor et al.
 \cite{mattor1995algorithm}
@@ -424,17 +516,6 @@ The general solution procedure is then:
     \item The local solution is computed from Equation \ref{eqn:sum-of-systems}
 \end{enumerate}
 
-\subsection{Evaluation of the right-hand side}
-
-\subsection{Evaluation of the right-hand side}
-
-\subsection{Solution of primary Near-Toeplitz tridiagonal systems}
-
-\subsection{Solution of reduced system}
-
-\subsection{Solution of secondary systems}
-
-\section{Results}
 
 \section*{References}
 
