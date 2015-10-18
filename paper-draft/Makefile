@@ -6,6 +6,6 @@ paper.pdf: paper.tex img/*.eps
 	bibtex paper.aux
 	pdflatex paper.tex
 	pdflatex paper.tex
-
+	make clean
 clean:
-	rm -rf *.pdf *.log *.aux *.out _minted* *.blg *.bbl *.spl
+	rm -rf *.log *.aux *.out _minted* *.blg *.bbl *.spl
