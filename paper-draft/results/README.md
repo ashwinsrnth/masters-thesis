@@ -19,7 +19,7 @@ Here is the directory organization
 2010-10-15
 ----------
 These are results from
-commit cab70d91d864f3369.
+commit e9ddeb9bfd100f05e
 
 cusparse: CUSPARSE's dgtsvStridedBatch
 globalmem: Precomputed cyclic reduction using only global memory

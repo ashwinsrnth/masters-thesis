@@ -1,32 +1,32 @@
 Solving a system sized 64 x 64 x 64
 -----------------------------------
 Run 1
-Total time for this run: 0.000606
+Total time for this run: 0.000578
 --------------------------------------
 Run 2
-Total time for this run: 0.000537
+Total time for this run: 0.000521
 --------------------------------------
 Run 3
-Total time for this run: 0.000532
+Total time for this run: 0.000516
 --------------------------------------
 Run 4
-Total time for this run: 0.000538
+Total time for this run: 0.000517
 --------------------------------------
 Run 5
-Total time for this run: 0.000532
+Total time for this run: 0.000518
 --------------------------------------
 Run 6
-Total time for this run: 0.000546
+Total time for this run: 0.000516
 --------------------------------------
 Run 7
-Total time for this run: 0.000550
+Total time for this run: 0.000515
 --------------------------------------
 Run 8
-Total time for this run: 0.000537
+Total time for this run: 0.000519
 --------------------------------------
 Run 9
-Total time for this run: 0.000535
+Total time for this run: 0.000521
 --------------------------------------
 Run 10
-Total time for this run: 0.000533
+Total time for this run: 0.000820
 --------------------------------------

@@ -1,32 +1,32 @@
-Solving a system sized 32 x 32 x 32
+Solving a system sized 128 x 128 x 128
 -----------------------------------
 Run 1
-Total time for this run: 0.000359
+Total time for this run: 0.003023
 --------------------------------------
 Run 2
-Total time for this run: 0.000301
+Total time for this run: 0.002928
 --------------------------------------
 Run 3
-Total time for this run: 0.000298
+Total time for this run: 0.003178
 --------------------------------------
 Run 4
-Total time for this run: 0.000295
+Total time for this run: 0.003753
 --------------------------------------
 Run 5
-Total time for this run: 0.000311
+Total time for this run: 0.003384
 --------------------------------------
 Run 6
-Total time for this run: 0.000310
+Total time for this run: 0.003355
 --------------------------------------
 Run 7
-Total time for this run: 0.000312
+Total time for this run: 0.003375
 --------------------------------------
 Run 8
-Total time for this run: 0.000309
+Total time for this run: 0.003391
 --------------------------------------
 Run 9
-Total time for this run: 0.000311
+Total time for this run: 0.003370
 --------------------------------------
 Run 10
-Total time for this run: 0.000306
+Total time for this run: 0.003373
 --------------------------------------

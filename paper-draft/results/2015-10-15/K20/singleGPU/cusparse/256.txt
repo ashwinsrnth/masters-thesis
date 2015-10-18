@@ -1,32 +1,32 @@
 Solving a system sized 256 x 256 x 256
 -----------------------------------
 Run 1
-Total time for this run: 0.025220
+Total time for this run: 0.025250
 --------------------------------------
 Run 2
-Total time for this run: 0.025163
+Total time for this run: 0.025181
 --------------------------------------
 Run 3
-Total time for this run: 0.034414
+Total time for this run: 0.034447
 --------------------------------------
 Run 4
-Total time for this run: 0.031922
+Total time for this run: 0.031869
 --------------------------------------
 Run 5
-Total time for this run: 0.028587
+Total time for this run: 0.028606
 --------------------------------------
 Run 6
-Total time for this run: 0.028573
+Total time for this run: 0.028593
 --------------------------------------
 Run 7
-Total time for this run: 0.028591
+Total time for this run: 0.028582
 --------------------------------------
 Run 8
-Total time for this run: 0.028583
+Total time for this run: 0.028702
 --------------------------------------
 Run 9
-Total time for this run: 0.028574
+Total time for this run: 0.028629
 --------------------------------------
 Run 10
-Total time for this run: 0.028601
+Total time for this run: 0.028632
 --------------------------------------
