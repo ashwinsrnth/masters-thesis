@@ -1,7 +1,7 @@
 view: paper.pdf
 	evince paper.pdf
 
-paper.pdf: paper.tex img/*.eps
+paper.pdf: paper.tex img/*.eps references.bib
 	pdflatex paper.tex
 	bibtex paper.aux
 	pdflatex paper.tex

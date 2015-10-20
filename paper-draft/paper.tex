@@ -87,9 +87,9 @@ and $<$add a comparison to the CPU Thomas algorithm$>$.
 This paper is organized as follows:
 
 Section \ref{sec:preliminaries}
-lists related works,
-describes the cyclic reduction algorithm
-and the specific issues in its implementation on GPUs.
+describes algorithms for solving tridiagonal systems on GPUs.
+The cyclic reduction algorithm in particular, is discussed in detail,
+and issues with its implementation on GPUs is discussed.
 Section \ref{sec:proposed-algorithm}
 describes our proposed solver for near-Toeplitz tridiagonal systems.
 Section \ref{sec:results-single-gpu}
@@ -98,6 +98,9 @@ and compares it with other implementations.
 
 %----------------------------------------------------------------------%
 \section{Preliminaries} \label{sec:preliminaries}
+
+
+\subsection{Solving tridiagonal systems on the GPU}
 
 The classical algorithm for solving tridiagonal systems is
 the Thomas algorithm.
@@ -153,16 +156,19 @@ k_2 = \frac{c_i}{b_{i+1}}
 
 Then, we update the values of $a$, $b$, $c$ and $d$ as:
 
-\begin{align} \label{eqn:forward-reduction}
-& a^{\prime}_i = -a_{i-1}k_1 & \\
-& b^{\prime}_i = b_i - c_{i-1}k_1 - a_{i+1}k_2 & \\
-& c^{\prime}_i = -c_{i+1}k_2 & \\
+\begin{align}
+& a^{\prime}_i = -a_{i-1}k_1 \
+    \label{eqn:forward-reduction-1}& \\
+& b^{\prime}_i = b_i - c_{i-1}k_1 - a_{i+1}k_2 \
+    \label{eqn:forward-reduction-2}& \\
+& c^{\prime}_i = -c_{i+1}k_2 \
+    \label{eqn:forward-reduction-3}& \\
 & d^{\prime}_i = d_i - d_{i-1}k_1  - d_{i+1}k_2 \
-    \label{eqn:forward-reduction-rhs}&
+    \label{eqn:forward-reduction-4}&
 \end{align}
 
 The 2-by-2 system of equations is solved trivially,
-yielding $x_n$ and $x_{n/2}$.
+yielding $x_n$ and $\frac{x_n}{2}$.
 In the backward substitution phase,
 every odd-indexed unknown $x_i$ is solved for by
 substituting the known values of $x_{i-1}$ and $x_{i+1}$:
@@ -185,12 +191,171 @@ And the backward substitution step for $i=1$ is instead:
 x_1 = \frac{d^{\prime}_1 - c^{\prime}_1x_{2}}{b^{\prime}_1}
 \end{align}
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[height=200pt]{img/parallel-cyclic-reduction-single-path.eps}
+\end{center}
+\caption{Parallel cyclic reduction - one reduction path highlighted}
+\label{fig:parallel-cyclic-reduction-single-path}
+\end{figure}
+
+Parallel cyclic reduction begins by
+performing the forward reduction step on
+both the odd and even indexed equations.
+This results in two systems of size $\frac{n}{2}$ each.
+Forward reduction is applied again to each of these systems
+resulting in four systems of size $\frac{n}{4}$ each.
+The process is repeated till $\frac{n}{2}$ 2-by-2 systems are produced,
+which can each be solved trivially.
+Figure \ref{fig:parallel-cyclic-reduction-single-path}
+shows PCR with one of these ``reduction paths'' highlighted.
+
+Our proposed solver is a specialization of cyclic reduction,
+so we discuss the pertinent implementation issues on GPUs.
+
+\subsection{GPU architecture}
+
+Writing applications that effectively exploit the GPU
+requires a thorough understanding of the underlying architecure.
+We provide the pertinent details here,
+and refer to \cite{GPUcomputingera} for a more complete picture.
+Our tests are performed on the NVIDIA Tesla K20 and K40 GPUs,
+built on the ``Kepler'' architecture,
+an overview of which is available at \cite{Keplerwhitepaper}.
+
+Applications that use the GPU include special
+pieces of code that are executed on the GPU,
+referred to as \emph{kernels}.
+In C, for example, kernels are written as functions,
+and are called with (almost) the same conventions.
+A kernel is executed in parallel by several threads,
+which are organized into a \emph{grid} of \emph{thread blocks}
+(or just \emph{blocks}).
+As a requirement, thread blocks must be able to run
+independent of each other,
+in series or in parallel.
+
+From the hardware perspective, an NVIDIA GPU may be viewed primarily as
+a collection of so-called Streaming Microprocessors (SMs).
+When a kernel is launched (with a specified number of thread blocks),
+each block is assigned to an SM.
+Threads within a thread block can execute concurrently on the SM,
+and an SM can execute several thread blocks concurrently.
+The number of thread blocks that an SM can execute concurrently
+is limited by a number of factors,
+and maximizing this number is often key to obtaining good performance.
+
+Every thread in every block has access to so-called \emph{global memory},
+which can also be accessed by the CPU (or \emph{host}) via the PCI-e bus.
+Further,
+threads within a thread block have access
+to a common, fast, limited \emph{shared memory}.
+The contents of shared memory are managed by the kernel code,
+and shared memory is often viewed as an explicitly controlled cache.
+Each thread also has private \emph{local memory},
+and access to extremely fast registers.
+Unlike CPUs, the GPU has a large number of registers---a
+thread executing a kernel will
+typically attempt to store the variables defined in registers,
+before spilling over to local memory, which is much slower.
+
+Thread access to global memory is slow,
+and is especially inefficient when
+successive threads in a block
+access locations that are far apart in memory---known
+as \emph{uncoalesced} memory access.
+Shared memory access can be expected to be
+much faster than global memory---however,
+the amount of shared memory per SM is limited
+(48 KiB for current GPUs).
+The amount of shared memory actually used by each block,
+can thus limit the number of blocks that concurrently run on each SM.
+The number of registers per SM is also limited,
+and the use of registers can similarly limit
+the number of concucrrently running blocks.
+Finally, memory transfers between the CPU (host) and GPU (device)
+are extremely expensive, limited by the bandwidth of the PCI-e bus.
+
+\subsection{Cyclic reduction on GPU}
+
+
+
 
 %----------------------------------------------------------------------%
 \section{Proposed algorithm} \label{sec:proposed-algorithm}
 
+We note that solving the equations
+\ref{eqn:forward-reduction-1}-\ref{eqn:forward-reduction-3}
+for each grid line and at each time step of the simulation
+is wasteful.
+It may be benefitial to
+\emph{precompute} and store the coefficients appearing at
+each step of the forward reduction,
+and to load these values from memory when required.
+
+\subsection{General tridiagonal matrix}
+
+For a general tridiagonal matrix,
+in addition to the $3n$ original coefficient arrays
+$a$, $b$ and $c$,
+this requires extra storage of 
+$\frac{n}{2}+\frac{n}{4}+\frac{n}{8}+...=n$
+elements each
+for $a_i$, $b_i$, $c_i$, $k1$ and $k2$
+appearing at the forward reduction steps.
+This additional storage cost is greatly amortized
+when solving the same system for multiple right-hand sides.
+But the additional arrays
+still need to be loaded into shared memory for each thread block.
+This raises the shared memory storage from $4n$ to $9n$,
+which significantly impacts the number of
+concurrently running blocks.
+
+\subsection{Near-Toeplitz matrix}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[height=200pt]{img/cyclic-reduction-boundaries.eps}
+\end{center}
+\caption{Indices affected by boundaries in cyclic reduction}
+\label{fig:cyclic-reduction-boundaries}
+\end{figure}
+
+Precomputing the forward reduction coefficients
+becomes especially effective for near-Toeplitz matrices.
+At each reduction step,
+the coefficients $a_i$, $b_i$, $c_i$, $k1_i$ and $k2_i$ 
+are the same for all indices $i$,
+except for indices ``polluted'' by the boundary conditions
+(Figure \ref{fig:cyclic-reduction-boundaries}).
+Ignoring the boundaries, then, we find that the precomputed coefficients
+require $5(log_2(n) - 1)$ storage---far lower than the $5n$ required for the
+general case.
+Further, a careful analysis of the equations
+\ref{eqn:forward-reduction-1}-\ref{eqn:forward-reduction-3}
+reveals that the following extra arrays are required
+to store the boundary information:
+
+\begin{enumerate}
+    \item The values of $b_1$ at each reduction step
+    \item The values of $k_{1,1}$ at each reduction step
+    \item The values of $k_{1,n}$ at each reduction step
+    \item The values of $a_n$ and $b_n$ at the final reduction step
+        (required for the 2-by-2 solve)
+\end{enumerate}
+
+This puts the total storage for precomputed coefficients
+at $8(log_2(n) - 1)+2$.
+
 %----------------------------------------------------------------------%
 \section{Results: single GPU} \label{sec:results-single-gpu}
+
+
+
+
+
+
+
 
 %----------------------------------------------------------------------%
 
@@ -314,7 +479,7 @@ cyclic reduction \cite{Zhang2010FTS}.
 %----------------------------------------------------------------------%
 
 We note from
-Equations \ref{eqn:forward-reduction}-\ref{eqn:forward-reduction-rhs}
+Equations \ref{eqn:forward-reduction-1}-\ref{eqn:forward-reduction-3}
 that each forward reduction step involves 12 operations.
 As the LHS matrix is constant,
 it is advantageous to pre-compute the coefficients appearing
