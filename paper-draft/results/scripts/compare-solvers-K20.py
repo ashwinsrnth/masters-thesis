@@ -49,5 +49,5 @@ leg = ax.legend((mkl_2_bars[0],
             'Our solver (shared memory)'),
             loc='best',
             fontsize='medium')
-leg.draw_frame(False)
+leg.draw_frame(True)
 plt.savefig('compare-solvers-K20.eps')
