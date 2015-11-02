@@ -556,25 +556,40 @@ and copies the even-indexed solution value
 from shared memory to global memory.
 Explicit synchronization is required at the end of each step.
 
-\section{3-D compact finite difference on multi-GPU}
 
+\pagebreak
 %----------------------------------------------------------------------%
 \section{Results: single GPU} \label{sec:results-single-gpu}
 %----------------------------------------------------------------------%
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[height=200pt]{fig/compare-solvers-K20.eps}
+\includegraphics[height=200pt]{fig/k20-bench-2d.eps}
 \end{center}
-\label{fig:compare-solvers-K20}
+\label{fig:k20-bench-2d}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[height=200pt]{fig/compare-solvers-K40.eps}
+\includegraphics[height=200pt]{fig/k20-bench-3d.eps}
 \end{center}
-\label{fig:compare-solvers-K40}
+\label{fig:k20-bench-3d}
 \end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[height=200pt]{fig/k20-global-vs-shared-2d.eps}
+\end{center}
+\label{fig:k20-global-vs-shared-2d}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[height=200pt]{fig/k20-global-vs-shared-3d.eps}
+\end{center}
+\label{fig:k20-global-vs-shared-3d}
+\end{figure}
+
 
 \pagebreak
 \section*{References}
