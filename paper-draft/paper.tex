@@ -14,16 +14,40 @@
 \maketitle
 
 \begin{abstract}
+    In this paper, we consider the solution of linear
+    systems of the form $A\bm{x} = \bm{d}$,
+    where $A$ is \emph{near-Toeplitz}.
+    These systems appear in numerical schemes
+    such as
+    Alternating Direction Implicit (ADI) methods,
+    compact finite differences,
+    and one-dimensional ordinary
+    and partial differential equations.
+    We develop a GPU solver that takes advantage
+    of the known structure of the matrix
+    to reduce the number of computations
+    and improve memory access.
+    We also describe the implementation of a multi-GPU solver
+    using MPI and CUDA.
+    We describe two applications:
+    2-D ADI applied to the heat equation on a single GPU,
+    and computation of
+    3-D compact finite differences on multiple GPUs.
+    Our solver is able to achieve 6x speedup
+    over an Intel MKL solver running on a single core,
+    and 2x speedup
+    over the NVIDIA CUSPARSE solver.
+    Additionally, we demonstrate scalability up to 64 GPUs.
 
 \end{abstract}
 
 \end{frontmatter}
-
-%----------------------------------------------------------------------%
     
+%---------------------------------------------------------------------%
 \section{Introduction}
+%---------------------------------------------------------------------%
 
-In this paper, we consider the solution of
+The focus of this paper is the solution of
 linear systems of the form $A\bm{x} = \bm{d}$,
 where $A$ has the following structure
 
@@ -51,13 +75,13 @@ We refer to matrices with the specific structure of $A$
 as \emph{near-Toeplitz tridiagonal matrices},
 and the linear system $A\bm{x}=\bm{d}$ as \emph{near-Toeplitz tridiagonal systems}.
 
-The solution of such tridiagonal systems
-appears in several numerical schemes
+Such tridiagonal systems
+appear in several numerical schemes
 in Computational Fluid Dynamics (CFD)
 such as
 compact finite differences \cite{lele1992compact},
 Alternating Direction Implicit (ADI) methods \cite{1955ADI}, and
-numerical solutions to one-dimensional differential equations.
+numerical solutions of one-dimensional differential equations.
 In such applications,
 the evaluation of the tridiagonal systems constitutes
 a significant portion of the runtime.
@@ -104,8 +128,9 @@ Section \ref{sec:results-single-gpu}
 provides an overview of the performance of our solver,
 and compares it with other implementations.
 
-%----------------------------------------------------------------------%
+%---------------------------------------------------------------------%
 \section{Preliminaries} \label{sec:preliminaries}
+%---------------------------------------------------------------------%
 
 \subsection{Cyclic reduction} \label{subsec:cyclic-reduction}
 
@@ -349,10 +374,9 @@ that works entirely in global memory,
 using additional kernels to reorder data so as to
 coalesce memory access.
 
-
-
 %----------------------------------------------------------------------%
 \section{Proposed algorithm} \label{sec:proposed-algorithm}
+%----------------------------------------------------------------------%
 
 \begin{figure}[h!]
 \begin{center}
@@ -442,7 +466,9 @@ Where $a^m$, $b^m$, $c^m$, $k_1^m$ and $k_2^m$
 are the appropriate values
 from the precomputed coefficient arrays.
 
+%----------------------------------------------------------------------%
 \section{GPU implementation} \label{sec:gpu-implementation}
+%----------------------------------------------------------------------%
 
 In this section, we describe the implementation of a GPU solver
 for solving a given near-Toeplitz tridiagonal system
@@ -467,9 +493,9 @@ contiguous region global memory.
 \subsubsection*{Global memory}
 
 In the global memory approach,
-we perform several kernel launches
-one for each single forward reduction step,
-and another for each backward substitution step.
+we launch several kernels---one
+for each single forward reduction step,
+an each backward substitution step.
 The precomputed coefficient arrays and right hand
 are accessed by the kernels from global memory directly.
 Because the coefficients
@@ -520,7 +546,7 @@ are accessed from shared memory,
 avoiding uncoalesced global memory accesses.
 In each back substitution step,
 threads overwrite the existing values in shared memory
-with the values of the solution $x$.
+with the values of the solution.
 In the final step,
 shared memory is filled completeley
 with the even-indexed solution values.
@@ -530,10 +556,14 @@ and copies the even-indexed solution value
 from shared memory to global memory.
 Explicit synchronization is required at the end of each step.
 
+\section{3-D compact finite difference on multi-GPU}
+
+
+
 
 %----------------------------------------------------------------------%
-
 \section{Results: single GPU} \label{sec:results-single-gpu}
+%----------------------------------------------------------------------%
 
 \begin{figure}[h!]
 \begin{center}

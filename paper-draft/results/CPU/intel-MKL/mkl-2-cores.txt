@@ -1,5 +1,0 @@
-size: 32	 time: 0.390250
-size: 64	 time: 0.976550
-size: 128	 time: 5.884350
-size: 256	 time: 75.154907
-size: 512	 time: 703.386974

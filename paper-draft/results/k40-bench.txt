@@ -1,0 +1,140 @@
+[atrikut@node0352 bench]$ python bench-2d.py 
++-------------+-------------------+--------------------+
+| System size | Number of systems | Time to solve (ms) |
++-------------+-------------------+--------------------+
+| 32          | 32                | 0.214961780442     |
+| 64          | 64                | 0.239480892817     |
+| 128         | 128               | 0.280707544751     |
+| 256         | 256               | 0.30947555436      |
+| 512         | 512               | 0.349678224987     |
+| 1024        | 1024              | 1.14786847432      |
+| 2048        | 2048              | 4.85700268216      |
++-------------+-------------------+--------------------+
+[atrikut@node0352 bench]$ python bench-3d.py 
++-------------+-------------------+--------------------+
+| System size | Number of systems | Time to solve (ms) |
++-------------+-------------------+--------------------+
+| 32          | 1024              | 0.0833031137784    |
+| 64          | 4096              | 0.335249768363     |
+| 128         | 16384             | 1.82402123345      |
+| 256         | 65536             | 10.2020797729      |
+| 512         | 262144            | 99.4724867079      |
++-------------+-------------------+--------------------+
+[atrikut@node0352 bench]$ cd intel-MKL/
+[atrikut@node0352 intel-MKL]$ export OMP_NUM_THREADS=1
+[atrikut@node0352 intel-MKL]$ make run
+make: `run' is up to date.
+[atrikut@node0352 intel-MKL]$ ./bench-2d.sh 
+make: `run' is up to date.
+Intel MKL solver on 1 cores              N 	            nrhs 	 Time to solve (ms) 
+             32 	              32 	           0.245 
+             64 	              64 	           0.058 
+            128 	             128 	           0.091 
+            256 	             256 	           0.247 
+            512 	             512 	           0.914 
+           1024 	            1024 	           3.512 
+           2048 	            2048 	          15.152 
+[atrikut@node0352 intel-MKL]$ ./bench-3d.sh 
+make: `run' is up to date.
+Intel MKL solver on 1 cores              N 	            nrhs 	 Time to solve (ms) 
+             32 	            1024 	           0.148 
+             64 	            4096 	           0.837 
+            128 	           16384 	           6.524 
+            256 	           65536 	          57.532 
+            512 	          262144 	         474.151 
+[atrikut@node0352 intel-MKL]$ export OMP_NUM_THREADS=2
+[atrikut@node0352 intel-MKL]$ ./bench-2d.sh 
+make: `run' is up to date.
+Intel MKL solver on 2 cores              N 	            nrhs 	 Time to solve (ms) 
+             32 	              32 	           0.050 
+             64 	              64 	           0.051 
+            128 	             128 	           0.075 
+            256 	             256 	           0.168 
+            512 	             512 	           0.616 
+           1024 	            1024 	           2.428 
+           2048 	            2048 	          10.918 
+[atrikut@node0352 intel-MKL]$ ./bench-3d.sh 
+make: `run' is up to date.
+Intel MKL solver on 2 cores              N 	            nrhs 	 Time to solve (ms) 
+             32 	            1024 	           0.111 
+             64 	            4096 	           0.562 
+            128 	           16384 	           6.019 
+            256 	           65536 	          36.660 
+            512 	          262144 	         290.735 
+[atrikut@node0352 intel-MKL]$ export OMP_NUM_THREADS=4
+[atrikut@node0352 intel-MKL]$ ./bench-2d.sh 
+make: `run' is up to date.
+Intel MKL solver on 4 cores              N 	            nrhs 	 Time to solve (ms) 
+             32 	              32 	           0.047 
+             64 	              64 	           0.058 
+            128 	             128 	           0.075 
+            256 	             256 	           0.164 
+            512 	             512 	           0.406 
+           1024 	            1024 	           1.481 
+           2048 	            2048 	           6.945 
+[atrikut@node0352 intel-MKL]$ ./bench-3d.sh 
+make: `run' is up to date.
+Intel MKL solver on 4 cores              N 	            nrhs 	 Time to solve (ms) 
+             32 	            1024 	           0.098 
+             64 	            4096 	           0.515 
+            128 	           16384 	           3.684 
+            256 	           65536 	          23.486 
+            512 	          262144 	         189.169 
+[atrikut@node0352 intel-MKL]$ export OMP_NUM_THREADS=8
+[atrikut@node0352 intel-MKL]$ ./bench-2d.sh 
+make: `run' is up to date.
+Intel MKL solver on 8 cores              N 	            nrhs 	 Time to solve (ms) 
+             32 	              32 	           0.047 
+             64 	              64 	           0.055 
+            128 	             128 	           0.068 
+            256 	             256 	           0.122 
+            512 	             512 	           0.306 
+           1024 	            1024 	           0.991 
+           2048 	            2048 	           5.083 
+[atrikut@node0352 intel-MKL]$ ./bench-3d.sh 
+make: `run' is up to date.
+Intel MKL solver on 8 cores              N 	            nrhs 	 Time to solve (ms) 
+             32 	            1024 	           0.090 
+             64 	            4096 	           0.344 
+            128 	           16384 	           2.480 
+            256 	           65536 	          18.243 
+            512 	          262144 	         138.269 
+[atrikut@node0352 intel-MKL]$ export OMP_NUM_THREADS=16
+[atrikut@node0352 intel-MKL]$ ./bench-2d.sh 
+make: `run' is up to date.
+Intel MKL solver on 16 cores              N 	            nrhs 	 Time to solve (ms) 
+             32 	              32 	           0.046 
+             64 	              64 	           0.113 
+            128 	             128 	           0.116 
+            256 	             256 	           0.115 
+            512 	             512 	           0.270 
+           1024 	            1024 	           0.785 
+           2048 	            2048 	           3.932 
+[atrikut@node0352 intel-MKL]$ ./bench-3d.sh 
+make: `run' is up to date.
+Intel MKL solver on 16 cores              N 	            nrhs 	 Time to solve (ms) 
+             32 	            1024 	           0.158 
+             64 	            4096 	           0.273 
+            128 	           16384 	           1.807 
+            256 	           65536 	          16.968 
+            512 	          262144 	         139.496 
+[atrikut@node0352 intel-MKL]$ cd ../cusparse-dgtsv/
+[atrikut@node0352 cusparse-dgtsv]$ ./bench-2d.sh 
+make: `run' is up to date.
+              N 	            nrhs 	 Time to solve (ms) 
+             32 	              32 	           0.249 
+             64 	              64 	           0.237 
+            128 	             128 	           0.239 
+            256 	             256 	           0.302 
+            512 	             512 	           0.538 
+           1024 	            1024 	           1.627 
+           2048 	            2048 	           6.116 
+[atrikut@node0352 cusparse-dgtsv]$ ./bench-3d.sh 
+make: `run' is up to date.
+              N 	            nrhs 	 Time to solve (ms) 
+             32 	            1024 	           0.257 
+             64 	            4096 	           0.468 
+            128 	           16384 	           2.640 
+            256 	           65536 	          24.213 
+            512 	          262144 	         216.743 
+
