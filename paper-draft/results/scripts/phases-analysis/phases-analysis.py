@@ -82,4 +82,4 @@ leg = ax.legend((
             fontsize='medium',
             bbox_to_anchor=(0.5, 1.1))
 leg.draw_frame(True)
-plt.savefig('k20-phases-analysis.eps', bbox_extra_artists=(leg,), bbox_inches='tight')
+plt.savefig('phases-analysis.eps', bbox_extra_artists=(leg,), bbox_inches='tight')

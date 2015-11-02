@@ -560,40 +560,50 @@ Explicit synchronization is required at the end of each step.
 
 \pagebreak
 %----------------------------------------------------------------------%
-\section{Results: single GPU} \label{sec:results-single-gpu}
+\section{Results} \label{sec:results-single-gpu}
 %----------------------------------------------------------------------%
+
+\subsection{Global memory v/s shared memory solver performance}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[height=200pt]{fig/k20-bench-2d.eps}
+\includegraphics[height=200pt]{fig/global-vs-shared-2d.eps}
+\end{center}
+\label{fig:global-vs-shared-2d}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[height=200pt]{fig/global-vs-shared-3d.eps}
+\end{center}
+\label{fig:global-vs-shared-3d}
+\end{figure}
+
+In Figures \ref{fig:global-vs-shared-2d} and \ref{fig:global-vs-shared-3d},
+we report the performance of the two solvers for the case
+$N_{rhs} = n$ and $N_{rhs} = n^2$.
+These cases correspond to tridiagonal systems
+arising in 2-D and 3-D problems respectively.
+
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=250pt]{fig/bench-2d.eps}
 \end{center}
 \label{fig:k20-bench-2d}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[height=200pt]{fig/k20-bench-3d.eps}
+\includegraphics[width=250pt]{fig/bench-3d.eps}
 \end{center}
 \label{fig:k20-bench-3d}
 \end{figure}
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[height=200pt]{fig/k20-global-vs-shared-2d.eps}
-\end{center}
-\label{fig:k20-global-vs-shared-2d}
-\end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[height=200pt]{fig/k20-global-vs-shared-3d.eps}
-\end{center}
-\label{fig:k20-global-vs-shared-3d}
-\end{figure}
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[height=250pt]{fig/k20-forward-vs-backward.eps}
+\includegraphics[width=250pt]{fig/phases-analysis.eps}
 \end{center}
 \label{fig:k20-forward-vs-backward}
 \end{figure}

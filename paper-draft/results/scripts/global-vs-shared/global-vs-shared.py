@@ -41,7 +41,7 @@ leg = ax.legend((
             loc='best',
             fontsize='medium')
 leg.draw_frame(True)
-plt.savefig('k20-global-vs-shared-2d.eps')
+plt.savefig('global-vs-shared-2d.eps')
 
 #plt.style.use('bmh')
 # 3-D plots
@@ -80,4 +80,4 @@ leg = ax.legend((
             loc='best',
             fontsize='medium')
 leg.draw_frame(True)
-plt.savefig('k20-global-vs-shared-3d.eps')
+plt.savefig('global-vs-shared-3d.eps')
