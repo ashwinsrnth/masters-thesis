@@ -37,7 +37,7 @@ ax.set_yscale('log', basey=2)
 ax.get_yaxis().set_major_formatter(
         matplotlib.ticker.ScalarFormatter())
 ax.yaxis.set_major_formatter(
-        matplotlib.ticker.FormatStrFormatter('%.1f'))
+        matplotlib.ticker.FormatStrFormatter('%.2f'))
 ax.set_xlabel('Problem size')
 
 ax.set_xlabel('System size (Number of systems = system size)')
@@ -101,7 +101,7 @@ ax.set_yscale('log', basey=2)
 ax.get_yaxis().set_major_formatter(
         matplotlib.ticker.ScalarFormatter())
 ax.yaxis.set_major_formatter(
-        matplotlib.ticker.FormatStrFormatter('%.1f'))
+        matplotlib.ticker.FormatStrFormatter('%.2f'))
 ax.set_xlabel('Problem size')
 
 ax.set_xlabel('System size (Number of systems = system size$^2$)')
