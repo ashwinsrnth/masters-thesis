@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import os
 import sys
 
-#plt.style.use('bmh')
+plt.style.use('bmh')
 # 2-D plots
 prob_sizes = [32, 64, 128, 256, 512., 1024, 2048]
 intel_mkl_1 = np.array(
@@ -21,6 +21,23 @@ cusparse = np.array(
         [0.273, 0.271, 0.271, 0.305, 0.629, 1.939, 7.607])
 neato_shared = np.array(
         [0.024, 0.025, 0.032, 0.066, 0.272, 1.252, 10.407])
+matrix = np.vstack([intel_mkl_1,
+                    intel_mkl_2,
+                    intel_mkl_4,
+                    intel_mkl_8,
+                    intel_mkl_16,
+                    cusparse,
+                    neato_shared])
+mins = np.min(matrix, axis=0)
+
+# normalize timings:
+intel_mkl_1 = intel_mkl_1/mins
+intel_mkl_2 = intel_mkl_2/mins
+intel_mkl_4 = intel_mkl_4/mins
+intel_mkl_8 = intel_mkl_8/mins
+intel_mkl_16 = intel_mkl_16/mins
+cusparse = cusparse/mins
+neato_shared = neato_shared/mins
 
 ind = np.arange(7)*5
 fig, ax = plt.subplots()
@@ -33,20 +50,18 @@ mkl_16_bars = ax.bar(ind+4*width, intel_mkl_16, width, color='m')
 cusparse_bars = ax.bar(ind+5*width, cusparse, width, color='y')
 neato_bars = ax.bar(ind+6*width, neato_shared, width, color='c')
 
-ax.set_yscale('log', basey=2)
 ax.get_yaxis().set_major_formatter(
         matplotlib.ticker.ScalarFormatter())
 ax.yaxis.set_major_formatter(
-        matplotlib.ticker.FormatStrFormatter('%.2f'))
+        matplotlib.ticker.FormatStrFormatter('%d'))
+
+ax.set_xticks(ind+3*width)
+ax.set_xticklabels(['32', '64', '128', '256', '512', '1024', '2048'])
 ax.set_xlabel('Problem size')
 
 ax.set_xlabel('System size (Number of systems = system size)')
-ax.set_ylabel('Time to solve systems (ms)')
-ax.set_xticks(ind+width)
-ax.set_xticklabels( 
-    ('$32$', '$64$', '$128$', '$256$', '$512$', '$1024$', '$2048$') )
+ax.set_ylabel('Relative time to solve systems')
 ax.tick_params(labelright=True)
-ax.set_title('Solver performance for 2-D problems')
 ax.grid(True)
 leg = ax.legend((
             mkl_1_bars[0],
@@ -82,9 +97,27 @@ intel_mkl_8 = np.array(
 intel_mkl_16 = np.array(
         [0.257, 0.403, 1.931, 16.610, 159.394])
 cusparse = np.array(
-        [0.310, 0.556, 3.128, 28.495, np.nan])
+        [0.310, 0.556, 3.128, 28.495, np.inf])
 neato_shared = np.array(
         [0.093, 0.409, 2.224, 12.568, 125.326])
+
+matrix = np.vstack([intel_mkl_1,
+                    intel_mkl_2,
+                    intel_mkl_4,
+                    intel_mkl_8,
+                    intel_mkl_16,
+                    cusparse,
+                    neato_shared])
+mins = np.min(matrix, axis=0)
+
+# normalize timings:
+intel_mkl_1 = intel_mkl_1/mins
+intel_mkl_2 = intel_mkl_2/mins
+intel_mkl_4 = intel_mkl_4/mins
+intel_mkl_8 = intel_mkl_8/mins
+intel_mkl_16 = intel_mkl_16/mins
+cusparse = cusparse/mins
+neato_shared = neato_shared/mins
 
 ind = np.arange(5)*5
 fig, ax = plt.subplots()
@@ -97,20 +130,17 @@ mkl_16_bars = ax.bar(ind+4*width, intel_mkl_16, width, color='m')
 cusparse_bars = ax.bar(ind+5*width, cusparse, width, color='y')
 neato_bars = ax.bar(ind+6*width, neato_shared, width, color='c')
 
-ax.set_yscale('log', basey=2)
 ax.get_yaxis().set_major_formatter(
         matplotlib.ticker.ScalarFormatter())
 ax.yaxis.set_major_formatter(
-        matplotlib.ticker.FormatStrFormatter('%.2f'))
+        matplotlib.ticker.FormatStrFormatter('%d'))
+ax.set_xticks(ind+3*width)
+ax.set_xticklabels(['32', '64', '128', '256', '512'])
 ax.set_xlabel('Problem size')
 
 ax.set_xlabel('System size (Number of systems = system size$^2$)')
-ax.set_ylabel('Time to solve systems (ms)')
-ax.set_xticks(ind+width)
-ax.set_xticklabels( 
-    ('$32$', '$64$', '$128$', '$256$', '$512$', '$1024$', '$2048$') )
+ax.set_ylabel('Relative time to solve systems')
 ax.tick_params(labelright=True)
-ax.set_title('Solver performance for 3-D problems')
 ax.grid(True)
 leg = ax.legend((
             mkl_1_bars[0],

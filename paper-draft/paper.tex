@@ -563,20 +563,40 @@ Explicit synchronization is required at the end of each step.
 \section{Results} \label{sec:results-single-gpu}
 %----------------------------------------------------------------------%
 
+In this section we present a performance overview
+of our Near-Toeplitz tridiagonal solver (NEATO)
+against a multi-threaded Intel MKL solver and
+the CUSPARSE GPU solver
+(\texttt{dgtsv} and \texttt{dgtsvStridedBatch} respectively).
+
+The CPU code is compiled with the Intel C++ compiler
+and run on up to 16 cores of the
+Intel Xeon Processor E5-2670 v2 (25M Cache, 2.50 GHz).
+GPU code is compiled with the CUDA toolkit (version 6.5.14),
+and run on the
+NVIDIA Tesla K20 Accelerator.
+\texttt{-O2} level optimizations are turned on for both
+CPU and GPU code.
+
 \subsection{Global memory v/s shared memory solver performance}
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[height=200pt]{fig/global-vs-shared-2d.eps}
-\end{center}
-\label{fig:global-vs-shared-2d}
-\end{figure}
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[height=200pt]{fig/global-vs-shared-3d.eps}
-\end{center}
-\label{fig:global-vs-shared-3d}
+\begin{figure}[!htb]
+    \centering
+    \begin{minipage}{0.75\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{fig/global-vs-shared-2d.eps}
+        \caption{Comparison of global memory and shared
+            memory implementations of NEATO (2D problems)}
+        \label{fig:global-vs-shared-2d}
+    \end{minipage}
+    \\
+    \begin{minipage}{0.75\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{fig/global-vs-shared-2d.eps}
+        \caption{Comparison of global memory and shared memory
+            implementations of NEATO (2D problems)}
+        \label{fig:global-vs-shared-3d}
+    \end{minipage}
 \end{figure}
 
 In Figures \ref{fig:global-vs-shared-2d} and \ref{fig:global-vs-shared-3d},
@@ -584,32 +604,70 @@ we report the performance of the two solvers for the case
 $N_{rhs} = n$ and $N_{rhs} = n^2$.
 These cases correspond to tridiagonal systems
 arising in 2-D and 3-D problems respectively.
+We note that the shared memory implementation
+offers better performance in nearly all cases.
+However, the relative speedup from using
+shared memory diminishes with increasing problem size.
+For larger problem sizes,
+the reduced occupancy and increase in number of inactive threads
+leads to poor shared memory performance.
 
+\subsection{Comparison with Intel MKL and CUSPARSE solvers}
+
+In Figures \ref{fig:bench-2d} and \ref{fig:bench-3d},
+we provide the relative performance of
+Intel MKL and CUSPARSE solvers and compare against
+the NEATO shared memory implementation.
+The Intel MKL solver can use multiple threads
+to solve several systems simaltaneously.
+The CUSPARSE solver uses a hybrid algorithm composed
+of Cyclic Reduction and Parallel Cyclic Reduction (CR+PCR).
+
+The relative performance for
+each problem size is obtained by
+normalizing the solver timings
+by the timing for the fastest solver for that problem size.
+
+Table \ref{table:bench} shows
+timings for different solvers.
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=250pt]{fig/bench-2d.eps}
+\includegraphics[width=300pt]{fig/bench-2d.eps}
 \end{center}
-\label{fig:k20-bench-2d}
+\caption{Relative solver performance for 2-D problems}
+\label{fig:bench-2d}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=250pt]{fig/bench-3d.eps}
+\includegraphics[width=300pt]{fig/bench-3d.eps}
 \end{center}
-\label{fig:k20-bench-3d}
+\caption{Relative solver performance for 3-D problems}
+\label{fig:bench-3d}
 \end{figure}
-
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=250pt]{fig/phases-analysis.eps}
+\includegraphics[width=300pt]{fig/phases-analysis.eps}
 \end{center}
 \label{fig:k20-forward-vs-backward}
 \end{figure}
 
-\input{table/global-vs-shared.tex}
+\begin{table}[]
+\scriptsize
+\centering
+\caption{Performance of Intel MKL, CUSPARSE and NEATO solvers}
+\label{table:bench}
+\input{table/bench.tex}
+\end{table}
 
+\section{Application: compact finite difference on multiple GPUs}
+
+
+
+
+\pagebreak
 \pagebreak
 \section*{References}
 
