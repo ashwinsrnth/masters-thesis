@@ -28,16 +28,15 @@ matrix = np.vstack([intel_mkl_1,
                     intel_mkl_16,
                     cusparse,
                     neato_shared])
-mins = np.min(matrix, axis=0)
 
 # normalize timings:
-intel_mkl_1 = intel_mkl_1/mins
-intel_mkl_2 = intel_mkl_2/mins
-intel_mkl_4 = intel_mkl_4/mins
-intel_mkl_8 = intel_mkl_8/mins
-intel_mkl_16 = intel_mkl_16/mins
-cusparse = cusparse/mins
-neato_shared = neato_shared/mins
+intel_mkl_1 = intel_mkl_1/neato_shared
+intel_mkl_2 = intel_mkl_2/neato_shared
+intel_mkl_4 = intel_mkl_4/neato_shared
+intel_mkl_8 = intel_mkl_8/neato_shared
+intel_mkl_16 = intel_mkl_16/neato_shared
+cusparse = cusparse/neato_shared
+neato_shared = neato_shared/neato_shared
 
 ind = np.arange(7)*5
 fig, ax = plt.subplots()
@@ -108,16 +107,15 @@ matrix = np.vstack([intel_mkl_1,
                     intel_mkl_16,
                     cusparse,
                     neato_shared])
-mins = np.min(matrix, axis=0)
 
 # normalize timings:
-intel_mkl_1 = intel_mkl_1/mins
-intel_mkl_2 = intel_mkl_2/mins
-intel_mkl_4 = intel_mkl_4/mins
-intel_mkl_8 = intel_mkl_8/mins
-intel_mkl_16 = intel_mkl_16/mins
-cusparse = cusparse/mins
-neato_shared = neato_shared/mins
+intel_mkl_1 = intel_mkl_1/neato_shared
+intel_mkl_2 = intel_mkl_2/neato_shared
+intel_mkl_4 = intel_mkl_4/neato_shared
+intel_mkl_8 = intel_mkl_8/neato_shared
+intel_mkl_16 = intel_mkl_16/neato_shared
+cusparse = cusparse/neato_shared
+neato_shared = neato_shared/neato_shared
 
 ind = np.arange(5)*5
 fig, ax = plt.subplots()
