@@ -18,7 +18,7 @@
 \begin{abstract}
     In this paper, we consider the solution of linear
     systems of the form $A\bm{x} = \bm{d}$,
-    where $A$ is \emph{near-Toeplitz}.
+    where $A$ is \emph{near-Toeplitz} tridiagonal.
     These systems appear in numerical schemes
     such as
     Alternating Direction Implicit (ADI) methods,
@@ -29,20 +29,14 @@
     of the known structure of the matrix
     to reduce the number of computations
     and improve memory access.
-    Our solver is able to achieve up to 5x speedup
-    over an Intel MKL solver running on a single core,
-    and 1.5x-11x speedup
-    over the NVIDIA CUSPARSE solver.
-    For larger problem sizes,
-    our solver is able to outperform
-    CUSPARSE as well as Intel MKL (on up to 16 cores).
+    Our solver is able to outperform
+    the NVIDIA CUSPARSE and
+    multi-core Intel MKL tridiagonal solvers
+    (on up to 16 cores).
     We also describe the implementation of a multi-GPU solver
-    using MPI and CUDA.
-    We describe two applications:
-    2-D ADI applied to the heat equation on a single GPU,
-    and computation of
-    3-D compact finite differences on multiple GPUs.
-
+    using MPI and CUDA,
+    and show scalability for up to 64 GPUs
+    for a 3-D compact finite difference application.
 \end{abstract}
 
 \end{frontmatter}
@@ -67,8 +61,8 @@ A =
          &      &      &      &     &  a_n  &  b_n
 \end{pmatrix}
 \end{equation}
-
-Where, in general
+%
+where, in general
 \begin{align*}
     & a_0 \neq a_n & \\
     & b_1 \neq b_0 \neq b_n &\\
@@ -113,13 +107,14 @@ the algorithms proposed so far
 are applicable to general tridiagonal systems,
 and make no attempt to take advantage of
 the known structure of the tridiagonal matrix.
-We describe the implementation of a GPU solver that
-uses this information to
-reduce the number of computations
-and memory accesses.
-The resulting solver is thus able to perform twice as fast as
-the equivalent NVIDIA CUSPARSE solver,
-and an Intel MKL solver running with 16 independent cores.
+The contribution of this paper is twofold:
+First, we describe the implementation of a GPU solver
+for the specific case of near-Toeplitz systems
+that uses the known structure to reduce
+computations and memory accesses.
+Secondly, we describe the implementation for
+for multi-GPU clusters using MPI and CUDA,
+and apply it to the evaluation of compact finite differences.
 
 This paper is organized as follows:
 Section \ref{sec:preliminaries}
@@ -133,6 +128,9 @@ discusses the implementation of the algorithm on GPUs.
 Section \ref{sec:results-single-gpu}
 provides an overview of the performance of our solver,
 and compares it with other implementations.
+Section \ref{sec-compact-finite-differences}
+describes the implementation on multiple GPUs,
+and application to the solution of compact finite differences.
 
 %---------------------------------------------------------------------%
 \section{Preliminaries} \label{sec:preliminaries}
@@ -172,12 +170,13 @@ and compares it with other implementations.
 \end{equation}
 
 Cyclic reduction is applicable to the solution of
-general linear systems of the form $Ax = d$,
+general linear systems of the form $A\bm{x} = \bm{d}$,
 where $A$ is a tridiagonal matrix with diagonals
-$a$, $b$ and $c$
+$\bm{a}$, $\bm{b}$ and $\bm{c}$
 (Equation \ref{eqn:general-tridiagonal-system}).
 The algorithm consists of two phases:
-\emph{forward reduction} and \emph{backward substitution}.
+\emph{forward reduction} and \emph{backward substitution}
+\ref{fig:cyclic-reduction}.
 In the forward reduction phase,
 every even-indexed equation $i$
 is expressed as a
@@ -198,7 +197,7 @@ The process is repeated until a system of
 & d^{\prime}_i = d_i - d_{i-1}k_1  - d_{i+1}k_2 \
     \label{eqn:forward-reduction-4}&
 \end{align}
-
+%
 where,
 
 \begin{align}
@@ -217,7 +216,7 @@ substituting the known values of $x_{i-1}$ and $x_{i+1}$
 x_i = \frac{d^{\prime}_i - a^{\prime}_ix_{i-1} - \
     c^{\prime}_ix_{i+1}}{b^{\prime}_i}
 \end{align}
-
+%
 For the last index $i=n$,
 the forward reduction step is instead:
 \begin{align} \label{eqn:forward-reduction-last}
@@ -225,7 +224,7 @@ the forward reduction step is instead:
     & b^{\prime}_n = b_n - c_{n-1}k_1 & \\
     & d^{\prime}_n = d_n - d_{n-1}k_1&
 \end{align}
-
+%
 And for $i=1$, the backward substitution step is instead:
 \begin{align} \label{eqn:backward-substitution-first}
 x_1 = \frac{d^{\prime}_1 - c^{\prime}_1x_{2}}{b^{\prime}_1}
@@ -251,7 +250,7 @@ for massively parallel architectures like GPUs.
 \subsection{GPU architecture} \label{subsec:gpu-architecture}
 
 Writing applications that effectively exploit the GPU
-requires a thorough understanding of the underlying architecture.
+requires an understanding of the underlying architecture.
 We provide the pertinent details here,
 and refer to \cite{GPUcomputingera} for a more complete picture.
 Our tests are performed on the NVIDIA Tesla K20 and K40 GPUs,
@@ -416,7 +415,7 @@ if we substitute in these equations:
     \item [] $b_2 = b_3 = b_4 = \hdots \equiv b_0$
     \item [] $c_2 = c_3 = c_4 = \hdots \equiv c_0$
 \end{itemize}
-
+%
 we observe that the resulting coefficients
 $a_i^\prime$, $b_i^\prime$ and $c_i^\prime$
 correspond to the coefficients of a tridiagonal matrix with
@@ -459,7 +458,7 @@ the $m^{th}$ forward reduction step is reduced to:
 d^{\prime}_i = d_i - d_{i-1}k_1^{m}  - d_{i+1}k_2^{m}
 \label{eqn:precomputed-forward-reduction-step}
 \end{equation}
-
+%
 And the $m^{th}$ backward substitution step is:
 
 \begin{equation}
@@ -467,10 +466,14 @@ x_i = \frac{d^{\prime}_i - a^mx_{i-1} - \
     c^{m}x_{i+1}}{b^m}
 \label{eqn:precomputed-backward-substitution-step}
 \end{equation}
-
-Where $a^m$, $b^m$, $c^m$, $k_1^m$ and $k_2^m$
+%
+where $a^m$, $b^m$, $c^m$, $k_1^m$ and $k_2^m$
 are the appropriate values
 from the precomputed coefficient arrays.
+In practice,
+the backward substitution step
+can overwrite the right-hand side vector $\bm{d}$
+with the solution values.
 
 %----------------------------------------------------------------------%
 \section{GPU implementation} \label{sec:gpu-implementation}
@@ -493,62 +496,57 @@ In both approaches,
 we map each of the $N_{rhs}$ tridiagonal systems
 to a thread block,
 and equations or \emph{indices} of a system
-to individual threads within a block.
+to individual threads within a block
+(Figure \ref{fig:gpu-mapping}).
 
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=400pt]{img/global-and-shared.eps}
 \end{center}
-\caption{Shared memory (top) and Global memory (bottom) implementations---
-    multiple kernel launches allow us to dedicate appropriate number
-    of threads per block in the global memory approach}
+\caption{Shared memory (top) and Global memory (bottom) implementations}
 \label{fig:global-and-shared}
 \end{figure}
 
-
 \subsubsection*{Global memory}
 
-This implementation works entirely on the GPU's global memory.
-Each right-hand side is mapped to a single thread block.
-Each block executes two kernels,
-\texttt{forwardReduction} and \texttt{backSubstitution},
-which are called each called $log_2(n)-1$ times.
+This implementation works entirely on the GPU's global memory,
+Here, we define two kernels - one for the forward reduction step,
+and the other for the backward substitution step.
+Each kernel is called $log_2(n)-1$ times.
 An extra call to the
-forward reduction kernel additionally performs
+forward reduction kernel performs
 the two-by-two solve.
-Exit from a kernel marks a global synchronization point,
-so no explicit synchronization is performed in the kernels.
-Because we launch a kernel for each
-forward reduction and back substitution step,
-we can specify the appropriate number of threads per block---$n/2$
-threads per block for the first forward reduction step,
-$n/4$ for the second, and so on (Figure \ref{fig:global-and-shared}).
-This guarantees that
-all threads within a block are always active.
+At each step,
+the size of the grid block is determined by the \emph{stride}
+between elements accessed at that step.
+For the forward reduction phase,
+we use $n/2$ threads per block for the first step,
+$n/4$ threads for the second step, and so on.
+The pattern is reversed for the backward substitution phase,
+beginning with 2 threads per block for the first step.
+Although this ensures that there are no inactive threads
+at any stage,
+the occupancy of the GPU is still very low
+during the end of forward reduction
+and the end of backward substitution.
+
 The precomputed coefficient arrays and right hand
-are accessed by the kernels from global memory directly.
-Because the coefficients
-$k_{1,i}$ and $k_{2,i}$
-required in the forward reduction step
-(Equation \ref{eqn:precomputed-forward-reduction-step})
-are precomputed and available in global memory,
-we do not compute
-$a_i^\prime$, $b_i^\prime$, $c_i^\prime$,
-$k_{1,i}$ and $k_{2,i}$.
-This reduces the number of uncoalesced accesses to global memory.
-In the backward substitution steps
-(Equation \ref{eqn:precomputed-backward-substitution-step}),
-the coefficients $a^m$, $b^m$ and $c^m$
-are accessed from global memory without coalescing problems.
+are accessed by the kernels from global memory.
+The kernel suffers from
+strided memory access for the right-hand side,
+but the precomputed coefficient values are accessed
+without major coalescing problems.
+Further, by precomputing the forward reduction coefficients,
+we greatly reduce the number of computations
+(and thus the number of uncoalesced memory accesses).
 
 \subsubsection*{Shared memory}
 
 In the shared memory approach (Figure \ref{fig:global-and-shared}),
-we again map every right-hand side to a thread block.
-Each thread block executes a single kernel \emph{once},
-which performs forward reduction,
-backward substitution, and the two-by-two solve.
-Shared memory sized $n/2$ is allocated by each block.
+we launch a single kernel to perform the entire
+cyclic reduction solve.
+The kernel is launched with $n/2$ threads per block.
+Each thread block allocated a block of shared memory of size $n/2$.
 Each thread performs the first reduction step
 (Equation \ref{eqn:precomputed-forward-reduction-step})
 by accessing the required values
@@ -557,7 +555,8 @@ storing the result in shared memory.
 In subsequent reduction steps,
 $d_i$, $d_{i-1}$ and $d_{i+1}$
 are accessed from shared memory,
-avoiding uncoalesced global memory accesses.
+avoiding the uncoalesced global memory accesses
+seen in the global memory implementation.
 In each back substitution step,
 threads overwrite the existing values in shared memory
 with the values of the solution.
@@ -574,10 +573,37 @@ memory transfers between global and shared memory.
 Explicit synchronization between the threads of a block
 is required within the kernel at the end of each step.
 
+The shared memory implementation suffers from two major issues:
+first, the number of active threads is halved at each forward reduction step,
+(and subsequently doubled at each backward reduction step).
+Synchronization between threads of a block is necessary at each step.
+Thus, a significant portion of the kernel execution time is
+spent by idle threads waiting for active threads to complete execution.
+Secondly, the strided access to the
+right-hand side values leads to \emph{bank-conflicts}.
+However, the number of bank conflicts is significantly smaller
+than in cyclic reduction implementations for general tridiagonal systems,
+due the reduced number of computations performed.
 
 %----------------------------------------------------------------------%
 \section{Results} \label{sec:results-single-gpu}
 %----------------------------------------------------------------------%
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=300pt]{fig/bench-2d.eps}
+\caption{Relative solver performance for 2-D problems}
+\label{fig:bench-2d}
+\end{center}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=300pt]{fig/bench-3d.eps}
+\caption{Relative solver performance for 3-D problems}
+\label{fig:bench-3d}
+\end{center}
+\end{figure}
 
 In this section we present a performance overview
 of our Near-Toeplitz tridiagonal solver (NEATO)
@@ -595,15 +621,22 @@ CPU and GPU code.
 
 \subsection{Global memory v/s shared memory solver performance}
 
-\begin{figure}[!htb]
-        \includegraphics[width=1.0\linewidth]{fig/global-vs-shared-2d.eps}
-        \caption{Comparison of global memory and shared
-            memory implementations of NEATO (2D problems)}
-        \label{fig:global-vs-shared-2d}
-        \includegraphics[width=1.0\linewidth]{fig/global-vs-shared-2d.eps}
-        \caption{Comparison of global memory and shared memory
-            implementations of NEATO (2D problems)}
-        \label{fig:global-vs-shared-3d}
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=1.0\linewidth]{fig/global-vs-shared-2d.eps}
+\caption{Comparison of global memory and shared
+    memory implementations of NEATO (2D problems)}
+\label{fig:global-vs-shared-2d}
+\end{center}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=1.0\linewidth]{fig/global-vs-shared-3d.eps}
+\caption{Comparison of global memory and shared memory
+    implementations of NEATO (2D problems)}
+\label{fig:global-vs-shared-3d}
+\end{center}
 \end{figure}
 
 In Figures \ref{fig:global-vs-shared-2d} and \ref{fig:global-vs-shared-3d},
@@ -626,31 +659,15 @@ we provide the relative performance of
 Intel MKL and CUSPARSE solvers and compare against
 the NEATO shared memory implementation.
 The Intel MKL solver can use multiple threads
-to solve several systems simaltaneously.
+to solve several systems simultaneously.
 The CUSPARSE solver uses a hybrid algorithm composed
 of Cyclic Reduction and Parallel Cyclic Reduction (CR+PCR).
 The relative performance for
 each problem size is obtained by
 normalizing the solver timings
 by the timing for the fastest solver for that problem size.
-Table \ref{fig:bench} shows the timings of the various
+Table \ref{table:bench} shows the timings of the various
 solvers to solve different problem sizes.
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=300pt]{fig/bench-2d.eps}
-\caption{Relative solver performance for 2-D problems}
-\label{fig:bench-2d}
-\end{center}
-\end{figure}
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=300pt]{fig/bench-3d.eps}
-\caption{Relative solver performance for 3-D problems}
-\label{fig:bench-3d}
-\end{center}
-\end{figure}
 
 \begin{sidewaystable}[]
 \scriptsize
@@ -660,7 +677,18 @@ solvers to solve different problem sizes.
 \input{table/bench.tex}
 \end{sidewaystable}
 
+%----------------------------------------------------------------------
 \section{Application: compact finite difference on multiple GPUs}
+\label{sec-compact-finite-differences}
+%----------------------------------------------------------------------
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[height=200pt]{img/computational-domain.eps}
+\caption{Computational domain in 3-D}
+\label{fig:computational-domain}
+\end{center}
+\end{figure}
 
 \subsection{Numerical algorithm}
 
@@ -693,7 +721,7 @@ Further, the left boundary can be treated using the following implicit equation:
 \begin{equation}
     f^{\prime}_1 + 2f^{\prime}_2 = \frac{-5f_1 + 4f_2 + f_3}{dx}
 \end{equation}
-
+%
 The right boundary ($f^{\prime}_{n}$) is treated by utilizing
 the negative complex-conjugate of the Fourier image of the stencil
 at $f^{\prime}_1$:
@@ -703,9 +731,9 @@ at $f^{\prime}_1$:
     =
     \frac{5f_{n} - 4f_{n-2} 1 f_{n-2}}{dx}
 \end{equation}
-
+%
 This boundary treatment maintains the tridiagonal identity
-of the syste to be solved, which then has the form:
+of the system to be solved, which then has the form:
 
 \begin{equation} \label{eqn:compact-tridiagonal-system}
  \begin{bmatrix}
@@ -746,14 +774,6 @@ of the syste to be solved, which then has the form:
 
 \subsection{Computational domain}
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[height=200pt]{img/computational-domain.eps}
-\end{center}
-\caption{Computational domain in 3-D}
-\label{fig:computational-domain}
-\end{figure}
-
 The computational domain (Figure \ref{fig:computational-domain})
 is a structured grid comprised of
 $nx \times ny \times nz$ grid points.
@@ -772,7 +792,7 @@ solving this tridiagonal system for $ny \times nz$ right hand sides.
 For multiple GPUs, we use the algorithm
 proposed by Mattor et al. \cite{mattor1995algorithm}.
 Here, we distribute the tridiagonal system among
-$p$ procesors.
+$p$ processors.
 We solve for the ``local''  
 portion of the global tridiagonal system
 by first solving the following three ``local''
@@ -861,7 +881,7 @@ l_m^p
 -c_m^p
 \end{bmatrix} & \label{eqn:secondary-system-2}
 \end{align}
-
+%
 and additionally, the following ``reduced'' system:
 
 \begin{align} \label{eqn:reduced-system}
@@ -904,7 +924,7 @@ Equations
 the ``secondary'' systems.
 The local part of the solution to the ``global'' tridiagonal system
 is obtained as a linear combination of
-the solutions to the primary and secondary sytems:
+the solutions to the primary and secondary systems:
 
 \begin{equation}
     \boldsymbol{x}^p = \boldsymbol{x}_r^p + \
@@ -917,38 +937,100 @@ from the solution of the reduced system.
 
 \subsection{GPU implementation}
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=200pt]{img/constructing-reduced-system.eps}
+\caption{Construction of the reduced system and scattering of parameters}
+\label{fig:reduced-system}
+\end{center}
+\end{figure}
+
+In this section we describe the implementation of
+a CUDA+MPI solver for compact finite differences.
+The algorithm 
+consists of the following sequence of steps:
+
 \begin{enumerate}
-    \item Computation of the RHS (requires communication)
-    \item Solving the primary and secondary systems
-    \item Constructing and solving the reduced systems,
-        and scattering the paramters $\alpha^p$ and $\beta^p$ (requires communication)
-    \item Summing the solutions (Equation \ref{eqn:sum-of-systems})
+\item Computation of the RHS (requires communication)
+\item Solving the primary and secondary systems
+\item Constructing and solving the reduced systems,
+    and scattering the parameters $\alpha^p$ and $\beta^p$ (requires communication)
+\item Summing the above solutions (Equation \ref{eqn:sum-of-systems})
 \end{enumerate}
 
 Each of these is performed on the GPU,
-one of the primary concerns is to eliminate
+and one of the primary concerns is to eliminate
 CPU-GPU transfers as much as possible in the solution process.
 
-The right-hand side computation involves stencil computation,
-which requires communication at the boundaries.
-Communication of non-contiguous MPI
-data types is expensive on the GPU,
-so we have dedicated
-contiguous halo arrays for performing swaps in each direction
+The right-hand side evaluation is a pointwise stencil computation,
+which requires communication of the function values at the boundaries.
+This is achieved using a halo-swapping technique
+with dedicated contiguous halo arrays for each subdomain,
+as communication of non-contiguous MPI
+data types is expensive on the GPU.
+After the halo information is exchanged,
+a pointwise stencil kernel computes the right-hand side values.
+
+The secondary systems are set up and solved only once
+as it is dependent only on the
+coefficients of the tridiagonal matrix.
+As the computation is offline,
+any convenient method can be used.
+The primary system is solved at every time step
+for different right hand sides,
+and is evaluated using the NEATO solver.
+
+The set up and solution of the reduced system
+requires global communication of the boundary information,
+which may be associated with a high overhead.
+While several techniques have been proposed to implement
+this type of communication pattern efficiently,
+we find it sufficient for moderately large problems
+to communicate all information to rank 0,
+using \texttt{MPI\_Gather}, and distribute the results
+back using \texttt{MPI\_Scatter} (Figure \ref{fig:reduced-system}).
+
+Finally, the summing of the solutions
+is a pointwise operation that is easily implemented
+on the GPU.
+
+For evaluation of compact finite differences in different
+coordinate directions,
+a local permutation of the data is performed.
 
 \subsection{Results}
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=300pt]{fig/strong-scaling-256.eps}
+\caption{Strong scaling for multi-GPU compact finite difference, problem size: $256^3$}
+\label{fig:strong-scaling-256}
+\end{center}
+\end{figure}
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=300pt]{fig/strong-scaling-512.eps}
+\caption{Strong scaling for multi-GPU compact finite difference, problem size: $512^3$}
+\label{fig:strong-scaling-512}
+\end{center}
+\end{figure}
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=300pt]{fig/weak-scaling-128.eps}
+\caption{Weak scaling for multi-GPU compact finite difference, problem size: $128^3$}
+\label{fig:weak-scaling-128}
+\end{center}
+\end{figure}
 
-% Time for dfdx, dfdy, dfdz at various problem sizes
-% and nprocs
-
-% Breakdown - time allocated for each step
-
-% Weak scaling
-
-% Strong scaling
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=300pt]{fig/weak-scaling-256.eps}
+\caption{Weak scaling for multi-GPU compact finite difference, problem size: $256^3$}
+\label{fig:weak-scaling-256}
+\end{center}
+\end{figure}
 
 \pagebreak[4]
 \section*{References}
