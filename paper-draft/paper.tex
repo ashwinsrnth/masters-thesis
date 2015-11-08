@@ -176,7 +176,7 @@ $\bm{a}$, $\bm{b}$ and $\bm{c}$
 (Equation \ref{eqn:general-tridiagonal-system}).
 The algorithm consists of two phases:
 \emph{forward reduction} and \emph{backward substitution}
-\ref{fig:cyclic-reduction}.
+(Fig. \ref{fig:cyclic-reduction}).
 In the forward reduction phase,
 every even-indexed equation $i$
 is expressed as a
@@ -328,14 +328,14 @@ In most GPU implementations of cyclic reduction,
 blocks are assigned to tridiagonal systems
 (when solving multiple systems),
 and threads within a block 
-are assigned to equations, or \emph{indices}.
-(Figure \ref{fig:gpu-mapping})
+are assigned to equations, or \emph{indices}
+(Fig. \ref{fig:gpu-mapping}).
 During the forward reduction phase,
 the threads assigned to each even index $i$
 compute the coefficients
 $a_i^\prime$, $b_i^\prime$ and $c_i^\prime$.
-In practice, the coefficients are updated \emph{in-place}
-(Figure \ref{fig:forward-reduction-step} shows the updates
+In practice, the coefficients are updated \emph{in-place}.
+Figure \ref{fig:forward-reduction-step} shows the updates
 to the coefficient array $\bm{b}$ in the first forward reduction step).
 
 In each step of forward reduction,
@@ -399,7 +399,7 @@ so that they can be reused for multiple right hand sides.
 While this can be done for general tridiagonal systems,
 the applicability to near-Toeplitz systems is
 of particular interest due to the lower storage costs.
-In Figure \ref{fig:forward-reduction-step},
+In Fig. \ref{fig:forward-reduction-step},
 we list the updates to
 $b_i$, for $i=2, 4, 6 ... n$
 during the first forward reduction step
@@ -433,7 +433,7 @@ except for those influenced by the
 boundary coefficients of the previous step.
 It is possible to \emph{precompute} these values
 and store them in separate arrays.
-In Figure \ref{fig:cyclic-reduction-precomputing},
+In Fig. \ref{fig:cyclic-reduction-precomputing},
 it is seen that the space required for storing each of the
 forward reduction coefficients
 $a_i^\prime$, $b_i^\prime$, $c_i^\prime$,
@@ -497,7 +497,7 @@ we map each of the $N_{rhs}$ tridiagonal systems
 to a thread block,
 and equations or \emph{indices} of a system
 to individual threads within a block
-(Figure \ref{fig:gpu-mapping}).
+(Fig. \ref{fig:gpu-mapping}).
 
 \begin{figure}[h!]
 \begin{center}
@@ -542,7 +542,7 @@ we greatly reduce the number of computations
 
 \subsubsection*{Shared memory}
 
-In the shared memory approach (Figure \ref{fig:global-and-shared}),
+In the shared memory approach (Fig. \ref{fig:global-and-shared}),
 we launch a single kernel to perform the entire
 cyclic reduction solve.
 The kernel is launched with $n/2$ threads per block.
@@ -639,7 +639,7 @@ CPU and GPU code.
 \end{center}
 \end{figure}
 
-In Figures \ref{fig:global-vs-shared-2d} and \ref{fig:global-vs-shared-3d},
+In Figs. \ref{fig:global-vs-shared-2d} and \ref{fig:global-vs-shared-3d},
 we report the performance of the two solvers for the case
 $N_{rhs} = n$ and $N_{rhs} = n^2$.
 These cases correspond to tridiagonal systems
@@ -654,7 +654,7 @@ leads to poor shared memory performance.
 
 \subsection{Comparison with Intel MKL and CUSPARSE solvers}
 
-In Figures \ref{fig:bench-2d} and \ref{fig:bench-3d},
+In Fig. \ref{fig:bench-2d} and \ref{fig:bench-3d},
 we provide the relative performance of
 Intel MKL and CUSPARSE solvers and compare against
 the NEATO shared memory implementation.
@@ -774,7 +774,7 @@ of the system to be solved, which then has the form:
 
 \subsection{Computational domain}
 
-The computational domain (Figure \ref{fig:computational-domain})
+The computational domain (Fig. \ref{fig:computational-domain})
 is a structured grid comprised of
 $nx \times ny \times nz$ grid points.
 While evaluating the derivative in, say, the x-direction,
@@ -988,7 +988,7 @@ this type of communication pattern efficiently,
 we find it sufficient for moderately large problems
 to communicate all information to rank 0,
 using \texttt{MPI\_Gather}, and distribute the results
-back using \texttt{MPI\_Scatter} (Figure \ref{fig:reduced-system}).
+back using \texttt{MPI\_Scatter} (Fig. \ref{fig:reduced-system}).
 
 Finally, the summing of the solutions
 is a pointwise operation that is easily implemented
