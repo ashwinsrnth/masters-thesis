@@ -113,14 +113,14 @@ for the specific case of near-Toeplitz systems
 that uses the known structure to reduce
 computations and memory accesses.
 Secondly, we describe the implementation for
-for multi-GPU clusters using MPI and CUDA,
+multi-GPU clusters using MPI and CUDA,
 and apply it to the evaluation of compact finite differences.
 
 This paper is organized as follows:
 Section \ref{sec:preliminaries}
-describes algorithms for solving tridiagonal systems on GPUs.
-The cyclic reduction algorithm in particular, is discussed in detail,
-and issues with its implementation on GPUs is discussed.
+reviews the cyclic reduction algorithm,
+and its implementation on GPUs.
+We also provide some relevant details about GPU architecture here.
 Section \ref{sec:proposed-algorithm}
 describes our proposed solver for near-Toeplitz tridiagonal systems.
 Section \ref{sec:gpu-implementation}
@@ -210,7 +210,7 @@ yielding $x_n$ and $x_{n/2}$.
 In the backward substitution phase,
 every odd-indexed unknown $x_i$ is solved for by
 substituting the known values of $x_{i-1}$ and $x_{i+1}$
-[Eq. (\ref{eqn:backward-substitution})] .
+[Eq. (\ref{eqn:backward-substitution})].
 
 \begin{align} \label{eqn:backward-substitution}
 x_i = \frac{d^{\prime}_i - a^{\prime}_ix_{i-1} - \
@@ -314,10 +314,12 @@ are extremely expensive, limited by the bandwidth of the PCI-e bus.
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[height=200pt]{img/forward-reduction-step.eps}
+\includegraphics[height=200pt]{img/gpu-mapping.eps}
 \end{center}
-\caption{Updating $\bm{b}$ in the first forward reduction step.}
-\label{fig:forward-reduction-step}
+\caption{Mapping work to blocks and threads:
+systems are mapped to blocks and
+indices are mapped to individual threads.}
+\label{fig:gpu-mapping}
 \end{figure}
 
 As described in Section \ref{subsec:gpu-architecture},
@@ -379,19 +381,18 @@ that works entirely in global memory,
 using additional kernels to reorder data so as to
 coalesce memory access.
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[height=200pt]{img/forward-reduction-step.eps}
+\end{center}
+\caption{Updating $\bm{b}$ in the first forward reduction step.}
+\label{fig:forward-reduction-step}
+\end{figure}
+
 %----------------------------------------------------------------------%
 \section{Proposed algorithm} \label{sec:proposed-algorithm}
 %----------------------------------------------------------------------%
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[height=200pt]{img/gpu-mapping.eps}
-\end{center}
-\label{fig:gpu-mapping}
-\caption{Mapping work to blocks and threads:
-systems are mapped to blocks and
-indices are mapped to individual threads.}
-\end{figure}
 
 The method is based on precomputing elements 
 appearing in the forward reduction phase
