@@ -173,7 +173,7 @@ Cyclic reduction is applicable to the solution of
 general linear systems of the form $A\bm{x} = \bm{d}$,
 where $A$ is a tridiagonal matrix with diagonals
 $\bm{a}$, $\bm{b}$ and $\bm{c}$
-(Equation \ref{eqn:general-tridiagonal-system}).
+[Eq. (\ref{eqn:general-tridiagonal-system})].
 The algorithm consists of two phases:
 \emph{forward reduction} and \emph{backward substitution}
 (Fig. \ref{fig:cyclic-reduction}).
@@ -183,7 +183,7 @@ is expressed as a
 linear combination of equations $i$, $i-1$ and $i+1$,
 yielding a new tridiagonal system of
 $n/2$ equations in $n/2$ unknowns
-(Equations \ref{eqn:forward-reduction-1} - \ref{eqn:forward-reduction-4}).
+[Eqs. (\ref{eqn:forward-reduction-1}) - (\ref{eqn:forward-reduction-4})].
 The process is repeated until a system of
 2 equations in 2 unknowns is left.
 
@@ -210,7 +210,7 @@ yielding $x_n$ and $x_{n/2}$.
 In the backward substitution phase,
 every odd-indexed unknown $x_i$ is solved for by
 substituting the known values of $x_{i-1}$ and $x_{i+1}$
-(Equation \ref{eqn:backward-substitution}) .
+[Eq. (\ref{eqn:backward-substitution})] .
 
 \begin{align} \label{eqn:backward-substitution}
 x_i = \frac{d^{\prime}_i - a^{\prime}_ix_{i-1} - \
@@ -548,7 +548,7 @@ cyclic reduction solve.
 The kernel is launched with $n/2$ threads per block.
 Each thread block allocated a block of shared memory of size $n/2$.
 Each thread performs the first reduction step
-(Equation \ref{eqn:precomputed-forward-reduction-step})
+[Eq. (\ref{eqn:precomputed-forward-reduction-step})]
 by accessing the required values
 $d_i$, $d_{i-1}$ and $d_{i+1}$ from global memory,
 storing the result in shared memory.
@@ -783,7 +783,7 @@ a collection of \emph{grid lines}---each consisting of
 $nx$ grid points---oriented in the x-direction.
 For each grid line,
 we may assemble a tridiagonal system of size $nx$, as in
-Equation \ref{eqn:compact-tridiagonal-system}.
+[Eq. (\ref{eqn:compact-tridiagonal-system})].
 Solving for the all derivatives in the $x$ direction then involves
 solving this tridiagonal system for $ny \times nz$ right hand sides.
 
@@ -917,10 +917,10 @@ x_{r,1}^P \\
 &
 \end{align}
 
-We call the system in Equation \ref{eqn:primary-system}
+We call the system in [Eq. (\ref{eqn:primary-system})]
 the ``primary'' system, and the systems in
-Equations
-\ref{eqn:secondary-system-1} and \ref{eqn:secondary-system-2}
+[Eqs.
+(\ref{eqn:secondary-system-1}) and (\ref{eqn:secondary-system-2})]
 the ``secondary'' systems.
 The local part of the solution to the ``global'' tridiagonal system
 is obtained as a linear combination of
@@ -955,7 +955,7 @@ consists of the following sequence of steps:
 \item Solving the primary and secondary systems
 \item Constructing and solving the reduced systems,
     and scattering the parameters $\alpha^p$ and $\beta^p$ (requires communication)
-\item Summing the above solutions (Equation \ref{eqn:sum-of-systems})
+\item Summing the above solutions [Eq. (\ref{eqn:sum-of-systems})]
 \end{enumerate}
 
 Each of these is performed on the GPU,
