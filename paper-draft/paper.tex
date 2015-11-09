@@ -243,7 +243,7 @@ for massively parallel architectures like GPUs.
 \begin{center}
 \includegraphics[height=250pt]{img/cyclic-reduction.eps}
 \end{center}
-\caption{Cyclic reduction}
+\caption{Cyclic reduction.}
 \label{fig:cyclic-reduction}
 \end{figure}
 
@@ -316,7 +316,7 @@ are extremely expensive, limited by the bandwidth of the PCI-e bus.
 \begin{center}
 \includegraphics[height=200pt]{img/forward-reduction-step.eps}
 \end{center}
-\caption{Updating $\bm{b}$ in the first forward reduction step}
+\caption{Updating $\bm{b}$ in the first forward reduction step.}
 \label{fig:forward-reduction-step}
 \end{figure}
 
@@ -390,7 +390,7 @@ coalesce memory access.
 \label{fig:gpu-mapping}
 \caption{Mapping work to blocks and threads:
 systems are mapped to blocks and
-indices are mapped to individual threads}
+indices are mapped to individual threads.}
 \end{figure}
 
 The method is based on precomputing elements 
@@ -446,7 +446,7 @@ is, at most, $log_2n-2 + 2(log_2n-1)$.
 \includegraphics[height=250pt]{img/cyclic-reduction-precomputing.eps}
 \end{center}
 \caption{Storing forward reduction coefficients
-    from each reduction step $m$}
+    from each reduction step $m$.}
 \label{fig:cyclic-reduction-precomputing}
 \end{figure}
 
@@ -503,7 +503,7 @@ to individual threads within a block
 \begin{center}
 \includegraphics[width=400pt]{img/global-and-shared.eps}
 \end{center}
-\caption{Shared memory (top) and Global memory (bottom) implementations}
+\caption{Thread activity in shared memory (top) and global memory (bottom) implementations.}
 \label{fig:global-and-shared}
 \end{figure}
 
@@ -592,7 +592,7 @@ due the reduced number of computations performed.
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=300pt]{fig/bench-2d.eps}
-\caption{Relative solver performance for 2-D problems}
+\caption{Relative solver performance for 2-D problems.}
 \label{fig:bench-2d}
 \end{center}
 \end{figure}
@@ -600,7 +600,7 @@ due the reduced number of computations performed.
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=300pt]{fig/bench-3d.eps}
-\caption{Relative solver performance for 3-D problems}
+\caption{Relative solver performance for 3-D problems.}
 \label{fig:bench-3d}
 \end{center}
 \end{figure}
@@ -625,7 +625,7 @@ CPU and GPU code.
 \begin{center}
 \includegraphics[width=1.0\linewidth]{fig/global-vs-shared-2d.eps}
 \caption{Comparison of global memory and shared
-    memory implementations of NEATO (2D problems)}
+    memory implementations of NEATO (2D problems).}
 \label{fig:global-vs-shared-2d}
 \end{center}
 \end{figure}
@@ -634,7 +634,7 @@ CPU and GPU code.
 \begin{center}
 \includegraphics[width=1.0\linewidth]{fig/global-vs-shared-3d.eps}
 \caption{Comparison of global memory and shared memory
-    implementations of NEATO (2D problems)}
+    implementations of NEATO (3D problems).}
 \label{fig:global-vs-shared-3d}
 \end{center}
 \end{figure}
@@ -672,7 +672,7 @@ solvers to solve different problem sizes.
 \begin{sidewaystable}[]
 \scriptsize
 \centering
-\caption{Performance of Intel MKL, CUSPARSE and NEATO solvers}
+\caption{Performance of Intel MKL, CUSPARSE and NEATO solvers.}
 \label{table:bench}
 \input{table/bench.tex}
 \end{sidewaystable}
@@ -685,7 +685,7 @@ solvers to solve different problem sizes.
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[height=200pt]{img/computational-domain.eps}
-\caption{Computational domain in 3-D}
+\caption{Computational domain in 3-D.}
 \label{fig:computational-domain}
 \end{center}
 \end{figure}
@@ -940,7 +940,7 @@ from the solution of the reduced system.
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=200pt]{img/constructing-reduced-system.eps}
-\caption{Construction of the reduced system and scattering of parameters}
+\caption{Construction of the reduced system and scattering of parameters.}
 \label{fig:reduced-system}
 \end{center}
 \end{figure}
@@ -1003,7 +1003,7 @@ a local permutation of the data is performed.
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=300pt]{fig/strong-scaling-256.eps}
-\caption{Strong scaling for multi-GPU compact finite difference, problem size: $256^3$}
+\caption{Strong scaling for multi-GPU compact finite difference, problem size: $256^3$.}
 \label{fig:strong-scaling-256}
 \end{center}
 \end{figure}
@@ -1011,7 +1011,7 @@ a local permutation of the data is performed.
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=300pt]{fig/strong-scaling-512.eps}
-\caption{Strong scaling for multi-GPU compact finite difference, problem size: $512^3$}
+\caption{Strong scaling for multi-GPU compact finite difference, problem size: $512^3$.}
 \label{fig:strong-scaling-512}
 \end{center}
 \end{figure}
@@ -1019,7 +1019,7 @@ a local permutation of the data is performed.
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=300pt]{fig/weak-scaling-128.eps}
-\caption{Weak scaling for multi-GPU compact finite difference, problem size: $128^3$}
+\caption{Weak scaling for multi-GPU compact finite difference, problem size: $128^3$ per process.}
 \label{fig:weak-scaling-128}
 \end{center}
 \end{figure}
@@ -1027,7 +1027,7 @@ a local permutation of the data is performed.
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=300pt]{fig/weak-scaling-256.eps}
-\caption{Weak scaling for multi-GPU compact finite difference, problem size: $256^3$}
+\caption{Weak scaling for multi-GPU compact finite difference, problem size: $256^3$ per process.}
 \label{fig:weak-scaling-256}
 \end{center}
 \end{figure}
