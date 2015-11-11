@@ -2,7 +2,9 @@
 *.log
 *.out
 *minted*
-*.pdf
+*paper.pdf
+*report.pdf
+*converted-to.pdf
 *.png
 *.eps
 *.spl
