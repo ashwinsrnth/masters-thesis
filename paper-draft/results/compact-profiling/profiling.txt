@@ -1,0 +1,268 @@
+Timings on K20 for sizes 32, 64, 128, 256; procs 8 and 64
+
+[atrikut@node0285 near-toeplitz-applications]$ ./runCompactProfiling.sh 
+--------- dfdx ----------
+Global to local:  0.379455089569
+RHS:  0.0689768791199
+Primary:  0.145864486694
+Params:  1.39041185379
+Sum:  0.233008861542
+
+
+--------- dfdy ----------
+Global to local:  0.329489707947
+RHS:  0.0674057006836
+Primary:  0.145914554596
+Params:  1.4096570015
+Sum:  0.310416221619
+Permute  0.337653160095
+
+
+--------- dfdz ----------
+Global to local:  0.322170257568
+RHS:  0.0635504722595
+Primary:  0.145442485809
+Params:  1.4030122757
+Sum:  0.0650382041931
+Permute  0.172672271729
+
+
+--------- dfdx ----------
+Global to local:  0.436062812805
+RHS:  0.097382068634
+Primary:  0.228440761566
+Params:  1.62450790405
+Sum:  0.440471172333
+
+
+--------- dfdy ----------
+Global to local:  0.426683425903
+RHS:  0.0804734230042
+Primary:  0.160710811615
+Params:  1.6282582283
+Sum:  0.384142398834
+Permute  0.224161148071
+
+
+--------- dfdz ----------
+Global to local:  0.49042224884
+RHS:  0.0956916809082
+Primary:  0.266804695129
+Params:  1.78649187088
+Sum:  0.336904525757
+Permute  0.248031616211
+
+
+--------- dfdx ----------
+Global to local:  0.443599224091
+RHS:  0.105926990509
+Primary:  0.466372966766
+Params:  1.46450042725
+Sum:  0.356366634369
+
+
+--------- dfdy ----------
+Global to local:  0.443189144135
+RHS:  0.102798938751
+Primary:  0.478532314301
+Params:  1.4467716217
+Sum:  0.40031671524
+Permute  0.268924236298
+
+
+--------- dfdz ----------
+Global to local:  0.419449806213
+RHS:  0.099184513092
+Primary:  0.464928150177
+Params:  1.45441532135
+Sum:  0.357711315155
+Permute  0.27996301651
+
+
+--------- dfdx ----------
+Global to local:  0.562496185303
+RHS:  0.121624469757
+Primary:  0.525155067444
+Params:  1.73149824142
+Sum:  0.471580028534
+
+
+--------- dfdy ----------
+Global to local:  0.547318458557
+RHS:  0.126495361328
+Primary:  0.526523590088
+Params:  1.75589799881
+Sum:  0.183396339417
+Permute  0.348126888275
+
+
+--------- dfdz ----------
+Global to local:  0.607523918152
+RHS:  0.139181613922
+Primary:  0.489008426666
+Params:  1.98977231979
+Sum:  0.218093395233
+Permute  0.350346565247
+
+
+--------- dfdx ----------
+Global to local:  1.07701539993
+RHS:  0.383100509644
+Primary:  2.25592136383
+Params:  1.84052467346
+Sum:  0.511240959167
+
+
+--------- dfdy ----------
+Global to local:  1.00382804871
+RHS:  0.379781723022
+Primary:  2.2642159462
+Params:  1.70205116272
+Sum:  0.342242717743
+Permute  0.797619819641
+
+
+--------- dfdz ----------
+Global to local:  1.00720643997
+RHS:  0.377357006073
+Primary:  2.25561857224
+Params:  1.70476436615
+Sum:  0.578408241272
+Permute  1.14196300507
+
+
+--------- dfdx ----------
+Global to local:  1.63630008698
+RHS:  0.538628101349
+Primary:  2.41695404053
+Params:  2.42243051529
+Sum:  0.693283081055
+
+
+--------- dfdy ----------
+Global to local:  1.31145477295
+RHS:  0.42356967926
+Primary:  2.3544883728
+Params:  2.46391057968
+Sum:  0.5837059021
+Permute  0.896141529083
+
+
+--------- dfdz ----------
+Global to local:  1.27470493317
+RHS:  0.430519580841
+Primary:  2.36128091812
+Params:  2.47911214828
+Sum:  0.527696609497
+Permute  1.36069059372
+
+
+--------- dfdx ----------
+Global to local:  5.83608627319
+RHS:  2.57621049881
+Primary:  12.7818059921
+Params:  3.80676984787
+Sum:  2.37802505493
+
+
+--------- dfdy ----------
+Global to local:  5.49632549286
+RHS:  2.57499217987
+Primary:  12.6362133026
+Params:  3.17172050476
+Sum:  2.31725692749
+Permute  6.02034807205
+
+
+--------- dfdz ----------
+Global to local:  5.57080030441
+RHS:  2.57231235504
+Primary:  12.7775216103
+Params:  3.09321403503
+Sum:  2.31013536453
+Permute  8.28610658646
+
+
+--------- dfdx ----------
+Global to local:  6.64047002792
+RHS:  2.70082235336
+Primary:  12.8647041321
+Params:  5.33598899841
+Sum:  2.86938428879
+
+
+--------- dfdy ----------
+Global to local:  6.32260799408
+RHS:  2.7711558342
+Primary:  12.7295470238
+Params:  5.42771577835
+Sum:  2.70852088928
+Permute  6.22618675232
+
+
+--------- dfdz ----------
+Global to local:  6.51570558548
+RHS:  2.7210187912
+Primary:  12.892844677
+Params:  5.46580314636
+Sum:  2.53677368164
+Permute  8.67979049683
+
+
+Done on K40
+
+[atrikut@node1989 near-toeplitz-applications]$ mpiexec $MPIEXECFLAGS -n 64 python run-parallel-compact-profile.py 512 4 4 4
+--------- dfdx ----------
+Global to local:  88.3757638931
+RHS:  35.00228405
+Primary:  117.136082649
+Params:  89.0382409096
+Sum:  37.6034212112
+
+
+--------- dfdy ----------
+Global to local:  61.5014696121
+RHS:  35.8771061897
+Primary:  117.303020954
+Params:  44.6320652962
+Sum:  32.5361824036
+Permute  73.8124370575
+
+
+--------- dfdz ----------
+Global to local:  55.7242488861
+RHS:  33.5595822334
+Primary:  116.070303917
+Params:  37.4422240257
+Sum:  34.812951088
+Permute  90.5233812332
+
+
+Aatrikut@node1989 near-toeplitz-applications]$ mpiexec $MPIEXECFLAGS -n 64 python run-parallel-compact-profile.py 512 2 2 2
+
+--------- dfdx ----------
+Global to local:  35.4351902008
+RHS:  16.8819856644
+Primary:  98.9744710922
+Params:  10.6355643272
+Sum:  13.6859369278
+
+
+--------- dfdy ----------
+Global to local:  35.6924366951
+RHS:  16.8493652344
+Primary:  98.4310293198
+Params:  6.83584928513
+Sum:  13.6610722542
+Permute  41.5309929848
+
+
+--------- dfdz ----------
+Global to local:  34.4715356827
+RHS:  16.8304800987
+Primary:  99.0016484261
+Params:  6.74031734467
+Sum:  13.6764287949
+Permute  52.0790266991
+
+

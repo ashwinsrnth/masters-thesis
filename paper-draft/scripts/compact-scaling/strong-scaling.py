@@ -19,6 +19,11 @@ dfdz = np.array([
 
 fig, ax = plt.subplots()
 ax.set_yscale("log", nonposy='clip')
+ax.get_yaxis().set_major_formatter(
+        matplotlib.ticker.ScalarFormatter())
+ax.yaxis.set_major_formatter(
+        matplotlib.ticker.FormatStrFormatter('%d'))
+
 ax.set_xscale("linear")
 ax.plot(dfdx, label='dfdx')
 ax.plot(dfdy, label='dfdy')
@@ -40,10 +45,14 @@ dfdz = np.array([
 
 fig, ax = plt.subplots()
 ax.set_yscale("log", nonposy='clip')
+ax.get_yaxis().set_major_formatter(
+        matplotlib.ticker.ScalarFormatter())
+ax.yaxis.set_major_formatter(
+        matplotlib.ticker.FormatStrFormatter('%d'))
 ax.set_xscale("linear")
-ax.plot(dfdx, label='dfdx')
-ax.plot(dfdy, label='dfdy')
-ax.plot(dfdz, label='dfdz')
+ax.plot(dfdx, 'o-', label='dfdx')
+ax.plot(dfdy, 'o-', label='dfdy')
+ax.plot(dfdz, 'o-', label='dfdz')
 ax.set_xticks(range(len(ngpus)))
 ax.set_xticklabels(['1', '8', '64'])
 ax.legend()

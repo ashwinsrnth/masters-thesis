@@ -18,6 +18,10 @@ dfdz = np.array([
 
 fig, ax = plt.subplots()
 ax.set_yscale("log", nonposy='clip')
+ax.get_yaxis().set_major_formatter(
+        matplotlib.ticker.ScalarFormatter())
+ax.yaxis.set_major_formatter(
+        matplotlib.ticker.FormatStrFormatter('%d'))
 ax.set_xscale("linear")
 ax.plot(dfdx, label='dfdx')
 ax.plot(dfdy, label='dfdy')
@@ -42,6 +46,10 @@ dfdz = np.array([
 
 fig, ax = plt.subplots()
 ax.set_yscale("log", nonposy='clip')
+ax.get_yaxis().set_major_formatter(
+        matplotlib.ticker.ScalarFormatter())
+ax.yaxis.set_major_formatter(
+        matplotlib.ticker.FormatStrFormatter('%d'))
 ax.set_xscale("linear")
 ax.plot(dfdx, label='dfdx')
 ax.plot(dfdy, label='dfdy')

@@ -1,0 +1,85 @@
+[atrikut@node1989 near-toeplitz-applications]$ ./runCompactStrong.sh 
+Strong scaling for problem sized 256
+python run-compact.py 256
+12.4709260654
+17.4167247772
+19.3936155891
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 128 2 2 2
+dfdx:  5.17947912216
+dfdy:  5.22635221481
+dfdz:  5.54465055466
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 64 4 4 4
+dfdx:  35.3603601456
+dfdy:  13.1142997742
+dfdz:  6.13995075226
+Strong scaling for problem sized 512
+python run-compact.py 512
+115.126503448
+155.797687531
+166.856468658
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 256 2 2 2
+dfdx:  24.1745901108
+dfdy:  28.9957499504
+dfdz:  29.8219513893
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 128 4 4 4
+dfdx:  41.904861927
+dfdy:  24.2216110229
+dfdz:  13.8401508331
+[atrikut@node1989 near-toeplitz-applications]$ ./runCompactStrong.sh 
+Strong scaling for problem sized 256
+python run-compact.py 256
+12.480510788
+17.407591629
+19.4002201653
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 128 2 2 2
+dfdx:  5.42464017868
+dfdy:  5.53108930588
+dfdz:  5.74050188065
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 64 4 4 4
+dfdx:  36.0605597496
+dfdy:  15.751349926
+dfdz:  7.00392007828
+Strong scaling for problem sized 512
+python run-compact.py 512
+115.153621521
+155.861907654
+167.057774506
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 256 2 2 2
+dfdx:  23.9295506477
+dfdy:  27.8518009186
+dfdz:  29.2792606354
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 128 4 4 4
+dfdx:  54.9119997025
+dfdy:  24.2323994637
+dfdz:  13.4804582596
+[atrikut@node1989 near-toeplitz-applications]$ vim runCompactWeak.sh 
+[atrikut@node1989 near-toeplitz-applications]$ cp runCompactStrong.sh runCompactWeak.sh 
+[atrikut@node1989 near-toeplitz-applications]$ vim runCompactWeak.sh 
+[atrikut@node1989 near-toeplitz-applications]$ ./runCompactWeak.sh 
+Weak scaling for problem sized 256
+python run-compact.py 256
+12.4921167946
+17.4277411079
+19.4179148674
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 256 2 2 2
+dfdx:  23.1404399872
+dfdy:  26.9955396652
+dfdz:  29.9641680717
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 256 4 4 4
+dfdx:  90.4299902916
+dfdy:  60.034930706
+dfdz:  46.3058400154
+Weak scaling for problem sized 512
+python run-compact.py 512
+115.179819794
+155.917997589
+167.049529724
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 512 2 2 2
+dfdx:  174.601120949
+dfdy:  233.312239647
+dfdz:  254.814119339
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 512 4 4 4
+dfdx:  348.582708836
+dfdy:  308.914549351
+dfdz:  340.998330116
+
