@@ -25,7 +25,10 @@ df.plot(kind='bar', stacked=True, ax=ax)
 leg=plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
 ax.set_ylabel('Time taken (ms)')
 ax.set_xticklabels(df.index, rotation=0)
-plt.savefig('profiling-256.eps', extra_artists=(leg,), bbox_inches='tight')
+plt.savefig('profiling-1024-64.eps', extra_artists=(leg,), bbox_inches='tight')
+plt.close()
+
+fig, ax = plt.subplots()
 
 # size 512, 64 GPUs
 results_lists = [
@@ -38,5 +41,5 @@ df.plot(kind='bar', stacked=True, ax=ax)
 leg=plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
 ax.set_ylabel('Time taken (ms)')
 ax.set_xticklabels(df.index, rotation=0)
-plt.savefig('profiling-512.eps', bbox_extra_artists=(leg,), bbox_inches='tight')
+plt.savefig('profiling-2048-64.eps', bbox_extra_artists=(leg,), bbox_inches='tight')
 
