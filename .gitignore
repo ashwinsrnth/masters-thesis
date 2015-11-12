@@ -12,3 +12,5 @@
 *.bbl
 *.blg
 *.swp
+*.lot
+*.lof
