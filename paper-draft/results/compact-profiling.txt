@@ -1,0 +1,300 @@
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact-profile.py 32 2 2 2
+--------- dfdx ----------
+Global to local:  0.320057868958
+RHS:  0.0580048561096
+Primary:  0.1300740242
+Params:  1.35332584381
+Sum:  0.0639963150024
+Total:  1.92545890808
+
+
+--------- dfdy ----------
+Global to local:  0.311808586121
+RHS:  0.063419342041
+Primary:  0.129392147064
+Params:  1.35413646698
+Sum:  0.059871673584
+Permute  0.163428783417
+Total:  2.08205699921
+
+
+--------- dfdz ----------
+Global to local:  0.319583415985
+RHS:  0.0576043128967
+Primary:  0.129897594452
+Params:  1.35988712311
+Sum:  0.0601601600647
+Permute  0.166273117065
+Total:  2.09340572357
+
+
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact-profile.py 32 4 4 4
+--------- dfdx ----------
+Global to local:  0.428085327148
+RHS:  0.077817440033
+Primary:  0.14315366745
+Params:  1.53113603592
+Sum:  0.123550891876
+Total:  2.30374336243
+
+
+--------- dfdy ----------
+Global to local:  0.396902561188
+RHS:  0.0815796852112
+Primary:  0.165247917175
+Params:  1.55738830566
+Sum:  0.0733590126038
+Permute  0.192551612854
+Total:  2.4670290947
+
+
+--------- dfdz ----------
+Global to local:  0.408596992493
+RHS:  0.0809121131897
+Primary:  0.159964561462
+Params:  1.56393051147
+Sum:  0.0726079940796
+Permute  0.20498752594
+Total:  2.49099969864
+
+
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact-profile.py 64 2 2 2
+--------- dfdx ----------
+Global to local:  0.396375656128
+RHS:  0.0894093513489
+Primary:  0.388917922974
+Params:  1.41385793686
+Sum:  0.0905275344849
+Total:  2.37908840179
+
+
+--------- dfdy ----------
+Global to local:  0.383760929108
+RHS:  0.0881481170654
+Primary:  0.382363796234
+Params:  1.39753818512
+Sum:  0.0832486152649
+Permute  0.213296413422
+Total:  2.54835605621
+
+
+--------- dfdz ----------
+Global to local:  0.382611751556
+RHS:  0.0887417793274
+Primary:  0.383472442627
+Params:  1.42708301544
+Sum:  0.0832843780518
+Permute  0.250928401947
+Total:  2.61612176895
+
+
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact-profile.py 64 4 4 4
+--------- dfdx ----------
+Global to local:  0.565671920776
+RHS:  0.142164230347
+Primary:  0.421650409698
+Params:  1.61795139313
+Sum:  0.111005306244
+Total:  2.85844326019
+
+
+--------- dfdy ----------
+Global to local:  0.628027915955
+RHS:  0.140960216522
+Primary:  0.406219959259
+Params:  1.67498350143
+Sum:  0.0988221168518
+Permute  0.288851261139
+Total:  3.23786497116
+
+
+--------- dfdz ----------
+Global to local:  0.489857196808
+RHS:  0.104515552521
+Primary:  0.402846336365
+Params:  1.7155790329
+Sum:  0.102803707123
+Permute  0.300049781799
+Total:  3.11565160751
+
+
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact-profile.py 128 2 2 2
+--------- dfdx ----------
+Global to local:  0.974812507629
+RHS:  0.329833030701
+Primary:  1.8789601326
+Params:  1.78731203079
+Sum:  0.325973033905
+Total:  5.29689073563
+
+
+--------- dfdy ----------
+Global to local:  0.896050930023
+RHS:  0.34499168396
+Primary:  1.87533378601
+Params:  1.55824184418
+Sum:  0.287494659424
+Permute  0.664451122284
+Total:  5.62656402588
+
+
+--------- dfdz ----------
+Global to local:  0.892243385315
+RHS:  0.326435565948
+Primary:  1.90493345261
+Params:  1.5793132782
+Sum:  0.283794403076
+Permute  0.97813129425
+Total:  5.96485137939
+
+
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact-profile.py 128 4 4 4
+--------- dfdx ----------
+Global to local:  1.16945028305
+RHS:  0.368278026581
+Primary:  1.95548057556
+Params:  2.25987672806
+Sum:  0.34631729126
+Total:  6.09940290451
+
+
+--------- dfdy ----------
+Global to local:  1.12716436386
+RHS:  0.351338386536
+Primary:  1.94044828415
+Params:  2.17287778854
+Sum:  0.315809249878
+Permute  0.731525421143
+Total:  6.63916349411
+
+
+--------- dfdz ----------
+Global to local:  1.15389823914
+RHS:  0.364634990692
+Primary:  1.93448781967
+Params:  2.20692396164
+Sum:  0.305528640747
+Permute  1.04706287384
+Total:  7.01253652573
+
+
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact-profile.py 256 2 2 2
+--------- dfdx ----------
+Global to local:  5.4354262352
+RHS:  2.23196029663
+Primary:  10.2401566505
+Params:  3.77172708511
+Sum:  1.84762239456
+Total:  23.526892662
+
+
+--------- dfdy ----------
+Global to local:  5.07574796677
+RHS:  2.22141265869
+Primary:  10.3412222862
+Params:  2.82009124756
+Sum:  1.84977054596
+Permute  5.0305724144
+Total:  27.3388171196
+
+
+--------- dfdz ----------
+Global to local:  5.11836767197
+RHS:  2.22659826279
+Primary:  10.2293562889
+Params:  2.83493757248
+Sum:  1.84296131134
+Permute  7.07234144211
+Total:  29.3245625496
+
+
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact-profile.py 256 4 4 4
+--------- dfdx ----------
+Global to local:  6.06313705444
+RHS:  2.27301597595
+Primary:  10.5040550232
+Params:  4.99177694321
+Sum:  1.90518856049
+Total:  25.7371735573
+
+
+--------- dfdy ----------
+Global to local:  6.25788450241
+RHS:  2.31912374496
+Primary:  10.6166934967
+Params:  4.84321832657
+Sum:  1.907954216
+Permute  5.28221130371
+Total:  31.2270855904
+
+
+--------- dfdz ----------
+Global to local:  6.24227285385
+RHS:  2.30465173721
+Primary:  10.4495048523
+Params:  4.85679864883
+Sum:  1.91043138504
+Permute  7.40967750549
+Total:  33.1733369827
+
+
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact-profile.py 512 2 2 2
+--------- dfdx ----------
+Global to local:  35.1798200607
+RHS:  16.8526244164
+Primary:  99.8171687126
+Params:  10.0153875351
+Sum:  13.6669659615
+Total:  175.531966686
+
+
+--------- dfdy ----------
+Global to local:  35.0968432426
+RHS:  16.8170952797
+Primary:  99.534778595
+Params:  6.30949258804
+Sum:  13.6286187172
+Permute  41.2393975258
+Total:  212.626225948
+
+
+--------- dfdz ----------
+Global to local:  34.2097473145
+RHS:  16.878631115
+Primary:  99.8448204994
+Params:  6.45029306412
+Sum:  13.6510968208
+Permute  52.0768737793
+Total:  223.111462593
+
+
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact-profile.py 512 4 4 4
+--------- dfdx ----------
+Global to local:  36.9019412994
+RHS:  16.9358992577
+Primary:  101.052882671
+Params:  14.8541283607
+Sum:  13.8215255737
+Total:  183.566377163
+
+
+--------- dfdy ----------
+Global to local:  38.6950063705
+RHS:  17.0624828339
+Primary:  102.564780712
+Params:  16.0541152954
+Sum:  13.7804293633
+Permute  43.3948516846
+Total:  231.55166626
+
+
+--------- dfdz ----------
+Global to local:  37.7301383018
+RHS:  16.9680070877
+Primary:  100.953102112
+Params:  14.4337630272
+Sum:  13.7718749046
+Permute  52.531478405
+Total:  236.388363838
+
+

@@ -1,0 +1,41 @@
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 32 2 2 2
+dfdx:  2.20916032791
+dfdy:  2.17452049255
+dfdz:  2.15933799744
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 32 4 4 4
+dfdx:  2.35427856445
+dfdy:  2.30154037476
+dfdz:  2.3060297966
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 64 2 2 2
+dfdx:  2.62143850327
+dfdy:  2.60265111923
+dfdz:  2.56130933762
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 64 4 4 4
+dfdx:  2.79036045074
+dfdy:  2.79486894608
+dfdz:  2.93991088867
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 128 2 2 2
+dfdx:  5.17228126526
+dfdy:  5.24504184723
+dfdz:  5.5743098259
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 128 4 4 4
+dfdx:  5.62609910965
+dfdy:  5.84035158157
+dfdz:  6.06308221817
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 256 2 2 2
+dfdx:  23.2455992699
+dfdy:  26.7510914803
+dfdz:  28.7419581413
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 256 4 4 4
+dfdx:  24.49696064
+dfdy:  30.5435299873
+dfdz:  31.631269455
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 512 2 2 2
+dfdx:  174.980690479
+dfdy:  219.538021088
+dfdz:  228.362350464
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 512 4 4 4
+dfdx:  297.078199387
+dfdy:  299.711389542
+dfdz:  338.632369041
+

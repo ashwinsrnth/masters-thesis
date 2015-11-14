@@ -1,0 +1,41 @@
+[atrikut@node0352 near-toeplitz-applications]$ ./runCompactStrong.sh 
+Strong scaling for problem sized 128
+python run-compact.py 128
+dfdx:  2.15171294451
+dfdy:  2.68193248272
+dfdz:  2.98891552687
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 64 2 2 2
+dfdx:  2.82297849655
+dfdy:  2.62818098068
+dfdz:  2.46760845184
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 32 4 4 4
+dfdx:  2.5908613205
+dfdy:  2.26348876953
+dfdz:  2.60656833649
+Strong scaling for problem sized 256
+python run-compact.py 256
+dfdx:  12.309650259
+dfdy:  17.1928001976
+dfdz:  19.1678463745
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 128 2 2 2
+dfdx:  5.22902011871
+dfdy:  5.42389154434
+dfdz:  5.75312852859
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 64 4 4 4
+dfdx:  2.83291101456
+dfdy:  2.89829969406
+dfdz:  3.00695180893
+Strong scaling for problem sized 512
+python run-compact.py 512
+dfdx:  115.803508453
+dfdy:  156.428335876
+dfdz:  167.675550079
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 8 python run-parallel-compact.py 256 2 2 2
+dfdx:  23.0248212814
+dfdy:  27.1676206589
+dfdz:  28.9250302315
+mpiexec --mca pml ob1 --mca mpi_warn_on_fork 0 -n 64 python run-parallel-compact.py 128 4 4 4
+dfdx:  5.74492931366
+dfdy:  5.96627950668
+dfdz:  6.08421802521
+
