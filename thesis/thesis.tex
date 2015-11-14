@@ -16,7 +16,7 @@
 %
 %% \usepackage{listings}
 %% \usepackage{comment}
-
+\usepackage{amsmath,bm}
 
 %
 % Make the document your own -- fill in these values to reflect the type of
@@ -53,16 +53,13 @@
     pdfkeywords={Clemson University, \theDepartment, \theDocumentType, \theMajor, \theDegree},
     pdfstartpage={1},
 }
-
-
 %
 % User-specified command definitions/redefinitions
 %
-%% \newcommand{\cplusplus}{{\rm C\raise.5ex\hbox{\small ++}}}
-%% \newcommand{\num}[1]{\mbox{(\textit{#1})}}
-%% \renewcommand{\ttdefault}{pcr}
-%% \renewcommand\lstlistlistingname{List of Listings}
-
+\newcommand{\cplusplus}{{\rm C\raise.5ex\hbox{\small ++}}}
+%%\newcommand{\num}[1]{\mbox{(\textit{#1})}}
+%%\renewcommand{\ttdefault}{pcr}
+%%\renewcommand\lstlistlistingname{List of Listings}
 
 \begin{document}
 %  ============================================================================
@@ -73,19 +70,16 @@
     \doublespacing                             % Text should be double spaced
     \setcounter{page}{2}                       % Abstract begins on page 2
     \addtotoc{Abstract}{\input{abstract.tex}}  % Generate the abstract
-
     %
     % The dedication page is optional.  Comment out this line if you do not
     % want to include this page.
     %
     \addtotoc{Dedication}{\input{dedication.tex}}
-
     %
     % The acknowledgment page is optional.  Comment out this line if you do
     % not want to include this page.
     %
     \addtotoc{Acknowledgments}{\input{acknowledgments.tex}}
-
     \singlespacing                             % Single space the lists
     \tableofcontents \clearpage                % Generate the Table of Contents
 
@@ -105,7 +99,6 @@
     %% \addtotoc{List of Listings}{\lstlistoflistings}
 
 
-
 %  ===========================================================================
     \mainmatter % Begin main matter (pages are numbered with Arabic numerals)
 %  ===========================================================================
@@ -116,29 +109,22 @@
     % and include them in the order you want them to appear.  Be sure to use
     % the \inputfile command.
     %
-    \inputfile{introduction.tex}
-    \inputfile{researchDesign.tex}
-    \inputfile{relatedWork.tex}
-    \inputfile{results.tex}
-    \inputfile{conclusions.tex}
+    \inputfile{introduction-and-background.tex}
 
     %
     % The appendices are optional.  This is the format for two or more.
     % If you do not wish to include an appendix, comment out these lines.
     % If you want just one, see the formatting guidelines.
     %
-    \begin{appendices}
-        \begin{subappendices}
-            \inputfile{appendixA.tex}
-            \inputfile{appendixB.tex}
-            \inputfile{appendixC.tex}
-        \end{subappendices}
-    \end{appendices}
-
-
+    %\begin{appendices}
+    %    \begin{subappendices}
+    %        \inputfile{appendixA.tex}
+    %        \inputfile{appendixB.tex}
+    %        \inputfile{appendixC.tex}
+    %    \end{subappendices}
+    %\end{appendices}
 
     \singlespacing                             % Single space the Bibliography
-
     %
     % The bibliography style.  Set this to whatever matches you discipline.
     % For example, Computer Science would likely use 'plain'.  You might
@@ -166,6 +152,7 @@
     %               [Dyson and Edgar, 2001] F.W. Dyson, A.G. Edgar ... 2001
     %               [Dyson, 2001] F.W. Dyson ... 2001
     %
+    \nocite{*}
     \bibliographystyle{plain}
     \addtotoc{Bibliography}{\bibliography{bibliography}}
 \end{document}

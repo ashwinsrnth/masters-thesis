@@ -27,7 +27,7 @@ EXTENSION=aux toc idx ind ilg log out lof lot lol bbl blg
 # Targets
 # 
 all: $(TARGET).pdf
-
+	evince $(TARGET).pdf
 
 #
 # Portable Document Format (PDF)

@@ -1,0 +1,208 @@
+\chapter{Preliminaries}
+
+
+\section{Graphics Processing Units (GPUs)}
+
+\subsection{Motivation}
+
+Most numerical approaches for modeling systems and phenomena
+approximate continuous quantities as discrete quantities.
+The larger the number of discrete entities used,
+the better the approximation.
+In CFD, the physical system (fluid)
+is represented as a set of discrete points (finite difference methods),
+or discrete cells (finite volume method),
+and this discrete representation is termed as a \emph{mesh}.
+In CFD applications
+a mesh containing several points is used
+to represent the underlying system,
+and numerical simulations are performed
+to study how physical quantities
+change with time at these mesh points (or cells).
+Typically, a \emph{time stepping} scheme is used to study this evolution,
+wherein the simulation proceeds as a series of \emph{time steps}.
+For each time step, the quantities at each mesh point at
+\emph{updated} from quantities computed at the previous time step.
+
+In the direct numerical simulation (DNS) of fluid systems,
+the aim is to resolve the smallest features of the flow.
+This requires the use of extremely fine meshes.
+At each of the mesh points,
+data about the flow must be stored
+(for instance, the pressure, temperature and velocities at that point).
+The large amount of data storage required places
+restrictions on the problem sizes that can be accommodated
+on a single workstation/PC.
+Further,
+the numerical simulation requires a large amount of
+computations with this data.
+In general, the computations are of a repetitive nature:
+the same computations are performed repeatedly
+for the different mesh points,
+and for successive time steps.
+
+Thus, CFD is typically a computationally expensive endeavour,
+and it has long been of interest to use
+\emph{parallel processing} to
+perform numerical simulations of fluid flows.
+This involves distributing computing tasks
+among multiple independent processors,
+which can run concurrently.
+Of course, this requires that the computations be \emph{independent}
+of each other.
+Fortunately, the computational patterns that arise in CFD
+typically satisfy this requirement:
+the computations at different mesh points are largely independent
+of each other and can be done in parallel.
+
+The traditional approach to parallel computing has been
+to distribute parallel tasks among CPU cores.
+The cores may all have access to a common memory space
+(shared memory systems),
+or may have distinct memory spaces
+(distributed memory systems).
+Much more common than purely distributed systems are
+\emph{hybrid} systems wherein the tasks may be distributed
+among so-called \emph{nodes},
+which are themselves shared-memory systems.
+Again, the computational workhorse in all these systems has traditionally
+been the CPU core.
+
+A more recent parallel system that has seen
+wide adoption
+is the Graphics Processing Unit (GPU).
+GPUs were developed primarily for performing
+graphics computations, i.e.,
+calculations with pixel data.
+This is a \emph{highly} parallelizable task;
+pixels can be processed independently and in parallel.
+Thus, the GPU evolved as a system
+to perform hundreds of computations concurrently,
+and it should be no surprise that it soon
+gained attention from the scientific computation community.
+Now, several scientific software packages have been
+written for GPUs,
+and the worlds largest supercomputers employ GPUs
+as accelerators.
+
+
+\section{Compact finite differences}
+
+Numerical evaluation of derivatives is a central component
+in scientific computing.
+The simplest and most widely-used approach for numerical differentiation
+is the \emph{finite difference} approximation,
+wherein the numerical approximation of the derivative
+is expressed as a \emph{difference equation}.
+A key application of the finite difference approximation
+is in \emph{finite difference methods},
+a family of numerical methods for solving differential equations
+in which the derivatives are approximated using
+finite difference approximations.
+%
+For example, we may consider a uniformly sampled
+function $f(x)$,
+sampled at points $x_1, x_2, x_3, \hdots x_n$.
+At each sample point $i$, we may approximate the derivative as
+a combination of the function values at
+$i$, and its neighbouring points:
+
+\begin{enumerate}
+    \item When the derivative at $i$ is expressed
+        as some combination of the function values
+        at $i$, $i+1$, $i+2$, $\hdots$,
+        we refer to the approximation as a
+        \emph{forward} difference.
+        
+    \item When the derivative is expressed as
+        some combination of the function values
+        at $i$, $i-1$, $i-2$, $\hdots$,
+        we refer to the approximation as a
+        \emph{backward} difference.
+
+    \item When the derivative is expressed as
+        some combination of the function values
+        on \emph{both} sides of $i$, i.e,
+        at $\hdots$, $i-2$, $i-1$, $i$, $i-1$, $i-2$, $\hdots$,
+        we refer to the approximation as a
+        \emph{central} difference.
+\end{enumerate}
+
+The approximation of higher order derivatives generally requires
+inclusion of a larger number of points in the
+finite difference approximation
+(referred to as the finite difference \emph{stencil}).
+For a given order of derivative,
+finite difference approximation of arbitrary stencil widths
+may be derived,
+with larger stencils associated with higher accuracy~\cite{fornberg1988generation}.
+In most applications,
+large stencil widths are undesirable.
+This is because:
+
+\begin{enumerate}
+    \item The arithmetic intensity increases, i.e.,
+        a larger number of computations must be performed per grid point.
+    \item When the solution is done in parallel,
+        the amount of boundary information that must be exchanged
+        between processors increases.
+\end{enumerate}
+
+To overcome the problems associated with larger stencil widths,
+another class of finite difference schemes,
+known as \emph{compact} schemes may be used.
+First proposed by Sanjeeva Lele ~\cite{lele1992compact},
+compact schemes express the derivative at a point $i$
+in terms of the derivatives at neighbouring points,
+For example,
+if $f_i$ represents the value of
+a uniformly sampled function evaluated at the $i$th sample point,
+the first derivative $f^{\prime}_i$ can be approximated from
+a relation of the form:
+
+\begin{equation}
+\begin{split}
+    \alpha(f^{\prime}_{i-1} + f^{\prime}_{i+1}) + \
+        f^{\prime}_i
+    \beta(f^{\prime}_{i-2} + f^{\prime}_{i+2}) + \
+    \hdots
+    = 
+    a\frac{f_{i+1} - f_{i-1}}{dx} + \
+    b\frac{f_{i+2} - f_{i-2}}{dx} + \\
+    c\frac{f_{i+3} - f_{i-3}}{dx} + \
+    \hdots
+\end{split}
+\label{eqn:general-compact}
+\end{equation}
+%
+where $\alpha$, $\beta$, $a$, $b$, $c$, etc.,
+are parameters that must satisfy certain constraints.
+We note that for equations of the form in Eq. \ref{eqn:general-compact},
+the derivative at any points $i$ cannot be computed explicitly.
+Instead, we must write similar equations for \emph{all} points $i$
+in the range.
+This results in a system of linear equations
+with unknowns \{$f^{\prime}_1$, $f^{\prime}_2$, $\hdots$, $f^{\prime}_n$\},
+which may be represented by the matrix system $A\bm{x}=\bm{d}$,
+where $\bm{x}$ is the vector
+\{$f^{\prime}_1$, $f^{\prime}_2$, $\hdots$, $f^{\prime}_n$\},
+$\bm{d}$ is a vector of right hand sides [Eq.\ref{eqn:general-compact}],
+and $A$ is, in general, a \emph{banded} matrix.
+
+The simplest classes of banded matrix include
+diagonal, tridiagonal and pentadiagonal matrices.
+When $A$ is diagonal ($\alpha$ = $\beta$ = $\hdots$ = 0),
+the scheme is explicit and straightforward to evaluate:
+the derivatives are simply computed pointwise
+(in series or in parallel),
+by application of the right-hand side stencil at each point.
+When $A$ is tridiagonal ($\alpha \neq 0$, $\beta$ = $\hdots$ = 0),
+the evaluation of the derivatives requires the solution
+of the tridiagonal system, which yields the derivatives
+at all points simultaneously.
+The classical Thomas algorithm
+also referred to as the Tridiagonal Matrix Algorithm,
+is widely employed for this purpose.
+The algorithm is straightforward to implement,
+and stable for diagonally dominant matrices ~\cite{numericalrecipes}.
+
