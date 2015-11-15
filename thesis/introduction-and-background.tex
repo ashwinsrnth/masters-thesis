@@ -1,90 +1,82 @@
-\chapter{Preliminaries}
+\chapter{Introduction and Background}
 
-
-\section{Graphics Processing Units (GPUs)}
-
-\subsection{Motivation}
-
-Most numerical approaches for modeling systems and phenomena
-approximate continuous quantities as discrete quantities.
-The larger the number of discrete entities used,
-the better the approximation.
-In CFD, the physical system (fluid)
-is represented as a set of discrete points (finite difference methods),
-or discrete cells (finite volume method),
-and this discrete representation is termed as a \emph{mesh}.
-In CFD applications
-a mesh containing several points is used
-to represent the underlying system,
-and numerical simulations are performed
-to study how physical quantities
-change with time at these mesh points (or cells).
-Typically, a \emph{time stepping} scheme is used to study this evolution,
-wherein the simulation proceeds as a series of \emph{time steps}.
-For each time step, the quantities at each mesh point at
-\emph{updated} from quantities computed at the previous time step.
+\section{Motivation}
 
 In the direct numerical simulation (DNS) of fluid systems,
-the aim is to resolve the smallest features of the flow.
-This requires the use of extremely fine meshes.
-At each of the mesh points,
-data about the flow must be stored
-(for instance, the pressure, temperature and velocities at that point).
-The large amount of data storage required places
-restrictions on the problem sizes that can be accommodated
-on a single workstation/PC.
-Further,
-the numerical simulation requires a large amount of
-computations with this data.
-In general, the computations are of a repetitive nature:
-the same computations are performed repeatedly
-for the different mesh points,
-and for successive time steps.
+the aim is to resolve the smallest features of the flow
+without resorting to any modeling of the turbulence.
+This involves the use of
+extremely fine computational grids to
+discretize the flow domain,
+and some numerical method for solving the
+flow equations on this grid.
+By far the most popular numerical approach for
+solving the flow equations
+is the \emph{finite difference method}.
+The finite difference method approximates the
+spatial and temporal derivatives appearing in the
+partial differential equations that describe the flow
+using finite difference schemes.
+\emph{Compact finite difference schemes} are a class
+of finite difference schemes that have found widespread
+adoption in DNS codes
+for their high order of accuracy.
+The evaluation of compact finite differences
+requires the repeated solution of \emph{banded} linear systems,
+making them fairly complex and expensive computationally.
 
-Thus, CFD is typically a computationally expensive endeavour,
-and it has long been of interest to use
-\emph{parallel processing} to
-perform numerical simulations of fluid flows.
-This involves distributing computing tasks
-among multiple independent processors,
-which can run concurrently.
-Of course, this requires that the computations be \emph{independent}
-of each other.
-Fortunately, the computational patterns that arise in CFD
-typically satisfy this requirement:
-the computations at different mesh points are largely independent
-of each other and can be done in parallel.
+As mentioned, DNS involves the use of extremely fine grids.
+At each of the grid points,
+various data about the flow must be stored---for
+example, the geometric coordinates (x, y and z),
+pressure, temperature and velocities at that point.
+The amount of memory required to store this data
+for even small problem sizes
+can quickly exceed the capacity of modern workstations/PCs.
+Thus, a \emph{distributed memory} parallel system
+is generally required for performing DNS.
+Here, the traditional approach has been
+to distribute parallel tasks among individual CPU cores,
+or groups of CPU cores
+that share common memory spaces.
+In the latter case,
+each group of cores constitutesa \emph{shared memory} system,
+and the overall system is referred to as a \emph{hybrid system}.
 
-The traditional approach to parallel computing has been
-to distribute parallel tasks among CPU cores.
-The cores may all have access to a common memory space
-(shared memory systems),
-or may have distinct memory spaces
-(distributed memory systems).
-Much more common than purely distributed systems are
-\emph{hybrid} systems wherein the tasks may be distributed
-among so-called \emph{nodes},
-which are themselves shared-memory systems.
-Again, the computational workhorse in all these systems has traditionally
-been the CPU core.
+The workhorse for computation in the above described
+parallel systems is the CPU core,
+however, more recently,
+Graphics Processing Units (GPUs)
+are being used for performing intensive calculations.
+GPUs, while themselves being highly parallel processors,
+can also function as accelerators in distributed memory systems
+(GPU clusters).
+However,
+applications that exploit such systems
+need careful redesign of algorithms---and
+sometimes, substantial changes to code---to
+see significant performance improvements.
+This is because the CPU and GPU have very different architectures,
+and any na\"{\i}ve ``parallelization'' of algorithms
+designed for the CPU
+is likely not take full advantage of the GPU's
+memory heirarchy and compute ability.
 
-A more recent parallel system that has seen
-wide adoption
-is the Graphics Processing Unit (GPU).
-GPUs were developed primarily for performing
-graphics computations, i.e.,
-calculations with pixel data.
-This is a \emph{highly} parallelizable task;
-pixels can be processed independently and in parallel.
-Thus, the GPU evolved as a system
-to perform hundreds of computations concurrently,
-and it should be no surprise that it soon
-gained attention from the scientific computation community.
-Now, several scientific software packages have been
-written for GPUs,
-and the worlds largest supercomputers employ GPUs
-as accelerators.
-
+The objective of this work is to develop an
+approach for evaluating
+compact finite differences
+on multiple GPUs in a distributed system.
+This is of interest because
+the evaluation of spatial derivatives using
+compact finite difference schemes is one of the most
+expensive tasks in DNS.
+But perhaps more significantly,
+it encompasses several computational patterns
+such as pointwise updates, stencil evaluations,
+and solutions of distributed tridiagonal systems.
+Efficient implementation of these computational patterns
+on GPUs is of interest in other areas of CFD,
+and scientific computation in general.
 
 \section{Compact finite differences}
 
@@ -136,30 +128,80 @@ For a given order of derivative,
 finite difference approximation of arbitrary stencil widths
 may be derived,
 with larger stencils associated with higher accuracy~\cite{fornberg1988generation}.
+
+\subsection{Wavenumber analysis of finite difference methods}
+
+For DNS applications, the relevant measure of accuracy of a
+finite difference scheme is obtained from the so-called
+\emph{modified wavenumber} approach.
+Here, we test the scheme's ability to
+accurately estimate the derivative of sinusoidal functions
+with increasing wavenumbers (frequencies),
+given a specified grid size. 
+We expect that the approximation of the derivative
+becomes more difficult with increasing wavenumbers,
+as the function value varies more rapidly.
+The wavenumber of the approximate derivative
+as given by the finite difference scheme is compared with
+the wavenumber of the exact derivative.
+The result for different schemes is shown
+in Fig. \ref{fig:modified-wavenumbers}.
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=250pt]{fig/modified-wavenumbers.eps}
+\end{center}
+\caption{Modified wavenumbers for three different schemes
+    with the same stencil width.
+    The compact schemes better estimate the derivative
+    for higher wavenumbers.}
+\label{fig:modified-wavenumbers}
+\end{figure}
+
+The ability of a finite difference scheme
+to accomodate large wavenumbers
+is extremely relevant in
+computational fluid dynamics applications
+~\cite{KravchenkoEffNumErr}.
+In DNS, the scheme
+\emph{must} capture the
+rapidly varying characteristics of the flow
+associated with the turbulence.
+For this purpose,
+higher order explicit schemes
+may be considered.
+While they are traightforward to compute,
+they are associated with large stencil widths.
 In most applications,
 large stencil widths are undesirable.
-This is because:
+This is because
+the arithmetic intensity increases with stencil size, i.e.,
+a larger number of computations must be performed per grid point.
+Further,
+the amount of boundary information that must be exchanged
+between parallel processes increases,
+which can seriously affect overall performance.
 
-\begin{enumerate}
-    \item The arithmetic intensity increases, i.e.,
-        a larger number of computations must be performed per grid point.
-    \item When the solution is done in parallel,
-        the amount of boundary information that must be exchanged
-        between processors increases.
-\end{enumerate}
+From \ref{fig:modified-wavenumbers},
+it is clear that the compact schemes are better
+able to compute derivatives for larger wavenumbers
+for a given stencil width.
+Thus, they are widely used in
+CFD for evaluation of spatial derivatives.
 
-To overcome the problems associated with larger stencil widths,
-another class of finite difference schemes,
-known as \emph{compact} schemes may be used.
-First proposed by Sanjeeva Lele ~\cite{lele1992compact},
-compact schemes express the derivative at a point $i$
-in terms of the derivatives at neighbouring points,
+\subsection{General form of compact finite difference schemes}
+\label{subsec:gen-form-compact}
+
+Compact schemes express the derivative at a point $i$
+in terms of
+function values \emph{and derivatives}
+at neighbouring points,
 For example,
 if $f_i$ represents the value of
 a uniformly sampled function evaluated at the $i$th sample point,
 the first derivative $f^{\prime}_i$ can be approximated from
 a relation of the form:
-
+%
 \begin{equation}
 \begin{split}
     \alpha(f^{\prime}_{i-1} + f^{\prime}_{i+1}) + \
@@ -176,7 +218,7 @@ a relation of the form:
 \end{equation}
 %
 where $\alpha$, $\beta$, $a$, $b$, $c$, etc.,
-are parameters that must satisfy certain constraints.
+are parameters that must satisfy certain constraints ~\cite{lele1992compact}.
 We note that for equations of the form in Eq. \ref{eqn:general-compact},
 the derivative at any points $i$ cannot be computed explicitly.
 Instead, we must write similar equations for \emph{all} points $i$
@@ -189,20 +231,146 @@ where $\bm{x}$ is the vector
 $\bm{d}$ is a vector of right hand sides [Eq.\ref{eqn:general-compact}],
 and $A$ is, in general, a \emph{banded} matrix.
 
+\subsection{Boundary conditions}
+
+One of the advantages of the compact finite difference approach
+is that it accommodates \emph{non-periodic} boundary conditions.
+This is in contrast to other methods used in DNS,
+such as the \emph{spectral} methods.
+We note that the Eq. (\ref{eqn:general-compact})
+cannot be applied near the boundary points.
+At the boundaries,
+\emph{non-centered} or \emph{one-sided}
+finite difference approximations are required.
+Some considerations are made in choosing
+these approximations:
+firstly, the bandwidth of the resulting banded matrix
+must be preserved.
+Secondly,
+the width of the boundary stencils
+must be lower than the interior stencils,
+as higher order boundary stencils are unstable
+~\cite{kennedy1994several}.
+In general, boundary equations for the first derivative
+are of the following form ~\cite{lele1992compact}:
+
+\begin{equation}
+    f_1^{\prime} + \alpha f_2^{\prime} = \
+        \frac{1}{h}(af_1 + bf_2 + cf_3 + df_4)
+\label{eqn:boundary-compact}
+\end{equation}
+
+\subsection{Tridiagonal compact schemes}
+
+As mentioned in Sec. \ref{subsec:gen-form-compact},
+compact finite difference schemes lead to
+\emph{banded} linear systems.
 The simplest classes of banded matrix include
 diagonal, tridiagonal and pentadiagonal matrices.
-When $A$ is diagonal ($\alpha$ = $\beta$ = $\hdots$ = 0),
-the scheme is explicit and straightforward to evaluate:
-the derivatives are simply computed pointwise
-(in series or in parallel),
-by application of the right-hand side stencil at each point.
-When $A$ is tridiagonal ($\alpha \neq 0$, $\beta$ = $\hdots$ = 0),
-the evaluation of the derivatives requires the solution
-of the tridiagonal system, which yields the derivatives
-at all points simultaneously.
-The classical Thomas algorithm
-also referred to as the Tridiagonal Matrix Algorithm,
-is widely employed for this purpose.
+When $\alpha$ = $\beta$ = $\hdots$ = 0,
+$A$ is a $\emph{diagonal}$ matrix.
+In this case, the
+scheme is \emph{explicit}
+and the derivatives are straightforward to evaluate:
+this simply involves the
+application of the right-hand side stencil at each point.
+When $\alpha \neq 0, \beta = \hdots$ = 0,
+$A$ is \emph{tridiagonal}.
+The evaluation of the derivatives requires
+the solution of the resulting tridiagonal system.
+The classical Thomas algorithm---also
+referred to as the Tridiagonal Matrix Algorithm---is
+widely employed for this purpose.
 The algorithm is straightforward to implement,
 and stable for diagonally dominant matrices ~\cite{numericalrecipes}.
+When $\alpha \neq 0$ and $\beta \neq  0$,
+pentadiagonal and higher-bandwidth systems arise.
+These can be more expensive and difficult to evaluate
+than tridiagonal systems
+using a direct method.
+
+This work will focus on
+compact finite difference schemes that lead
+to tridiagonal systems.
+An example of such a scheme is obtained
+by substituting 
+$\beta = 0$, $\alpha = \frac{1}{4}$ and $a = \frac{3}{4}$
+in Eq. \ref{eqn:general-compact}
+(all other coefficients are set to zero).
+This leads to a fourth-order accurate
+tridiagonal compact finite difference scheme,
+known also as the Pad\'{e} scheme.
+At the boundaries,
+the following \emph{third-order} accurate
+approximations are used:
+
+\begin{align}
+    f^{\prime}_1 + 2f^{\prime}_2 = \frac{-5f_1 + 4f_2 + f_3}{dx} \\
+    f^{\prime}_{n} + 2f^{\prime}_{n-1}
+    =
+    \frac{5f_{n} - 4f_{n-2} -  f_{n-1}}{dx}
+\end{align}
+%
+The resulting tridiagonal system is then:
+
+\begin{equation}
+ \label{eqn:compact-tridiagonal-system}
+ \begin{bmatrix}
+     1&2\\
+     1/4&1&1/4\\
+     &1/4&1&1/4\\
+     &&1/4&1&1/4\\
+     &&&1/4&1&1/4\\
+     &&&&&\ddots\\
+     &&&&&&\ddots\\
+     &&&&&&&\ddots\\
+     &&&&&&&2&1
+  \end{bmatrix}
+  \begin{bmatrix}
+      f^{\prime}_1 \\
+
+      f^{\prime}_2 \\
+      f^{\prime}_3 \\
+      \vdots \\
+      \vdots \\
+      \vdots \\
+      \vdots \\
+      f^{\prime}_{n-1} \\
+      f^{\prime}_n
+   \end{bmatrix}
+ =
+ \begin{bmatrix}
+     \frac{-5f_1 + 4f_2 + f_3}{2}\\
+     \frac{3(f_{3} - f_{1})}{4}\\
+     \frac{3(f_{4} - f_{2})}{4}\\
+     \vdots\\
+     \vdots\\
+     \vdots\\
+     \vdots\\
+     \frac{3(f_{n} - f_{n-2})}{4}\\
+     \frac{5f_{n} - 4f_{n-1} - f_{n-2}}{2}
+  \end{bmatrix}
+\end{equation}
+
+Similar tridiagonal schemes are available
+to evaluate higher order derivatives.
+Compact schemes for
+second, third and fourth derivatives
+are derived in ~\cite{lele1992compact}.
+
+\section{Graphics processing units}
+
+\subsection{Introduction}
+\subsection{Memory model}
+\subsubsection{Global memory}
+\subsubsection{Shared memory}
+\subsubsection{Registers and local memory}
+\subsection{CUDA Programming model}
+\subsubsection{Kernels}
+\subsubsection{Thread organization}
+
+\section{Tridiagonal solvers}
+\subsection{Thomas algorithm}
+\subsection{Cyclic reduction}
+\subsection{Other algorithms}
 
