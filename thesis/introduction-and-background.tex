@@ -525,6 +525,7 @@ Data in global memory remains persistent
 throughout the execution of the program.
 
 \subsubsection{Shared memory}
+\label{subsubsec:shared-memory}
 
 Threads within a block have access to a
 common, fast \emph{shared memory}.
@@ -676,14 +677,49 @@ for solving this problem on the GPU.
 
 \subsection{Thomas algorithm}
 
+\begin{equation} \label{eqn:general-tridiagonal-system}
+\begin{pmatrix}
+     b_1 & c_1  \\
+     a_2 & b_2  &  c_2  \\
+         & a_3  &  b_3 &  c_3  \\
+         &      &  a_4 &  b_4 &  c_4  \\
+         &      &      &      &  \ddots \\
+         &      &      &      &     &  \ddots  \\
+         &      &      &      &     &  a_n  &  b_n
+\end{pmatrix}
+\begin{bmatrix}
+    x_1 \\
+    x_2 \\
+    x_3 \\
+    x_4 \\
+    \vdots \\
+    \vdots \\
+    x_n
+ \end{bmatrix}
+=
+\begin{bmatrix}
+   d_1 \\
+   d_2 \\
+   d_3 \\
+   d_4 \\
+   \vdots \\
+   \vdots \\
+   d_{n}
+\end{bmatrix}
+\end{equation}
+
 Traditionally,
-the Thomas algorithm is employed for solving tridiagonal systems.
+the Thomas algorithm is employed for solving
+general linear systems of the form $A\bm{x} = \bm{d}$,
+where $A$ is a tridiagonal matrix with diagonals
+$\bm{a}$, $\bm{b}$ and $\bm{c}$
+[Eq. (\ref{eqn:general-tridiagonal-system})].
 The algorithm is derived
 from the more general Gaussian (LU) algorithm
 applied to tridiagonal matrices.
 Implementations of this algorithm are relatively straightforward
 and compact ~\cite{numericalrecipes}.
-Only the non-zero diagonals of the tridiagonal system
+Only the non-zero diagonals of the tridiagonal matrix
 are stored,
 and the algorithm performs $2N$ steps
 to solve the system.
@@ -721,8 +757,210 @@ solve the smaller systems in parallel.
 
 Two other popular algorithms for solving
 tridiagonal systems are the
-cyclic reduction (CR) and parallel cyclic reduction (PCR)
+cyclic reduction (CR) and
+the related parallel cyclic reduction (PCR)
 algorithms.
 
+\begin{figure}
+\begin{center}
+\includegraphics[height=250pt]{img/cyclic-reduction.eps}
+\end{center}
+\caption{Cyclic reduction.}
+\label{fig:cyclic-reduction}
+\end{figure}
 
-\subsection{Other algorithms}
+The cyclic reduction algorithm consists of two phases:
+\emph{forward reduction} and \emph{backward substitution}
+(Fig. \ref{fig:cyclic-reduction}).
+In the forward reduction phase,
+every even-indexed equation $i$
+is expressed as a
+linear combination of equations $i$, $i-1$ and $i+1$,
+yielding a new tridiagonal system of
+$n/2$ equations in $n/2$ unknowns
+[Eqs. (\ref{eqn:forward-reduction-1}) - (\ref{eqn:forward-reduction-4})].
+The process is repeated until a system of
+2 equations in 2 unknowns is left.
+
+\begin{align} 
+& a^{\prime}_i = -a_{i-1}k_1 \
+    \label{eqn:forward-reduction-1}& \\
+& b^{\prime}_i = b_i - c_{i-1}k_1 - a_{i+1}k_2 \
+    \label{eqn:forward-reduction-2}& \\
+& c^{\prime}_i = -c_{i+1}k_2 \
+    \label{eqn:forward-reduction-3}& \\
+& d^{\prime}_i = d_i - d_{i-1}k_1  - d_{i+1}k_2 \
+    \label{eqn:forward-reduction-4}&
+\end{align}
+%
+where,
+
+\begin{align}
+& k_1 = \frac{a_i}{b_{i-1}} \label{eqn:k1-update}& \\
+& k_2 = \frac{c_i}{b_{i+1}} \label{eqn:k2-update}&
+\end{align}
+
+The 2-by-2 system of equations is solved trivially,
+yielding $x_n$ and $x_{n/2}$.
+In the backward substitution phase,
+every odd-indexed unknown $x_i$ is solved for by
+substituting the known values of $x_{i-1}$ and $x_{i+1}$
+[Eq. (\ref{eqn:backward-substitution})].
+
+\begin{align} \label{eqn:backward-substitution}
+x_i = \frac{d^{\prime}_i - a^{\prime}_ix_{i-1} - \
+    c^{\prime}_ix_{i+1}}{b^{\prime}_i}
+\end{align}
+%
+For the last index $i=n$,
+the forward reduction step is instead:
+\begin{align} \label{eqn:forward-reduction-last}
+    & a^{\prime}_n = -a_{n-1}k_1 & \\
+    & b^{\prime}_n = b_n - c_{n-1}k_1 & \\
+    & d^{\prime}_n = d_n - d_{n-1}k_1&
+\end{align}
+%
+And for $i=1$, the backward substitution step is instead:
+
+\begin{align} \label{eqn:backward-substitution-first}
+x_1 = \frac{d^{\prime}_1 - c^{\prime}_1x_{2}}{b^{\prime}_1}
+\end{align}
+
+Thus, in the best case ($n$ parallel processors),
+cyclic reduction requires 
+$2log_2(n) - 1$ steps.
+For even moderately large $n$,
+this is significantly smaller than
+the $2n$ steps required by the Thomas algorithm.
+This makes cyclic reduction a good fit
+for massively parallel architectures like GPUs.
+
+\subsection{Parallel cyclic reduction}
+
+The parallel cyclic reduction (PCR) algorithm ~\cite{Zhang2010FTS}
+has only the forward reduction phase.
+The first forward reduction step is applied to
+the odd and even indexed equations seperately,
+yielding two reduced systems
+of size $n/2$.
+Forward reduction applied to both of these
+systems then yields \emph{four} reduced
+systems of size $n/4$.
+The process is repeated till
+$n/2$ 2-by-2 systems are left,
+all of which can be solved trivially.
+The PCR algorithm requires half the number of steps
+required by CR ($log_2(n)$),
+but does significantly more computation per-step.
+Further, unlike CR,
+PCR can be implemented free of bank conflicts.
+
+\subsection{Cyclic reduction implementation on GPUs}
+
+The algorithm proposed in this work is based on cyclic reduction,
+so it is pertinent to discuss the
+implementation of cyclic reduction on GPUs,
+the associated issues,
+and the relevant literature.
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=200pt]{img/gpu-mapping.eps}
+\end{center}
+\caption{Mapping work to blocks and threads:
+systems are mapped to blocks and
+indices are mapped to individual threads.}
+\label{fig:gpu-mapping}
+\end{figure}
+
+In the GPU implementation of cyclic reduction,
+blocks are assigned to tridiagonal systems
+(when solving multiple systems),
+and threads within a block 
+are assigned to equations, or \emph{indices}
+(Fig. \ref{fig:gpu-mapping}).
+In this way, several grid lines are solved concurrently
+by the GPU.
+During the forward reduction phase,
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=200pt]{img/forward-reduction-step.eps}
+\end{center}
+\caption{Updating $\bm{b}$ in the first forward reduction step.}
+\label{fig:forward-reduction-step}
+\end{figure}
+
+the threads assigned to each even index $i$
+compute the coefficients
+$a_i^\prime$, $b_i^\prime$ and $c_i^\prime$.
+In practice, the coefficients are updated \emph{in-place}.
+Figure \ref{fig:forward-reduction-step} shows the updates
+to the coefficient array $\bm{b}$
+in the first forward reduction step).
+In each step of forward reduction,
+a thread accesses values from the coefficient arrays
+$\bm{a}$, $\bm{b}$ and $\bm{c}$ in a \emph{strided} fashion.
+At every subsequent step,
+this stride is doubled, while the number of active threads is halved
+\ref{fig:cyclic-reduction}.
+In the backward substitution phase,
+the strides are halved at each step,
+while the number of active threads is doubled.
+
+This \emph{hourglass} pattern results in low GPU utilization
+towards the end of forward reduction
+and the beginning of back substitution.
+Further,
+the long-strided memory accesses towards the end
+of the forward reduction
+and the beginning of backward substitution
+is problematic for both
+global memory and shared memory implementations.
+The global memory access is \emph{uncoalesced},
+leading to severe performance penalties.
+The use of shared memory can prevent
+long-strided global memory access.
+Unfortunately,
+the power-of-two strides at each successive
+leads to bank conflicts,
+as described in Sec. \ref{subsubsec:shared-memory}.
+The bank conflicts become increasingly severe
+at each forward reduction phase,
+and decreasingly so during the back substitution phase.
+The limited amount of shared memory places restricions
+on the size of tridiagonal systems that can be solved,
+and also on the number of blocks that can run in parallel.
+
+Despite these problems,
+cyclic reduction remains an attractive algorithm
+for GPUs,
+for its low algorithmic complexity,
+and lower work per step compared to PCR.
+Much work has been done on
+optimizing cyclic reduction performance on GPUs,
+and addressing the issues discussed.
+Zhang et al. \cite{Zhang2010FTS} propose a
+\emph{hybrid} solver
+that uses both cyclic reduction and parallel cyclic reduction
+to reduce bank conflicts.
+G{\"o}dekke et al. \cite{GoSt11CR}
+use a method of separately storing
+the even and odd indexed equations
+to arrive at a bank-conflict free solver
+at the cost of additional shared memory usage.
+Davidson et al. \cite{davidson2011register}
+describe the method of
+\emph{register packing}---performing more computations
+on \emph{registers}, rather than shared memory---as
+a means to reduce shared memory usage in cyclic reduction.
+Esfahanian et. al, \cite{esfahanian2014efficient}
+avoid shared memory (and associated bank conflicts entirely)
+using a data rearrangement scheme to improve global memory access.
+Our approach takes a different route,
+and is focussed on near-Toeplitz systems---exploiting
+the relatively simple matrix structure
+to reduce the number of computations and memory accesses
+performed by each thread
+at every cyclic reduction step.
+
