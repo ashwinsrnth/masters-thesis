@@ -261,6 +261,7 @@ are of the following form ~\cite{lele1992compact}:
 \end{equation}
 
 \subsection{Tridiagonal compact schemes}
+\label{sec:tridiagonal-compact-schemes}
 
 As mentioned in Sec. \ref{subsec:gen-form-compact},
 compact finite difference schemes lead to
@@ -278,11 +279,6 @@ When $\alpha \neq 0, \beta = \hdots$ = 0,
 $A$ is \emph{tridiagonal}.
 The evaluation of the derivatives requires
 the solution of the resulting tridiagonal system.
-The classical Thomas algorithm---also
-referred to as the Tridiagonal Matrix Algorithm---is
-widely employed for this purpose.
-The algorithm is straightforward to implement,
-and stable for diagonally dominant matrices ~\cite{numericalrecipes}.
 When $\alpha \neq 0$ and $\beta \neq  0$,
 pentadiagonal and higher-bandwidth systems arise.
 These can be more expensive and difficult to evaluate
@@ -360,17 +356,373 @@ are derived in ~\cite{lele1992compact}.
 
 \section{Graphics processing units}
 
-\subsection{Introduction}
-\subsection{Memory model}
-\subsubsection{Global memory}
-\subsubsection{Shared memory}
-\subsubsection{Registers and local memory}
-\subsection{CUDA Programming model}
+The evolution of graphics processing units (GPUs)
+has traditionally been guided by the requirements
+of graphics applications such as video gaming.
+In general, these graphics computations involve
+manipulations and calculations with pixel data.
+Because these calculations are largely independent,
+the GPU hardware is specialized
+to perform several of them \emph{in parallel}.
+Therefore, the
+GPU may be regarded as a highly multithreaded processor.
+Initially,
+programming GPUs for scientific computation tasks
+was a cumbersome process,
+as the programming interfaces were designed for graphics computations,
+and attempts to use them for other purposes were essentially ``hacks''.
+Moreover, there was little support for double precision arithmetic,
+which is critical for many applications.
+But with the introduction of the
+NVIDIA Compute Unified Device Architecture (CUDA)
+parallel computing platform
+and programming model,
+CUDA-enabled GPUs have come into the
+mainstream in high-performance computing.
+A history of the development of GPUs
+for general purpose computation,
+and of CUDA specifically is available
+in ~\cite{HwuBook}.
+We provide the essential and relevant details about CUDA here,
+and refer to the
+CUDA Programming Guide \cite{CUDAProgrammingGuide}
+for a detailed outlook.
+
+\subsection{The CUDA Programming model}
+
+CUDA is the name for the parallel computing platform
+developed by NVIDIA,
+as well as the application programming interface
+for programming their GPUs.
+CUDA allows general-purpose applications to be
+more easily programmed for the GPU.
+Two essential features of the CUDA programming modl
+are \emph{kernels} and \emph{thread organization}.
+
 \subsubsection{Kernels}
+
+The CUDA application programming interface (API)
+is availabe as an extension to
+a programming languages (C, C++, Fortran, etc.),
+allowing certain portions of code to execute on the GPU.
+The rest of the code is executed as usual on the CPU.
+In CUDA terminology,
+the CPU is referred to as the \emph{host},
+and the GPU is referred to as the \emph{device}.
+The special pieces of code
+that execute on the GPU are known as \emph{kernels}.
+Kernels have similar syntax
+as ``host code'',
+but in general,
+are more restricted in the
+features of the underlying language they can use.
+In C, for example, kernels are written as \emph{functions},
+and are called by the host code
+using (almost) the same conventions.
+Thus, a C program that uses the GPU
+looks and behaves very much like a normal C program,
+but includes special calls to these kernels.
+When the application is launched,
+a CPU thread executes the host-code as usual,
+but upon encountering a call to the kernel,
+it passes program control over to the GPU.
+After the kernel is finished executing,
+control is passed back to the CPU,
+and this process may repeat when another kernel call is encountered.
+The CPU and GPU may also operate \emph{asynchronously},
+i.e.,
+control may be passed back to the CPU \emph{before} kernel completion,
+in which case
+explicit synchronization between the host and device may be necessary.
+Apart from kernel calls, the host code can also call functions to
+allocate and deallocate device memory,
+query device information,
+perform device synchronization, etc.
+
 \subsubsection{Thread organization}
 
-\section{Tridiagonal solvers}
-\subsection{Thomas algorithm}
-\subsection{Cyclic reduction}
-\subsection{Other algorithms}
+A kernel is executed in parallel by
+several lightweight \emph{threads}.
+Threads are organized into groups called
+\emph{thread blocks}, or just \emph{blocks},
+and the different blocks constitute a
+\emph{grid} of blocks.
+In many cases,
+the GPU is used to process array data,
+and each thread is mapped to a single array element.
+In most applications,
+the array is logically 1-, 2- or 3-dimensional.
+Thus, for convenience, the grid and block sizes
+can be 1-, 2- or 3-dimensional
+(hence the terminology \emph{grid} and \emph{blocks}).
+This kind of thread organization is optional,
+and $n$-dimensional arrays can be processed
+using just 1-dimensional grids and blocks.
 
+\subsection{CUDA architecture and memory model}
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=250pt]{img/gpu-scaling.png}
+\end{center}
+\caption{Scheduling of blocks to streaming microprocessors---GPUs
+    with more SMs are able to execute more blocks concurrently.
+(\emph{CUDA Programming Guide ~\cite{CUDAProgrammingGuide}})}
+\label{fig:gpu-scaling}
+\end{figure}
+
+From the hardware perspective,
+an NVIDIA GPU may be viewed primarily as
+a collection of so-called Streaming Microprocessors (SMs).
+When a kernel is launched with specified
+grid size (number of blocks)
+and block size (threads per block),
+each block is assigned to an SM.
+Threads within a thread block can execute concurrently on the SM,
+and an SM can execute several thread blocks concurrently.
+It is imperative that blocks are able to run
+independently, in series or in parallel.
+This feature gives CUDA programs
+their scalability \ref{fig:gpu-scaling}.
+The same program runs faster on a GPU with a larger number
+of SMs, simply because more blocks may run concurrently.
+The number of thread blocks that an
+SM can execute concurrently
+is limited by a number of factors,
+and maximizing this number is often
+key to obtaining good performance.
+Another key consideration in the implementation
+of algorithms on GPUs is the
+available \emph{memory heirarchy}.
+Threads executing a kernel can read and write
+to several different memory spaces,
+each with different capacity, latency and bandwidth.
+
+\subsubsection{Global memory}
+
+Data from the host is first read into the
+device's \emph{global memory}.
+Similarly, data from the device is read back into the host
+from global memory.
+This is done in the host-code
+using special functions provided by the CUDA API 
+(e.g., \texttt{cudaMemcpy}).
+Data transfer between the host and the device is
+extremely slow relative to data access within the device.
+This data transfer rate is limited by the bandwidth
+of the PCI-e bus between the host and device.
+All threads executing a kernel can
+read and write to locations in global memory,
+and it is the largest memory space that is
+writable by the device.
+For example, the current NVIDIA Tesla K20 accelerator
+has about 4 Gigabytes of usable global memory.
+Thread access to global memory has a long latency
+and it is especially inefficient when
+successive threads in a block access memory locations
+that are far apart.
+Data in global memory remains persistent
+throughout the execution of the program.
+
+\subsubsection{Shared memory}
+
+Threads within a block have access to a
+common, fast \emph{shared memory}.
+All threads within a block
+can read and write to the block's shared memory,
+but they may \emph{not} access
+shared memory of another block.
+Thread access to shared memory can be expected to be
+much faster than access to global memory.
+Data that may be repeatedly used in a kernel
+are good candidates for placement in shared memory
+The contents of shared memory are managed by the kernel code,
+and for this reason,
+shared memory is often viewed as explicitly managed cache.
+Data in shared memory does\emph{not} persist after
+kernel execution.
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=300pt]{img/bank-conflicts.eps}
+\end{center}
+\caption{(a) Organization of shared memory as 4 byte words
+    organized into 32 banks. Each cell (square) is a word.
+    (b) Bank conflict free access by a warp. Each warp
+    accesses a word from a different bank. (c) 2-way
+    bank conflicts arising from successive threads accessing
+alternating words.}
+\label{fig:bank-conflicts}
+\end{figure}
+
+Shared memory is organized as a collection of  4 byte ``words''.
+Each consecutive word in shared memory belongs
+to a different bank - modern GPUs have 32 banks.
+The GPU schedules
+thread execution within a block
+in groups of 32 (termed as thread \emph{warps}).
+Ideally, these 32 threads
+can access shared memory locations concurrently.
+However, when two or more threads in a warp access
+words from the same bank,
+a \emph{bank conflict} is said to occurr,
+and the access is serialized.
+Thus,
+a warp of 32 threads reading
+32 successive \texttt{float}s (4 bytes) in a shared memory array
+is perfectly parallelized.
+But a warp of 32 threads reading
+32 alternating \texttt{float}s in a shared memory array
+leads to bank conflicts (Fig. \ref{fig:bank-conflicts}).
+Because the floats are placed in consecutive banks,
+the 1st and 17th threads will acess floats from the same bank,
+as will the 2nd and 18th threads, and so on.
+This specific kind of bank conflict is termed a
+\emph{two-way} bank conflict -
+threads access two words from the same bank.
+It is observed that higher-order bank conflicts may occur,
+if threads in a warp access
+\texttt{float}s in strides of 4,
+a \emph{four-way} bank conflict can occur.
+In the worst case, successive threads may access
+\texttt{float}s in strides of 32,
+in which case all threads in the warp
+request memory from the same bank:
+a emph{32-way} bank conflict.
+
+\subsubsection{Registers and local memory}
+
+Each thread also has private \emph{local memory},
+and access to extremely fast registers.
+Unlike CPUs, the GPU has a large number of registers---a
+thread executing a kernel will
+typically attempt to store
+non-array variables defined in the kernel in registers.
+Thread access to registers has the lowest latency
+compared to all other memory spaces.
+The number of registers available to each thread is limited,
+and if exceeded,
+data is instead stored in the thread's local memory.
+Access to local memory is much slower than registers,
+so this is typically avoided.
+
+\subsubsection{Limiting shared memory and register usage}
+
+While shared memory and registers can service memory requests
+much faster than global memory,
+their overuse can lead to performance degradation.
+The amount of shared memory per SM
+and the numer of registers per SM is limited.
+For the current NVIDIA Tesla K20 accelerator,
+the amount of shared memory per SM is limited to 48 KiB,
+and the number of registers per SM is limited to 65536.
+These are also the limits
+on the resources that can be allocated for each \emph{block}.
+However,
+allocating 48 KiB shared memory or using 65536 registers 
+for each block is ill-advised,
+as this effectively restricts the number of blocks that
+each SM can run at any given time to 1.
+If each block allocates 24 KiB of shared memory,
+then an SM can run only 2 blocks concurrently.
+Thus, the resources allocated per-block affects
+the overall parallelism that can be exploited from the GPU.
+
+\subsection{Considerations to be made while programming for GPUs}
+
+As seen in the previous sections,
+several factors must be considered while
+designing and implementing algorithms for GPUs.
+Failure to include these considerations can easily
+lead to poor performance,
+and no significant speedup may be noted over CPUs.
+In fact, one may even note performance degradation.
+We list the primary considerations here:
+
+\begin{itemize}
+    \item In any application, the data transfers between
+        the host and device must be minimized.
+        Ideally,
+        data is read into the device from the host \emph{once}
+        and from the device to the host \emph{once}.
+    \item Thread access to global memory must \emph{coalesced},
+        i.e., successive threads must read successive locations
+        in global memory.
+    \item Shared memory access must be free of bank conflicts
+        as much as possible---in general, this means avoiding
+        strided shared memory access.
+    \item The amount of shared memory and registers
+        allocated for each block is kept minimum.
+\end{itemize}
+
+\section{Tridiagonal solvers for compact finite difference evaluation}
+
+As mentioned in \ref{sec:tridiagonal-compact-schemes},
+this work is concernted with
+\emph{tridiagonal} compact finite differences
+for their relative ease in evaluation.
+The resulting tridiagonal system must be solved
+repeatedly for all lines of grid points in the computational grid.
+For a regular Cartesian grid (generally employed in DNS),
+the coefficients of the tridiagonal systems
+are the same for each grid line,
+and only the right hand sides are different.
+Thus, the compact finite difference evaluation
+effectively requires the solution of a tridiagonal system
+for several right hand sides.
+In this section,
+we describe the applicability of several algorithms
+for solving this problem on the GPU.
+
+\subsection{Thomas algorithm}
+
+Traditionally,
+the Thomas algorithm is employed for solving tridiagonal systems.
+The algorithm is derived
+from the more general Gaussian (LU) algorithm
+applied to tridiagonal matrices.
+Implementations of this algorithm are relatively straightforward
+and compact ~\cite{numericalrecipes}.
+Only the non-zero diagonals of the tridiagonal system
+are stored,
+and the algorithm performs $2N$ steps
+to solve the system.
+It is also stable for diagonally dominant matrices.
+The Thomas algorithm has an algorithmic complexity of $O(N)$,
+and is the fastest serial solver for tridiagonal systems.
+It is thus well suited to solution by a single CPU thread.
+While the algorithm itself is sequential,
+in a multithreaded environment,
+the different CPU threads may be used to solve
+the different independent tridiagonal systems simultaneously.
+
+A similar parallelization strategy may be extended to GPUs,
+where each GPU thread solves an independent tridiagonal system.
+The coefficient right hand sides are assumed to be stored
+contiguously as a single array in memory.
+If each thread works entirely with global memory,
+\emph{uncoalesced} memory access is observed.
+This cost \emph{may} be amortized for a large enough
+number of systems, as is the case
+for 3-D problems \cite{sakharnykhADIconf}.
+If shared memory is used,
+then low parallelism is exhibited,
+as the amount shared memory allocated by each thread
+is relatively high ($4N$).
+An approach that uses the parallel Thomas algorithm
+effectively is described by Chang et al. \cite{chang2012scalable}.
+Here, a \emph{parallel cyclic reduction} algorithm
+is first used to reduce a
+tridiagonal system into several smaller tridiagonal system,
+and the parallel Thomas algorithm is then used to
+solve the smaller systems in parallel.
+
+\subsection{Cyclic reduction}
+
+Two other popular algorithms for solving
+tridiagonal systems are the
+cyclic reduction (CR) and parallel cyclic reduction (PCR)
+algorithms.
+
+
+\subsection{Other algorithms}
