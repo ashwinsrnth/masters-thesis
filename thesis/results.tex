@@ -1,13 +1,204 @@
 \chapter{Results}
 
-\section{Validation}
-    \subsection{Validation of tridiagonal solver}
-    \subsection{Validation of compact finite difference application}
-        \subsubsection{Tests for individual kernels}
-        \subsubsection{Tests for communication routines}
-        \subsubsection{Test functions for derivatives}
-        \subsubsection{Order of convergence tests}
-    \subsubsection{Validation results}
-
 \section{Performance of GPU tridiagonal solver}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/bench-2d.eps}
+\caption{Relative solver performance for 2-D problems. Relative time defined as:}
+$\frac{\text{Time taken by solver}}{\text{Time taken by NEATO solver}}$
+\label{fig:bench-2d}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/bench-3d.eps}
+\caption{Relative solver performance for 3-D problems. Relative time defined as:}
+$\frac{\text{Time taken by solver}}{\text{Time taken by NEATO solver}}$
+\label{fig:bench-3d}
+\end{center}
+\end{figure}
+
+In this section we present a performance overview
+of our Near-Toeplitz tridiagonal solver (NEATO)
+against a multi-threaded Intel MKL solver and
+the CUSPARSE GPU solver
+(\texttt{dgtsv} and \texttt{dgtsvStridedBatch} respectively).
+The MKL solver is based on Gaussian Elimination with partial pivoting,
+Boundary conditions may prevent
+the matrix from being symmetric and/or diagonally dominant,
+precluding the use of more specialized tridiagonal solvers.
+and the CUSPARSE solver uses a combination of
+Cyclic Reduction and Parallel Cyclic Reduction.
+Both solvers are optimized for the underlying architectures.
+
+The CPU code is compiled with the Intel C compiler (version 15.0),
+and run (with OpenMP support) on up to
+16 independent cores of the the same shared-memory node
+(one thread per core).
+The CPU is an
+Intel Xeon Processor E5-2670 v2 (2.50 GHz, 25 MB Smart Cache).
+GPU code is compiled with the CUDA toolkit (version 6.5.14),
+and run on the
+NVIDIA Tesla K20 Accelerator.
+When measuring GPU performance (both CUSPARSE and NEATO),
+we do \emph{not} include the cost
+of data transfer between the CPU and GPU.
+\texttt{-O2} level compiler optimizations are turned on for both
+CPU and GPU code;
+no further optimization options are enabled in either case.
+Of course, we use double precision for all solvers.
+The timings reported are
+kernel \emph{execution} times, i.e.,
+the time for all kernel(s) to execute completely
+before returning the program control to the CPU.
+All timings are averaged over 100 tridiagonal solves.
+
+\subsection{NEATO: global memory v/s shared memory performance}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/global-vs-shared-2d.eps}
+\caption{Comparison of global memory and shared
+    memory implementations of NEATO (2D problems).}
+\label{fig:global-vs-shared-2d}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/global-vs-shared-3d.eps}
+\caption{Comparison of global memory and shared memory
+    implementations of NEATO (3D problems).}
+\label{fig:global-vs-shared-3d}
+\end{center}
+\end{figure}
+
+In Figs. \ref{fig:global-vs-shared-2d} and \ref{fig:global-vs-shared-3d},
+we report the performance of the two solvers for the case
+$N_{rhs} = n$ and $N_{rhs} = n^2$.
+These cases correspond to tridiagonal systems
+arising in 2-D and 3-D problems respectively.
+We note that the shared memory implementation
+offers better performance in nearly all cases.
+However, the relative speedup from using
+shared memory diminishes with increasing problem size.
+For larger problem sizes,
+the synchronization costs associated with inactive threads
+leads to poor shared memory performance.
+
+\subsection{Comparison of NEATO with Intel MKL and CUSPARSE solvers}
+
+In Fig. \ref{fig:bench-2d} and \ref{fig:bench-3d},
+we provide the relative performance of
+Intel MKL and CUSPARSE solvers and compare against
+the NEATO shared memory implementation.
+The relative performance for
+each problem size is obtained by
+normalizing the solver timings
+by the timing for the fastest solver for that problem size.
+Table \ref{table:bench} shows the timings of the various
+solvers to solve different problem sizes.
+
+\begin{sidewaystable}[]
+\scriptsize
+\centering
+\caption{Performance of Intel MKL, CUSPARSE and NEATO solvers.}
+\label{table:bench}
+\input{table/bench.tex}
+\end{sidewaystable}
+
 \section{Performance of compact finite difference application}
+
+The experiments were run on the
+Clemson University Palmetto Cluster,
+using NVIDIA Tesla K20 and K40 GPUs.
+The K40 GPUs were used for the largest problem sizes.
+Each compute node on the cluster is equipped with up to 2 GPUs,
+and nodes are connected by 56 Gbps Infiniband interconnect.
+We use Open MPI 1.8.1 configured with OpenFabrics support.
+
+The timings reported are \emph{wall clock} times
+with global synchronization between processes performed 
+before and after evaluation of the derivatives.
+All timings are averaged over 100 evaluations of the function derivatives
+in each coordinate direction.
+We make it clear that our reported
+problem sizes represent the \emph{actual size of problem data}.
+Although it may be considered sufficient to
+run tests on a single line of processes
+for measuring the compact finite difference solver performance,
+we set up and solve the problem for the entire computational domain.
+In the context of a larger simulation,
+global synchronization between the processes
+is typically performed before and after the evalaution of derivatives,
+and it is important to consider the related overhead.
+
+Figures \ref{fig:compact-profiling-1024-64}-\ref{fig:compact-profiling-2048-64}
+show the time taken by the different steps of
+the compact finite difference solver.
+We note that for the larger problem size,
+the evaluation of the primary systems (using the NEATO solver)
+constitutes a larger majority of the total runtime,
+which justifies our efforts in optimizing the tridiagonal solver.
+For evaluation of the derivatives in the y- and z- directions,
+we note that a significant portion of the runtime is dedicated
+to performing permutations of the input and output data.
+We attribute this to our naive implementation of the
+permutation kernels (no shared memory).
+Figures \ref{fig:strong-scaling-256}-\ref{fig:weak-scaling-256}
+show the strong and weak scaling of the compact finite difference solver
+for evaluating derivatives in all three coordinate directions.
+We note good scaling for both 2-D and 3-D cases.
+The strong scaling for 3-D problems is somewhat better
+as the GPU is kept busy for all problem sizes.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/profiling-1024-64.eps}
+\caption{Solving problem sized $1024^3$ on 64 GPUs}
+\label{fig:compact-profiling-1024-64}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/profiling-2048-64.eps}
+\caption{Solving problem sized $2048^3$ on 64 GPUs}
+\label{fig:compact-profiling-2048-64}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/strong-scaling-256.eps}
+\caption{Strong scaling for multi-GPU compact finite difference, problem size: $256^3$.}
+\label{fig:strong-scaling-256}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/strong-scaling-512.eps}
+\caption{Strong scaling for multi-GPU compact finite difference, problem size: $512^3$.}
+\label{fig:strong-scaling-512}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/weak-scaling-128.eps}
+\caption{Weak scaling for multi-GPU compact finite difference, problem size: $128^3$ per process.}
+\label{fig:weak-scaling-128}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/weak-scaling-256.eps}
+\caption{Weak scaling for multi-GPU compact finite difference, problem size: $256^3$ per process.}
+\label{fig:weak-scaling-256}
+\end{center}
+\end{figure}
+

@@ -157,6 +157,23 @@ coefficient computed for $i = 1$ at step $m$.
 
 \section{Implementation}
 
+In this section, we describe the implementation of a GPU solver
+for solving a given near-Toeplitz tridiagonal system
+for multiple right hand sides.
+Our implementation uses
+NVIDIA CUDA platform for programming the GPU,
+but is easily translated to OpenCL.
+The Python programming language is used
+to interface with CUDA, by use of the
+PyCUDA \cite{kloeckner_pycuda_2012} library.
+We develop two approaches based on the common idea
+of precomputed forward reduction coefficients---one that leverages
+the GPU's \emph{shared memory},
+and the other working directly with global memory.
+The GPU kernels for both implementations are relatively
+straightforward and compact,
+spanning no more than 100 lines of code.
+
 \subsection{Precomputing forward reduction coefficients}
 
 \begin{figure}
@@ -242,24 +259,6 @@ Although this ensures that there are no inactive threads
 at any stage,
 the occupancy of the GPU is still very low
 during the end of forward reduction and the end of backward substitution.
-
-\begin{listing}[H]
-\begin{minted}[fontsize=\footnotesize]{python}
-stride = 1
-for i in range(n-1):
-    stride *= 2
-    forwardReductionKernel(num_blocks=nrhs, block_size=n/stride)
-
-solveTwoByTwo()
-
-for i in range(n-1):
-    stride /= 2
-    backSubstitutionKernel(num_blocks=nrhs, block=n/stride)
-\end{minted}
-\caption{Global memory implementation of cyclic reduction (host code)}
-\label{listing:global-memory-implementation}
-\end{listing}
-%
 The precomputed coefficient arrays and right hand
 are accessed by the kernels from global memory.
 The kernel suffers from
@@ -314,4 +313,3 @@ right-hand side values leads to bank-conflicts.
 However, the number of bank conflicts is significantly smaller
 than in cyclic reduction implementations for general tridiagonal systems,
 due the reduced number of computations performed.
-

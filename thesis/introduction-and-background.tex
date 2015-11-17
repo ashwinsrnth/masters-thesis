@@ -25,13 +25,13 @@ The evaluation of compact finite differences
 requires the repeated solution of \emph{banded} linear systems,
 making them fairly complex and expensive computationally.
 
-As mentioned, DNS involves the use of extremely fine grids.
-At each of the grid points,
+When solving for flows numerically,
+at each of the grid points in the computational domain,
 various data about the flow must be stored---for
 example, the geometric coordinates (x, y and z),
 pressure, temperature and velocities at that point.
-The amount of memory required to store this data
-for even small problem sizes
+For even small problem sizes,
+the amount of memory required to store this data
 can quickly exceed the capacity of modern workstations/PCs.
 Thus, a \emph{distributed memory} parallel system
 is generally required for performing DNS.
@@ -40,7 +40,7 @@ to distribute parallel tasks among individual CPU cores,
 or groups of CPU cores
 that share common memory spaces.
 In the latter case,
-each group of cores constitutesa \emph{shared memory} system,
+each group of cores constitutes a \emph{shared memory} system,
 and the overall system is referred to as a \emph{hybrid system}.
 
 The workhorse for computation in the above described
@@ -119,7 +119,7 @@ $i$, and its neighbouring points:
         we refer to the approximation as a
         \emph{central} difference.
 \end{enumerate}
-
+%
 The approximation of higher order derivatives generally requires
 inclusion of a larger number of points in the
 finite difference approximation
@@ -128,6 +128,53 @@ For a given order of derivative,
 finite difference approximation of arbitrary stencil widths
 may be derived,
 with larger stencils associated with higher accuracy~\cite{fornberg1988generation}.
+In the evaluation of spatial derivatives,
+the above schemes are referred to as \emph{explicit}
+schemes, as the derivative at each point
+can be expressed as some explicit combination of function values.
+
+\subsection{General form of compact finite difference schemes}
+\label{subsec:gen-form-compact}
+
+Compact schemes express the derivative at a point $i$
+in terms of
+function values \emph{and derivatives}
+at neighbouring points,
+i.e., the derivative is expressed \emph{implicitly}.
+For example,
+if $f_i$ represents the value of
+a uniformly sampled function evaluated at the $i$th sample point,
+the first derivative $f^{\prime}_i$ can be approximated from
+a relation of the form:
+%
+\begin{equation}
+\begin{split}
+    \alpha(f^{\prime}_{i-1} + f^{\prime}_{i+1}) + \
+        f^{\prime}_i
+    \beta(f^{\prime}_{i-2} + f^{\prime}_{i+2}) + \
+    \hdots
+    = 
+    a\frac{f_{i+1} - f_{i-1}}{dx} + \
+    b\frac{f_{i+2} - f_{i-2}}{dx} + \\
+    c\frac{f_{i+3} - f_{i-3}}{dx} + \
+    \hdots
+\end{split}
+\label{eqn:general-compact}
+\end{equation}
+%
+where $\alpha$, $\beta$, $a$, $b$, $c$, etc.,
+are parameters that must satisfy certain constraints ~\cite{lele1992compact}.
+We note that for equations of the form in Eq. \ref{eqn:general-compact},
+the derivative at any points $i$ cannot be computed explicitly.
+Instead, we must write similar equations for \emph{all} points $i$
+in the range.
+This results in a system of linear equations
+with unknowns \{$f^{\prime}_1$, $f^{\prime}_2$, $\hdots$, $f^{\prime}_n$\},
+which may be represented by the matrix system $A\bm{x}=\bm{d}$,
+where $\bm{x}$ is the vector
+\{$f^{\prime}_1$, $f^{\prime}_2$, $\hdots$, $f^{\prime}_n$\},
+$\bm{d}$ is a vector of right hand sides [Eq.\ref{eqn:general-compact}],
+and $A$ is, in general, a \emph{banded} matrix.
 
 \subsection{Wavenumber analysis of finite difference methods}
 \label{subsec:wavenumber-analysis}
@@ -190,48 +237,6 @@ for a given stencil width.
 This makes them the superior choice for DNS,
 in which the flow quantities
 exhibit spatial variation associated with high wavenumbers.
-
-\subsection{General form of compact finite difference schemes}
-\label{subsec:gen-form-compact}
-
-Compact schemes express the derivative at a point $i$
-in terms of
-function values \emph{and derivatives}
-at neighbouring points,
-For example,
-if $f_i$ represents the value of
-a uniformly sampled function evaluated at the $i$th sample point,
-the first derivative $f^{\prime}_i$ can be approximated from
-a relation of the form:
-%
-\begin{equation}
-\begin{split}
-    \alpha(f^{\prime}_{i-1} + f^{\prime}_{i+1}) + \
-        f^{\prime}_i
-    \beta(f^{\prime}_{i-2} + f^{\prime}_{i+2}) + \
-    \hdots
-    = 
-    a\frac{f_{i+1} - f_{i-1}}{dx} + \
-    b\frac{f_{i+2} - f_{i-2}}{dx} + \\
-    c\frac{f_{i+3} - f_{i-3}}{dx} + \
-    \hdots
-\end{split}
-\label{eqn:general-compact}
-\end{equation}
-%
-where $\alpha$, $\beta$, $a$, $b$, $c$, etc.,
-are parameters that must satisfy certain constraints ~\cite{lele1992compact}.
-We note that for equations of the form in Eq. \ref{eqn:general-compact},
-the derivative at any points $i$ cannot be computed explicitly.
-Instead, we must write similar equations for \emph{all} points $i$
-in the range.
-This results in a system of linear equations
-with unknowns \{$f^{\prime}_1$, $f^{\prime}_2$, $\hdots$, $f^{\prime}_n$\},
-which may be represented by the matrix system $A\bm{x}=\bm{d}$,
-where $\bm{x}$ is the vector
-\{$f^{\prime}_1$, $f^{\prime}_2$, $\hdots$, $f^{\prime}_n$\},
-$\bm{d}$ is a vector of right hand sides [Eq.\ref{eqn:general-compact}],
-and $A$ is, in general, a \emph{banded} matrix.
 
 \subsection{Boundary conditions}
 
@@ -846,7 +851,7 @@ for massively parallel architectures like GPUs.
 
 \subsection{Parallel cyclic reduction}
 
-The parallel cyclic reduction (PCR) algorithm ~\cite{Zhang2010FTS}
+The parallel cyclic reduction (PCR) algorithm
 has only the forward reduction phase.
 The first forward reduction step is applied to
 the odd and even indexed equations seperately,
@@ -862,7 +867,8 @@ The PCR algorithm requires half the number of steps
 required by CR ($log_2(n)$),
 but does significantly more computation per-step.
 Further, unlike CR,
-PCR can be implemented free of bank conflicts.
+PCR can be implemented free of bank conflicts
+~\cite{Zhang2010FTS}.
 
 \subsection{Cyclic reduction implementation on GPUs}
 \label{subsec:cyclic-reduction-gpu-implementation}

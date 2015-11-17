@@ -7,7 +7,7 @@ tridiagonal solver developed in the previous section
 to the evaluation of compact finite differences---which
 are used widely in the direct numerical simulation
 of fluid flows.
-
+%
 \begin{figure}
 \begin{center}
 \includegraphics[height=150pt]{img/computational-domain.eps}
@@ -22,8 +22,8 @@ is a 3-dimensional,
 regular, Cartesian grid with
 $nx$, $ny$ and $nz$ grid points and grid spacing of
 $dx$, $dy$ and $dz$ in the
-respective coordinate directions,
-\ref{fig:computational-domain},
+respective coordinate directions
+(Fig. \ref{fig:computational-domain}).
 Structured grids such as these
 are widely used because they lend themselves naturally
 to finite-difference methods.
@@ -38,7 +38,7 @@ the large number of grid points
 parallelism becomes mandatory.
 We have spoken so far of GPUs as massively parallel systems.
 However, each GPU has a very limited amount of global memory:
-current NVIDIA Tesla accelerators have about 4 Gigabytes.
+current NVIDIA Tesla K20 GPUs have about 4 Gigabytes.
 Thus, to accomodate the
 larger problem sizes in DNS,
 the use of \emph{multiple} GPUs is necessary,
@@ -72,8 +72,8 @@ at that point and its neighbouring points.
 The stencil operations at individual points
 are independent,
 making the overall calculation highly parallelizable.
-The solution of the tridiagonal systems,
-is of course parallelizable
+The solution of the tridiagonal systems
+is of course parallelizable,
 as has been discussed in previous sections.
 
 Without loss of generality,
@@ -104,7 +104,7 @@ apply a different stencil from the interior threads.
 The implementation of GPU kernels for
 stencil operations such as these is a topic of wide study.
 The most important considerations were brought out
-in the paper by Micikevicius et al. ~\ref{micikevicius20093d}.
+in the paper by Micikevicius et al. ~\cite{micikevicius20093d}.
 For solving the tridiagonal systems,
 each thread block of the GPU is mapped to a
 different \emph{grid line}
