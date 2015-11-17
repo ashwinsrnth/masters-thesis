@@ -130,6 +130,7 @@ may be derived,
 with larger stencils associated with higher accuracy~\cite{fornberg1988generation}.
 
 \subsection{Wavenumber analysis of finite difference methods}
+\label{subsec:wavenumber-analysis}
 
 For DNS applications, the relevant measure of accuracy of a
 finite difference scheme is obtained from the so-called
@@ -170,7 +171,7 @@ associated with the turbulence.
 For this purpose,
 higher order explicit schemes
 may be considered.
-While they are traightforward to compute,
+While they are straightforward to compute,
 they are associated with large stencil widths.
 In most applications,
 large stencil widths are undesirable.
@@ -186,8 +187,9 @@ From \ref{fig:modified-wavenumbers},
 it is clear that the compact schemes are better
 able to compute derivatives for larger wavenumbers
 for a given stencil width.
-Thus, they are widely used in
-CFD for evaluation of spatial derivatives.
+This makes them the superior choice for DNS,
+in which the flow quantities
+exhibit spatial variation associated with high wavenumbers.
 
 \subsection{General form of compact finite difference schemes}
 \label{subsec:gen-form-compact}

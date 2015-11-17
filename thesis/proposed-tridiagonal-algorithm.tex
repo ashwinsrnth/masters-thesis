@@ -1,5 +1,7 @@
 \chapter{Proposed tridiagonal algorithm}
 
+\section{Modified cyclic reduction for near-Toeplitz systems}
+
 Here, we explore the idea of
 exploiting the relatively simple matrix structure
 of the coefficient matrix appearing in
@@ -36,12 +38,8 @@ These matrices appear in a wide range of applications
 such as alternating direction implicit methods,
 line relaxation methods,
 and numerical solutions to one-dimensional differential equations.
-In this chapter,
-we will describe an efficient solver for solving such
+We describe an efficient solver for solving such
 near-Toeplitz tridiagonal systems efficiently on GPUs.
-
-\section{Modified cyclic reduction for near-Toeplitz systems}
-
 \subsection{Forward reduction}
 
 The forward reduction phase reduces
@@ -258,8 +256,10 @@ for i in range(n-1):
     stride /= 2
     backSubstitutionKernel(num_blocks=nrhs, block=n/stride)
 \end{minted}
+\caption{Global memory implementation of cyclic reduction (host code)}
+\label{listing:global-memory-implementation}
 \end{listing}
-
+%
 The precomputed coefficient arrays and right hand
 are accessed by the kernels from global memory.
 The kernel suffers from
