@@ -301,9 +301,9 @@ the following \emph{third-order} accurate
 approximations are used:
 
 \begin{align}
-    f^{\prime}_1 + 2f^{\prime}_2 = \frac{-5f_1 + 4f_2 + f_3}{dx} \\
+    f^{\prime}_1 + 2f^{\prime}_2 &= \frac{-5f_1 + 4f_2 + f_3}{dx} \\
     f^{\prime}_{n} + 2f^{\prime}_{n-1}
-    =
+    &=
     \frac{5f_{n} - 4f_{n-2} -  f_{n-1}}{dx}
 \end{align}
 %
@@ -659,7 +659,7 @@ We list the primary considerations here:
 \section{Tridiagonal solvers for compact finite difference evaluation}
 
 As mentioned in \ref{sec:tridiagonal-compact-schemes},
-this work is concernted with
+this work is concerned with
 \emph{tridiagonal} compact finite differences
 for their relative ease in evaluation.
 The resulting tridiagonal system must be solved
@@ -672,8 +672,11 @@ Thus, the compact finite difference evaluation
 effectively requires the solution of a tridiagonal system
 for several right hand sides.
 In this section,
-we describe the applicability of several algorithms
+we describe the applicability of some algorithms
 for solving this problem on the GPU.
+We refer to ~\cite{chang2014guide} for
+a more comprehensive list of algorithms,
+along with details of their GPU implementation.
 
 \subsection{Thomas algorithm}
 
@@ -783,21 +786,21 @@ The process is repeated until a system of
 2 equations in 2 unknowns is left.
 
 \begin{align} 
-& a^{\prime}_i = -a_{i-1}k_1 \
-    \label{eqn:forward-reduction-1}& \\
-& b^{\prime}_i = b_i - c_{i-1}k_1 - a_{i+1}k_2 \
-    \label{eqn:forward-reduction-2}& \\
-& c^{\prime}_i = -c_{i+1}k_2 \
-    \label{eqn:forward-reduction-3}& \\
-& d^{\prime}_i = d_i - d_{i-1}k_1  - d_{i+1}k_2 \
-    \label{eqn:forward-reduction-4}&
+    a^{\prime}_i &= -a_{i-1}k_1 \
+    \label{eqn:forward-reduction-1} \\
+    b^{\prime}_i &= b_i - c_{i-1}k_1 - a_{i+1}k_2 \
+    \label{eqn:forward-reduction-2} \\
+    c^{\prime}_i &= -c_{i+1}k_2 \
+    \label{eqn:forward-reduction-3} \\
+    d^{\prime}_i &= d_i - d_{i-1}k_1  - d_{i+1}k_2 \
+    \label{eqn:forward-reduction-4}
 \end{align}
 %
 where,
 
 \begin{align}
-& k_1 = \frac{a_i}{b_{i-1}} \label{eqn:k1-update}& \\
-& k_2 = \frac{c_i}{b_{i+1}} \label{eqn:k2-update}&
+    k_1 &= \frac{a_i}{b_{i-1}} \label{eqn:k1-update} \\
+    k_2 &= \frac{c_i}{b_{i+1}} \label{eqn:k2-update}
 \end{align}
 
 The 2-by-2 system of equations is solved trivially,
@@ -807,24 +810,28 @@ every odd-indexed unknown $x_i$ is solved for by
 substituting the known values of $x_{i-1}$ and $x_{i+1}$
 [Eq. (\ref{eqn:backward-substitution})].
 
-\begin{align} \label{eqn:backward-substitution}
+\begin{equation} \label{eqn:backward-substitution}
 x_i = \frac{d^{\prime}_i - a^{\prime}_ix_{i-1} - \
     c^{\prime}_ix_{i+1}}{b^{\prime}_i}
-\end{align}
+\end{equation}
 %
 For the last index $i=n$,
 the forward reduction step is instead:
 \begin{align} \label{eqn:forward-reduction-last}
-    & a^{\prime}_n = -a_{n-1}k_1 & \\
-    & b^{\prime}_n = b_n - c_{n-1}k_1 & \\
-    & d^{\prime}_n = d_n - d_{n-1}k_1&
+    a^{\prime}_n &= -a_{n-1}k_1  \\
+    b^{\prime}_n &= b_n - c_{n-1}k_1  \\
+    d^{\prime}_n &= d_n - d_{n-1}k_1
 \end{align}
 %
 And for $i=1$, the backward substitution step is instead:
 
-\begin{align} \label{eqn:backward-substitution-first}
+\begin{equation} \label{eqn:backward-substitution-first}
 x_1 = \frac{d^{\prime}_1 - c^{\prime}_1x_{2}}{b^{\prime}_1}
-\end{align}
+\end{equation}
+%
+In practice, the right-hand side vector can be safely
+overwritten with the solution values
+in backward substitution.
 
 Thus, in the best case ($n$ parallel processors),
 cyclic reduction requires 
@@ -856,6 +863,7 @@ Further, unlike CR,
 PCR can be implemented free of bank conflicts.
 
 \subsection{Cyclic reduction implementation on GPUs}
+\label{subsec:cyclic-reduction-gpu-implementation}
 
 The algorithm proposed in this work is based on cyclic reduction,
 so it is pertinent to discuss the
@@ -893,14 +901,20 @@ During the forward reduction phase,
 
 the threads assigned to each even index $i$
 compute the coefficients
-$a_i^\prime$, $b_i^\prime$ and $c_i^\prime$.
-In practice, the coefficients are updated \emph{in-place}.
+and right hand side for the reduced tridiagonal system
+$a_i^\prime$, $b_i^\prime$ and $c_i^\prime$
+and $d_i^\prime$.
+In practice, the coefficients and right hand side
+are updated \emph{in-place}.
 Figure \ref{fig:forward-reduction-step} shows the updates
 to the coefficient array $\bm{b}$
-in the first forward reduction step).
+in the first forward reduction step,
+a similar pattern is seen for the arrays
+$\bm{a}$, $\bm{c}$ and $\bm{d}$.
 In each step of forward reduction,
-a thread accesses values from the coefficient arrays
-$\bm{a}$, $\bm{b}$ and $\bm{c}$ in a \emph{strided} fashion.
+a thread accesses values from the
+coefficient arrays and right hand side
+in a \emph{strided} fashion.
 At every subsequent step,
 this stride is doubled, while the number of active threads is halved
 \ref{fig:cyclic-reduction}.
@@ -908,31 +922,41 @@ In the backward substitution phase,
 the strides are halved at each step,
 while the number of active threads is doubled.
 
-This \emph{hourglass} pattern results in low GPU utilization
-towards the end of forward reduction
-and the beginning of back substitution.
-Further,
-the long-strided memory accesses towards the end
-of the forward reduction
-and the beginning of backward substitution
-is problematic for both
-global memory and shared memory implementations.
-The global memory access is \emph{uncoalesced},
-leading to severe performance penalties.
-The use of shared memory can prevent
-long-strided global memory access.
-Unfortunately,
-the power-of-two strides at each successive
-leads to bank conflicts,
-as described in Sec. \ref{subsubsec:shared-memory}.
-The bank conflicts become increasingly severe
-at each forward reduction phase,
-and decreasingly so during the back substitution phase.
-The limited amount of shared memory places restricions
-on the size of tridiagonal systems that can be solved,
-and also on the number of blocks that can run in parallel.
+Thus, the following issues are encountered
+while implementing cyclic reduction for GPUs:
 
-Despite these problems,
+\begin{enumerate}
+    \item GPU utilization is low towards the end of forward reduction,
+        and in the beginning of backward substitution.
+
+    \item Because coefficients and right hand sides
+        are updated \emph{in-place},
+        synchronization between the blocks is required at
+        the end of each step.
+
+    \item If the threads work entirely with global memory,
+        memory accesses are increasingly
+        \emph{uncoalesced} in the forward reduction phase
+        (and become increasingly coalesced in the
+        backward substitution phase).
+
+    \item The use of shared memory prevents
+        uncoalesced global memory access.
+        Unfortunately,
+        the power-of-two strides at each successive
+        leads to bank conflicts,
+        as described in Sec. \ref{subsubsec:shared-memory}.
+        The bank conflicts become increasingly severe
+        at each forward reduction phase,
+        and decreasingly so during the back substitution phase.
+        
+    \item The limited amount of shared memory places restricions
+        on the size of tridiagonal systems that can be solved,
+        and also on the number of systems that can be solved
+        concurrently.
+\end{enumerate}
+
+Despite these issues,
 cyclic reduction remains an attractive algorithm
 for GPUs,
 for its low algorithmic complexity,
@@ -943,7 +967,8 @@ and addressing the issues discussed.
 Zhang et al. \cite{Zhang2010FTS} propose a
 \emph{hybrid} solver
 that uses both cyclic reduction and parallel cyclic reduction
-to reduce bank conflicts.
+to reduce the number and severity of bank conflicts,
+and also to have better thread activity overall.
 G{\"o}dekke et al. \cite{GoSt11CR}
 use a method of separately storing
 the even and odd indexed equations
@@ -958,9 +983,8 @@ Esfahanian et. al, \cite{esfahanian2014efficient}
 avoid shared memory (and associated bank conflicts entirely)
 using a data rearrangement scheme to improve global memory access.
 Our approach takes a different route,
-and is focussed on near-Toeplitz systems---exploiting
+and is focussed on \emph{near-Toeplitz} systems---exploiting
 the relatively simple matrix structure
 to reduce the number of computations and memory accesses
 performed by each thread
 at every cyclic reduction step.
-

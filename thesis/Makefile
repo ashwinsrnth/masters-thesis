@@ -36,7 +36,7 @@ $(TARGET).pdf: $(SOURCES)
 	@echo "-------------------------------------------------------------------------------"
 	@echo "-- Running 'pdflatex $(TARGET).tex'"
 	@echo "-------------------------------------------------------------------------------"
-	@pdflatex $(TARGET).tex
+	@pdflatex -shell-escape $(TARGET).tex
 
 	@echo ""
 	@echo "-------------------------------------------------------------------------------"
@@ -48,7 +48,7 @@ $(TARGET).pdf: $(SOURCES)
 	@echo "-------------------------------------------------------------------------------"
 	@echo "-- Rerunning 'pdflatex $(TARGET).tex' to get cross-references right"
 	@echo "-------------------------------------------------------------------------------"
-	@pdflatex $(TARGET).tex
+	@pdflatex -shell-escape $(TARGET).tex
 
 	@latex_count=5 ; \
 	while egrep -s 'Rerun (LaTeX|to get cross-references right)' \
@@ -58,7 +58,7 @@ $(TARGET).pdf: $(SOURCES)
 		echo "-------------------------------------------------------------------------------";\
 		echo "-- Rerunning 'pdflatex $(TARGET).tex' to get cross-references right" ;\
 		echo "-------------------------------------------------------------------------------";\
-		pdflatex $(TARGET).tex ;\
+		pdflatex -shell-escape $(TARGET).tex ;\
 		latex_count=`expr $$latex_count - 1` ;\
 	done
 	make evince
