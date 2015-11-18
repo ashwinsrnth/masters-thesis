@@ -133,8 +133,7 @@ multiple GPUs attached to the same PCI-e bus.
 In this case, every GPU is visible to the host,
 and the GPUs read from and write into
 the same host memory space.
-The domain is divided into a number of
-into ``subdomains'',
+The domain is divided into a number of `subdomains'',
 as shown in \ref{fig:compact-shared-gpu}.
 The domain decomposition is done such that
 only a single subdomain is used along the
@@ -158,9 +157,9 @@ set of grid lines to solve.
 \end{figure}
 
 For larger problems,
-a distributed system may be required.
+a distributed system is nearly always required.
 Here, the simplest strategy is to use a domain decomposition
-as shown in \ref{fig:compact-distributed-restricted}.
+as shown in Fig. \ref{fig:compact-distributed-restricted}.
 Here again, 
 no inter-GPU communication is required.
 By restricting the distribution along one coordinate direction,
@@ -230,7 +229,6 @@ right-most grid points in the subdomain of
 GPU 2.
 Thus, a ``swapping'' of the boundary information
 is required at each of the subdomain boundaries.
-
 The solution of the distributed tridiagonal systems
 involves much more complexity,
 and is discussed in detail in the next section.
@@ -319,7 +317,7 @@ u_m^p
 0 \\
 \vdots \\
 0
-\end{bmatrix} & \label{eqn:secondary-system-1-expanded} \\
+\end{bmatrix} & \label{eqn:secondary-system-1-expanded} 
 \end{align}
 %
 \begin{align}
@@ -351,11 +349,13 @@ l_m^p
 \end{align}
 %
 We refer to the subsystem in Eq. (\ref{eqn:primary-system-expanded})
-the ``primary'' system, and the subsystems in
+as the ``primary'' system,
+and the subsystems in
 Eqs. (\ref{eqn:secondary-system-1-expanded}) and
 (\ref{eqn:secondary-system-2-expanded})
-the ``secondary'' systems.
-Additionally, the following ``reduced'' system is solved:
+as the ``secondary'' systems.
+Additionally, the following ``reduced'' system
+must be constructed andsolved:
 
 \begin{align} \label{eqn:reduced-system}
 &
@@ -432,7 +432,7 @@ and the system is solved for each right hand side.
 
 \section{GPU implementation}
 
-Our algorithm is outlined in \ref{fig:compact-algorithm},
+Our algorithm is outlined in Fig. \ref{fig:compact-algorithm},
 and is described for the case of evaluating derivatives
 in the direction along which successive
 function values in a subdomain are stored contiguously in memory,
@@ -463,6 +463,7 @@ is described in Table \ref{table:compact-algorithm}.
 \begin{table}[]
 \centering
 \caption{Purpose of kernels and MPI calls in compact finite difference application}
+
 \label{table:compact-algorithm}
 \begin{tabular}{|l|p{6cm}|}
 \hline
@@ -490,7 +491,7 @@ sumSolutionsKernel  & Sum the primary and secondary solutions
 \end{tabular}
 \end{table}
 
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
 \includegraphics[width=200pt]{img/constructing-reduced-system.eps}
 \caption{Construction of the reduced system and scattering of parameters.}
