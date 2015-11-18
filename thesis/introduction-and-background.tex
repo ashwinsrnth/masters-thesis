@@ -128,7 +128,7 @@ finite difference approximation
 For a given order of derivative,
 finite difference approximation of arbitrary stencil widths
 may be derived,
-with larger stencils associated with higher accuracy~\cite{fornberg1988generation}.
+with larger stencils associated with higher accuracy \cite{fornberg1988generation}.
 In the evaluation of spatial derivatives,
 the above schemes are referred to as \emph{explicit}
 schemes, as the derivative at each point
@@ -164,7 +164,7 @@ a relation of the form:
 \end{equation}
 %
 where $\alpha$, $\beta$, $a$, $b$, $c$, etc.,
-are parameters that must satisfy certain constraints ~\cite{kennedy1994several,lele1992compact},
+are parameters that must satisfy certain constraints \cite{kennedy1994several,lele1992compact},
 and $h$ is the space between two grid points.
 We note that for equations of the form in Eq. (\ref{eqn:general-compact}),
 the derivative at any points $i$ cannot be computed explicitly.
@@ -214,7 +214,7 @@ The ability of a finite difference scheme
 to accommodate large wavenumbers
 is extremely relevant in
 computational fluid dynamics applications
-~\cite{KravchenkoEffNumErr}.
+\cite{KravchenkoEffNumErr}.
 In DNS, the scheme
 \emph{must} capture the
 rapidly varying characteristics of the flow
@@ -261,9 +261,9 @@ Secondly,
 the width of the boundary stencils
 must be lower than the interior stencils,
 as higher order boundary stencils are unstable
-~\cite{kennedy1994several}.
+\cite{kennedy1994several}.
 In general, boundary equations for the first derivative
-are of the following form ~\cite{lele1992compact}:
+are of the following form \cite{lele1992compact}:
 
 \begin{equation}
     f_1^{\prime} + \alpha^{\prime}f_2^{\prime} = \
@@ -363,7 +363,7 @@ Similar tridiagonal schemes are available
 to evaluate higher order derivatives.
 Compact schemes for
 second, third and fourth derivatives
-are derived in ~\cite{lele1992compact}.
+are derived in \cite{lele1992compact}.
 
 \section{Graphics processing units}
 
@@ -393,7 +393,7 @@ mainstream in high-performance computing.
 A history of the development of GPUs
 for general purpose computation,
 and of CUDA specifically is available
-in ~\cite{HwuBook}.
+in \cite{HwuBook}.
 We provide the essential and relevant details about CUDA here,
 and refer to the
 CUDA Programming Guide \cite{CUDAProgrammingGuide}
@@ -478,7 +478,7 @@ using just 1-dimensional grids and blocks.
 \end{center}
 \caption{Scheduling of blocks to streaming microprocessors---GPUs
     with more SMs are able to execute more blocks concurrently.
-(\emph{CUDA Programming Guide ~\cite{CUDAProgrammingGuide}})}
+(\emph{CUDA Programming Guide \cite{CUDAProgrammingGuide}})}
 \label{fig:gpu-scaling}
 \end{figure}
 
@@ -685,7 +685,7 @@ for several right hand sides.
 In this section,
 we describe the applicability of some algorithms
 for solving this problem on the GPU.
-We refer to ~\cite{chang2014guide} for
+We refer to \cite{chang2014guide} for
 a more comprehensive list of algorithms,
 along with details of their GPU implementation.
 
@@ -732,7 +732,7 @@ The algorithm is derived
 from the more general Gaussian (LU) algorithm
 applied to tridiagonal matrices.
 Implementations of this algorithm are relatively straightforward
-and compact ~\cite{numericalrecipes}.
+and compact \cite{numericalrecipes}.
 Only the non-zero diagonals of the tridiagonal matrix
 are stored,
 and the algorithm performs $2N$ steps
@@ -872,7 +872,7 @@ required by CR ($log_2(n)$),
 but does significantly more computation per-step.
 Further, unlike CR,
 PCR can be implemented free of bank conflicts
-~\cite{Zhang2010FTS}.
+\cite{Zhang2010FTS}.
 
 \subsection{Cyclic reduction implementation on GPUs}
 \label{subsec:cyclic-reduction-gpu-implementation}
