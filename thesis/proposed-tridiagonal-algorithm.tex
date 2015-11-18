@@ -39,7 +39,7 @@ such as alternating direction implicit methods,
 line relaxation methods,
 and numerical solutions to one-dimensional differential equations.
 We describe an approach for solving such
-near-Toeplitz tridiagonal systems efficiently on GPUs.
+\emph{near-Toeplitz} tridiagonal systems efficiently on GPUs.
 
 Below, we present the effect of the matrix structure
 [Eq. (\ref{eqn:toeplitz-matrix})] on the
@@ -72,14 +72,14 @@ the reduced systems appearing in the
 forward reduction steps,
 and reuse them for each right-hand side.
 We note that for a general tridiagonal system,
-this requires storage for $3.(2N - 2)$ coefficients,
-in addition to the $3N$ coefficients
+this requires storage for $3.(2n - 2)$ coefficients,
+in addition to the $3n$ coefficients
 for the original tridiagonal system.
 
 Let us consider the case
 when the tridiagonal system is \emph{near-Toeplitz},
 i.e., when the coefficient matrix is of the form
-$A$ in Eq. \ref{eqn:toeplitz-matrix}.
+$A$ in Eq. (\ref{eqn:toeplitz-matrix}).
 We examine the effect of the
 first forward reduction step by making the following substitutions
 in Eqs. (\ref{eqn:forward-reduction-1}) -
@@ -94,16 +94,16 @@ in Eqs. (\ref{eqn:forward-reduction-1}) -
 We observe that the resulting coefficients
 $a_i^\prime$, $b_i^\prime$ and $c_i^\prime$
 correspond to the coefficients of a tridiagonal matrix with
-exactly the near-Toeplitz structure of $A$.
+exactly the \emph{near-Toeplitz} structure of $A$.
 This form-preserving property of cyclic reduction
 has been reported for block Toeplitz tridiagonal systems
 by Bini et al. \cite{bini}.
 
 The fact that the reduced system at each step
-is near-Toeplitz can be exploited
+is \emph{near-Toeplitz} can be exploited
 to reduce the cost of
 precomputing and storing the coefficients.
-Each near-Toeplitz matrix is completely defined
+Each \emph{near-Toeplitz} matrix is completely defined
 by only a handful of coefficients:
 $\{b_1, c_1, a_0, b_0, c_0, a_n, b_n\}$,
 making its storage extremely compact
@@ -164,9 +164,9 @@ coefficient computed for $i = 1$ at step $m$.
 \section{Implementation}
 
 In this section, we describe the implementation of a GPU solver
-for solving a given near-Toeplitz tridiagonal system
+for solving a given \emph{near-Toeplitz} tridiagonal system
 for multiple right hand sides.
-Our implementation uses
+Our implementation uses the
 NVIDIA CUDA platform for programming the GPU,
 but is easily translated to OpenCL.
 The Python programming language is used
@@ -210,7 +210,7 @@ system at the end of the forward reduction phase,
 i.e., for $m=log_2(n)-1$,
 and they are not stored for the previous steps.
 Similarly, the values $c_1^m$ are equal to $c_0^m$,
-and do not require special storage.
+and do not require separate storage.
 The set of precomputed coefficients required to be stored is then
 $\{a_0^m, b_0^m, c_0^m, k_1^m, k_2^m, b_1^m, k_{1,1}^m, k_{1,n}^m\}$.
 Each of these ``coefficient arrays'' are computed on the CPU
@@ -318,4 +318,4 @@ Secondly, the strided access to the
 right-hand side values leads to bank-conflicts.
 However, the number of bank conflicts is significantly smaller
 than in cyclic reduction implementations for general tridiagonal systems,
-due the reduced number of computations performed.
+due to the reduced number of computations performed.

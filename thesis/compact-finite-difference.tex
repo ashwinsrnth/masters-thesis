@@ -94,7 +94,7 @@ the ``fastest'' coordinate direction.
 \end{center}
 \end{figure}
 
-For a single GPU \ref{fig:compact-single-gpu},
+For a single GPU (Fig. \ref{fig:compact-single-gpu}),
 when calculating the right hand sides,
 each point in the grid is mapped to a single thread,
 and each thread applies the required stencil operation
@@ -104,7 +104,7 @@ apply a different stencil from the interior threads.
 The implementation of GPU kernels for
 stencil operations such as these is a topic of wide study.
 The most important considerations were brought out
-in the paper by Micikevicius et al. ~\cite{micikevicius20093d}.
+in the paper by Micikevicius et al. \cite{micikevicius20093d}.
 For solving the tridiagonal systems,
 each thread block of the GPU is mapped to a
 different \emph{grid line}
