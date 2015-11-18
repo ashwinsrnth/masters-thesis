@@ -10,7 +10,7 @@ extremely fine computational grids to
 discretize the flow domain,
 and some numerical method for solving the
 flow equations on this grid.
-By far the most popular numerical approach for
+Among the most popular numerical approaches for
 solving the flow equations
 is the \emph{finite difference method}.
 The finite difference method approximates the
@@ -20,7 +20,7 @@ using finite difference schemes.
 \emph{Compact finite difference schemes} are a class
 of finite difference schemes that have found widespread
 adoption in DNS codes
-for their high order of accuracy.
+for their high order of accuracy and small stencil widths.
 The evaluation of compact finite differences
 requires the repeated solution of \emph{banded} linear systems,
 making them fairly complex and expensive computationally.
@@ -64,8 +64,9 @@ memory hierarchy and compute ability.
 
 The objective of this work is to develop an
 approach for evaluating
-compact finite differences
-on multiple GPUs in a distributed system.
+compact finite differences---and
+other numerical schemes leading to tridiagonal systems---on
+multiple GPUs in a distributed system.
 This is of interest because
 the evaluation of spatial derivatives using
 compact finite difference schemes is one of the most
@@ -149,8 +150,8 @@ a relation of the form:
 %
 \begin{equation}
 \begin{split}
+    f_i^{\prime} + \
     \alpha(f^{\prime}_{i-1} + f^{\prime}_{i+1}) + \
-        f^{\prime}_i
     \beta(f^{\prime}_{i-2} + f^{\prime}_{i+2}) + \
     \hdots
     = 
@@ -163,8 +164,9 @@ a relation of the form:
 \end{equation}
 %
 where $\alpha$, $\beta$, $a$, $b$, $c$, etc.,
-are parameters that must satisfy certain constraints ~\cite{lele1992compact}.
-We note that for equations of the form in Eq. \ref{eqn:general-compact},
+are parameters that must satisfy certain constraints ~\cite{kennedy1994several,lele1992compact},
+and $dx$ is the space between two grid points.
+We note that for equations of the form in Eq. (\ref{eqn:general-compact}),
 the derivative at any points $i$ cannot be computed explicitly.
 Instead, we must write similar equations for \emph{all} points $i$
 in the range.
@@ -173,7 +175,7 @@ with unknowns \{$f^{\prime}_1$, $f^{\prime}_2$, $\hdots$, $f^{\prime}_n$\},
 which may be represented by the matrix system $A\bm{x}=\bm{d}$,
 where $\bm{x}$ is the vector
 \{$f^{\prime}_1$, $f^{\prime}_2$, $\hdots$, $f^{\prime}_n$\},
-$\bm{d}$ is a vector of right hand sides [Eq.\ref{eqn:general-compact}],
+$\bm{d}$ is a vector of right hand sides [Eq. (\ref{eqn:general-compact})],
 and $A$ is, in general, a \emph{banded} matrix.
 
 \subsection{Wavenumber analysis of finite difference methods}
@@ -199,8 +201,10 @@ in Fig. \ref{fig:modified-wavenumbers}.
 \begin{center}
 \includegraphics[height=250pt]{fig/modified-wavenumbers.eps}
 \end{center}
-\caption{Modified wavenumbers for three different schemes
-    with the same stencil width.
+\caption{Modified wavenumbers for different finite difference schemes.
+    $k^\prime$ is the wavenumber of the approximated derivative,
+    while $k$ is wavenumber of the exact derivative.
+    $h$ represents the spacing between two grid points.
     The compact schemes better estimate the derivative
     for higher wavenumbers.}
 \label{fig:modified-wavenumbers}
@@ -230,7 +234,7 @@ the amount of boundary information that must be exchanged
 between parallel processes increases,
 which can seriously affect overall performance.
 
-From \ref{fig:modified-wavenumbers},
+From Fig. \ref{fig:modified-wavenumbers},
 it is clear that the compact schemes are better
 able to compute derivatives for larger wavenumbers
 for a given stencil width.
@@ -243,7 +247,7 @@ exhibit spatial variation associated with high wavenumbers.
 One of the advantages of the compact finite difference approach
 is that it accommodates \emph{non-periodic} boundary conditions.
 This is in contrast to other methods used in DNS,
-such as the \emph{spectral} methods.
+such as \emph{spectral} methods.
 We note that the Eq. (\ref{eqn:general-compact})
 cannot be applied near the boundary points.
 At the boundaries,
@@ -262,8 +266,8 @@ In general, boundary equations for the first derivative
 are of the following form ~\cite{lele1992compact}:
 
 \begin{equation}
-    f_1^{\prime} + \alpha f_2^{\prime} = \
-        \frac{1}{h}(af_1 + bf_2 + cf_3 + df_4)
+    f_1^{\prime} + \alpha^{\prime}f_2^{\prime} = \
+        \frac{1}{dx}(a^{\prime}f_1 + b^{\prime}f_2 + c^{\prime}f_3 + d^{\prime}f_4)
 \label{eqn:boundary-compact}
 \end{equation}
 
@@ -283,11 +287,11 @@ and the derivatives are straightforward to evaluate:
 this simply involves the
 application of the right-hand side stencil at each point.
 When $\alpha \neq 0, \beta = \hdots$ = 0,
-$A$ is \emph{tridiagonal}.
+$A$ is tridiagonal.
 The evaluation of the derivatives requires
 the solution of the resulting tridiagonal system.
 When $\alpha \neq 0$ and $\beta \neq  0$,
-pentadiagonal and higher-bandwidth systems arise.
+pentadiagonal systems arise.
 These can be more expensive and difficult to evaluate
 than tridiagonal systems
 using a direct method.
@@ -298,7 +302,7 @@ to tridiagonal systems.
 An example of such a scheme is obtained
 by substituting 
 $\beta = 0$, $\alpha = \frac{1}{4}$ and $a = \frac{3}{4}$
-in Eq. \ref{eqn:general-compact}
+in Eq. (\ref{eqn:general-compact})
 (all other coefficients are set to zero).
 This leads to a fourth-order accurate
 tridiagonal compact finite difference scheme,
@@ -343,15 +347,15 @@ The resulting tridiagonal system is then:
    \end{bmatrix}
  =
  \begin{bmatrix}
-     \frac{-5f_1 + 4f_2 + f_3}{2}\\
-     \frac{3(f_{3} - f_{1})}{4}\\
-     \frac{3(f_{4} - f_{2})}{4}\\
+     \frac{-5f_1 + 4f_2 + f_3}{2dx}\\
+     \frac{3(f_{3} - f_{1})}{4dx}\\
+     \frac{3(f_{4} - f_{2})}{4dx}\\
      \vdots\\
      \vdots\\
      \vdots\\
      \vdots\\
-     \frac{3(f_{n} - f_{n-2})}{4}\\
-     \frac{5f_{n} - 4f_{n-1} - f_{n-2}}{2}
+     \frac{3(f_{n} - f_{n-2})}{4dx}\\
+     \frac{5f_{n} - 4f_{n-1} - f_{n-2}}{2dx}
   \end{bmatrix}
 \end{equation}
 
@@ -403,7 +407,7 @@ as well as the application programming interface
 for programming their GPUs.
 CUDA allows general-purpose applications to be
 more easily programmed for the GPU.
-Two essential features of the CUDA programming modl
+Two essential features of the CUDA programming model
 are \emph{kernels} and \emph{thread organization}.
 
 \subsubsection{Kernels}
@@ -490,7 +494,7 @@ and an SM can execute several thread blocks concurrently.
 It is imperative that blocks are able to run
 independently, in series or in parallel.
 This feature gives CUDA programs
-their scalability \ref{fig:gpu-scaling}.
+their scalability (Fig. \ref{fig:gpu-scaling}).
 The same program runs faster on a GPU with a larger number
 of SMs, simply because more blocks may run concurrently.
 The number of thread blocks that an
@@ -547,7 +551,7 @@ are good candidates for placement in shared memory
 The contents of shared memory are managed by the kernel code,
 and for this reason,
 shared memory is often viewed as explicitly managed cache.
-Data in shared memory does\emph{not} persist after
+Data in shared memory does \emph{not} persist after
 kernel execution.
 
 \begin{figure}
@@ -653,7 +657,7 @@ We list the primary considerations here:
         Ideally,
         data is read into the device from the host \emph{once}
         and from the device to the host \emph{once}.
-    \item Thread access to global memory must \emph{coalesced},
+    \item Thread access to global memory must be \emph{coalesced},
         i.e., successive threads must read successive locations
         in global memory.
     \item Shared memory access must be free of bank conflicts
@@ -888,7 +892,7 @@ systems are mapped to blocks and
 indices are mapped to individual threads.}
 \label{fig:gpu-mapping}
 \end{figure}
-
+%
 In the GPU implementation of cyclic reduction,
 blocks are assigned to tridiagonal systems
 (when solving multiple systems),
@@ -898,15 +902,6 @@ are assigned to equations, or \emph{indices}
 In this way, several grid lines are solved concurrently
 by the GPU.
 During the forward reduction phase,
-
-\begin{figure}
-\begin{center}
-\includegraphics[height=200pt]{img/forward-reduction-step.eps}
-\end{center}
-\caption{Updating $\bm{b}$ in the first forward reduction step.}
-\label{fig:forward-reduction-step}
-\end{figure}
-
 the threads assigned to each even index $i$
 compute the coefficients
 and right hand side for the reduced tridiagonal system
@@ -930,38 +925,45 @@ In the backward substitution phase,
 the strides are halved at each step,
 while the number of active threads is doubled.
 
-Thus, the following issues are encountered
-while implementing cyclic reduction for GPUs:
+\begin{figure}
+\begin{center}
+\includegraphics[height=200pt]{img/forward-reduction-step.eps}
+\end{center}
+\caption{Updating $\bm{b}$ in the first forward reduction step.}
+\label{fig:forward-reduction-step}
+\end{figure}
+
+Several issues are encountered in the GPU implementation:
 
 \begin{enumerate}
-    \item GPU utilization is low towards the end of forward reduction,
-        and in the beginning of backward substitution.
+\item GPU utilization is low towards the end of forward reduction,
+    and in the beginning of backward substitution.
 
-    \item Because coefficients and right hand sides
-        are updated \emph{in-place},
-        synchronization between the blocks is required at
-        the end of each step.
+\item Because coefficients and right hand sides
+    are updated \emph{in-place},
+    synchronization between the blocks is required at
+    the end of each step.
 
-    \item If the threads work entirely with global memory,
-        memory accesses are increasingly
-        \emph{uncoalesced} in the forward reduction phase
-        (and become increasingly coalesced in the
-        backward substitution phase).
+\item If the threads work entirely with global memory,
+    memory accesses are increasingly
+    \emph{uncoalesced} in the forward reduction phase
+    (and become increasingly coalesced in the
+    backward substitution phase).
 
-    \item The use of shared memory prevents
-        uncoalesced global memory access.
-        Unfortunately,
-        the power-of-two strides at each successive
-        leads to bank conflicts,
-        as described in Sec. \ref{subsubsec:shared-memory}.
-        The bank conflicts become increasingly severe
-        at each forward reduction phase,
-        and decreasingly so during the back substitution phase.
-        
-    \item The limited amount of shared memory places restrictions
-        on the size of tridiagonal systems that can be solved,
-        and also on the number of systems that can be solved
-        concurrently.
+\item The use of shared memory prevents
+    uncoalesced global memory access.
+    Unfortunately,
+    the power-of-two strides at each successive
+    leads to bank conflicts,
+    as described in Sec. \ref{subsubsec:shared-memory}.
+    The bank conflicts become increasingly severe
+    at each forward reduction phase,
+    and decreasingly so during the back substitution phase.
+    
+\item The limited amount of shared memory places restrictions
+    on the size of tridiagonal systems that can be solved,
+    and also on the number of systems that can be solved
+    concurrently.
 \end{enumerate}
 
 Despite these issues,
@@ -970,8 +972,8 @@ for GPUs,
 for its low algorithmic complexity,
 and lower work per step compared to PCR.
 Much work has been done on
-optimizing cyclic reduction performance on GPUs,
-and addressing the issues discussed.
+addressing these problems and
+optimizing cyclic reduction performance on GPUs.
 Zhang et al. \cite{Zhang2010FTS} propose a
 \emph{hybrid} solver
 that uses both cyclic reduction and parallel cyclic reduction
@@ -987,12 +989,11 @@ describe the method of
 \emph{register packing}---performing more computations
 on \emph{registers}, rather than shared memory---as
 a means to reduce shared memory usage in cyclic reduction.
-Esfahanian et. al, \cite{esfahanian2014efficient}
+Esfahanian et al. \cite{esfahanian2014efficient}
 avoid shared memory (and associated bank conflicts entirely)
 using a data rearrangement scheme to improve global memory access.
 Our approach takes a different route,
-and is focussed on \emph{near-Toeplitz} systems---exploiting
-the relatively simple matrix structure
+and is focussed on exploiting the specific matrix structure
 to reduce the number of computations and memory accesses
 performed by each thread
 at every cyclic reduction step.

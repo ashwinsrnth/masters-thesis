@@ -38,8 +38,14 @@ These matrices appear in a wide range of applications
 such as alternating direction implicit methods,
 line relaxation methods,
 and numerical solutions to one-dimensional differential equations.
-We describe an efficient solver for solving such
+We describe an approach for solving such
 near-Toeplitz tridiagonal systems efficiently on GPUs.
+
+Below, we present the effect of the matrix structure
+[Eq. (\ref{eqn:toeplitz-matrix})] on the
+forward reduction and backward substitution phases of
+the cyclic reduction algorithm.
+
 \subsection{Forward reduction}
 
 The forward reduction phase reduces
@@ -178,7 +184,7 @@ spanning no more than 100 lines of code.
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=200pt]{img/cyclic-reduction-precomputing.eps}
+\includegraphics[height=250pt]{img/cyclic-reduction-precomputing.eps}
 \end{center}
 \caption{Maximum storage required for forward reduction coefficients
 at all steps $m=1, 2, ... log_2(n)-1$}

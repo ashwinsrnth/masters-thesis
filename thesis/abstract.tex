@@ -1,19 +1,20 @@
 \chapter*{Abstract}
 
 \emph{Compact} finite difference schemes are widely used
-in the direct numerical simulation of fluid flows,
+in the direct numerical simulation of fluid flows
 for their ability to better resolve the small scales of turbulence.
 However, they can be expensive to evaluate and
 difficult to parallelize.
 In this work, we present an approach for the computation
 of compact finite differences
+and similar tridiagonal schemes
 on graphics processing units (GPUs).
 We present a variant of the \emph{cyclic reduction} 
 algorithm for solving the
 tridiagonal linear systems that arise in such numerical schemes.
 We study the impact of the matrix structure on
 the cyclic reduction algorithm
-and show that that precomputing
+and show that precomputing
 forward reduction coefficients can be
 especially effective for obtaining good performance.
 Our tridiagonal solver is able to outperform
@@ -24,4 +25,4 @@ In addition,
 we present a parallelization strategy for GPU-accelerated clusters,
 and show scalabality
 of a 3-D compact finite difference application
-for up to 64 GPUs on the Palmetto cluster.
+for up to 64 GPUs on Clemson's Palmetto cluster.
