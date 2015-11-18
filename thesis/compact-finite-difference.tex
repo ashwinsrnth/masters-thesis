@@ -39,7 +39,7 @@ parallelism becomes mandatory.
 We have spoken so far of GPUs as massively parallel systems.
 However, each GPU has a very limited amount of global memory:
 current NVIDIA Tesla K20 GPUs have about 4 Gigabytes.
-Thus, to accomodate the
+Thus, to accommodate the
 larger problem sizes in DNS,
 the use of \emph{multiple} GPUs is necessary,
 which introduces a second level of parallelism.
@@ -152,7 +152,7 @@ set of grid lines to solve.
 \begin{center}
 \includegraphics[width=200pt]{img/compact-distributed-restricted.eps}
 \caption{Compact finite differences - distributed GPUs and
-    restriced in one direction}
+    restricted in one direction}
 \label{fig:compact-distributed-restricted}
 \end{center}
 \end{figure}
@@ -164,7 +164,7 @@ as shown in \ref{fig:compact-distributed-restricted}.
 Here again, 
 no inter-GPU communication is required.
 By restricting the distribution along one coordinate direction,
-the ease of solution of the tridaigonal systems is maintained.
+the ease of solution of the tridiagonal systems is maintained.
 
 \subsection{Distributed GPUs in all directions}
 
@@ -206,7 +206,7 @@ in a single direction.
 For the other coordinate directions,
 explicit finite difference schemes may be used,
 which have the disadvantages discussed earlier.
-To accomodate compact finite difference schemes in all the coordinate
+To accommodate compact finite difference schemes in all the coordinate
 directions,
 the domain decomposition generally must be performed in all directions,
 as shown in Fig. \ref{fig:compact-distributed-all}.
@@ -408,7 +408,7 @@ from the solution of the reduced system.
 The algorithm described in
 Sec. \ref{subsec:distributed-tridiagonal-algorithm}
 is applicable to a single tridiagonal system distributed
-accross several processors.
+across several processors.
 When solving a distributed tridiagonal system
 for several distributed grid lines,
 we note that
@@ -435,7 +435,7 @@ and the system is solved for each right hand side.
 Our algorithm is outlined in \ref{fig:compact-algorithm},
 and is described for the case of evaluating derivatives
 in the direction along which successive
-function values in a subdomain are stored contigiously in memory,
+function values in a subdomain are stored contiguously in memory,
 i.e., the ``fastest'' coordinate direction.
 Each step of the algorithm must be implemented on the GPU
 to avoid data transfer to and from the CPU,

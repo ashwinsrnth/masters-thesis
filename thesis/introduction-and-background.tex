@@ -60,7 +60,7 @@ This is because the CPU and GPU have very different architectures,
 and any na\"{\i}ve ``parallelization'' of algorithms
 designed for the CPU
 is likely not take full advantage of the GPU's
-memory heirarchy and compute ability.
+memory hierarchy and compute ability.
 
 The objective of this work is to develop an
 approach for evaluating
@@ -207,7 +207,7 @@ in Fig. \ref{fig:modified-wavenumbers}.
 \end{figure}
 
 The ability of a finite difference scheme
-to accomodate large wavenumbers
+to accommodate large wavenumbers
 is extremely relevant in
 computational fluid dynamics applications
 ~\cite{KravchenkoEffNumErr}.
@@ -409,7 +409,7 @@ are \emph{kernels} and \emph{thread organization}.
 \subsubsection{Kernels}
 
 The CUDA application programming interface (API)
-is availabe as an extension to
+is available as an extension to
 a programming languages (C, C++, Fortran, etc.),
 allowing certain portions of code to execute on the GPU.
 The rest of the code is executed as usual on the CPU.
@@ -500,7 +500,7 @@ and maximizing this number is often
 key to obtaining good performance.
 Another key consideration in the implementation
 of algorithms on GPUs is the
-available \emph{memory heirarchy}.
+available \emph{memory hierarchy}.
 Threads executing a kernel can read and write
 to several different memory spaces,
 each with different capacity, latency and bandwidth.
@@ -573,7 +573,7 @@ Ideally, these 32 threads
 can access shared memory locations concurrently.
 However, when two or more threads in a warp access
 words from the same bank,
-a \emph{bank conflict} is said to occurr,
+a \emph{bank conflict} is said to occur,
 and the access is serialized.
 Thus,
 a warp of 32 threads reading
@@ -583,7 +583,7 @@ But a warp of 32 threads reading
 32 alternating \texttt{float}s in a shared memory array
 leads to bank conflicts (Fig. \ref{fig:bank-conflicts}).
 Because the floats are placed in consecutive banks,
-the 1st and 17th threads will acess floats from the same bank,
+the 1st and 17th threads will access \texttt{float}s from the same bank,
 as will the 2nd and 18th threads, and so on.
 This specific kind of bank conflict is termed a
 \emph{two-way} bank conflict -
@@ -596,7 +596,7 @@ In the worst case, successive threads may access
 \texttt{float}s in strides of 32,
 in which case all threads in the warp
 request memory from the same bank:
-a emph{32-way} bank conflict.
+a \emph{32-way} bank conflict.
 
 \subsubsection{Registers and local memory}
 
@@ -620,7 +620,7 @@ While shared memory and registers can service memory requests
 much faster than global memory,
 their overuse can lead to performance degradation.
 The amount of shared memory per SM
-and the numer of registers per SM is limited.
+and the number of registers per SM is limited.
 For the current NVIDIA Tesla K20 accelerator,
 the amount of shared memory per SM is limited to 48 KiB,
 and the number of registers per SM is limited to 65536.
@@ -958,7 +958,7 @@ while implementing cyclic reduction for GPUs:
         at each forward reduction phase,
         and decreasingly so during the back substitution phase.
         
-    \item The limited amount of shared memory places restricions
+    \item The limited amount of shared memory places restrictions
         on the size of tridiagonal systems that can be solved,
         and also on the number of systems that can be solved
         concurrently.
