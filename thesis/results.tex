@@ -2,36 +2,22 @@
 
 \section{Performance of GPU tridiagonal solver}
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=300pt]{fig/bench-2d.eps}
-\caption{Relative solver performance for 2-D problems. Relative time defined as:}
-$\frac{\text{Time taken by solver}}{\text{Time taken by NEATO solver}}$
-\label{fig:bench-2d}
-\end{center}
-\end{figure}
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=300pt]{fig/bench-3d.eps}
-\caption{Relative solver performance for 3-D problems. Relative time defined as:}
-$\frac{\text{Time taken by solver}}{\text{Time taken by NEATO solver}}$
-\label{fig:bench-3d}
-\end{center}
-\end{figure}
-
 In this section we present a performance overview
-of our Near-Toeplitz tridiagonal solver (NEATO)
+of our NEATO solver
 against a multi-threaded Intel MKL solver and
 the CUSPARSE GPU solver
 (\texttt{dgtsv} and \texttt{dgtsvStridedBatch} respectively).
-The MKL solver is based on Gaussian Elimination with partial pivoting,
+The MKL solver uses Gaussian elimination with partial pivoting,
+and the CUSPARSE solver uses a combination of
+Cyclic Reduction and Parallel Cyclic Reduction
+as described by Zhang et al. \cite{Zhang2010FTS}.
+These solvers represent the most straightforward way
+to compute solutions for tridiagonal systems
+and are highly optimized for performance on
+underlying architectures.
 Boundary conditions may prevent
 the matrix from being symmetric and/or diagonally dominant,
 precluding the use of more specialized tridiagonal solvers.
-and the CUSPARSE solver uses a combination of
-Cyclic Reduction and Parallel Cyclic Reduction.
-Both solvers are optimized for the underlying architectures.
 
 The CPU code is compiled with the Intel C compiler (version 15.0),
 and run (with OpenMP support) on up to
@@ -45,7 +31,12 @@ NVIDIA Tesla K20 Accelerator.
 When measuring GPU performance (both CUSPARSE and NEATO),
 we do \emph{not} include the cost
 of data transfer between the CPU and GPU.
-\texttt{-O2} level compiler optimizations are turned on for both
+This is because the tridiagonal solver is expected to be
+part of a larger application.
+This is in keeping with the timing strategies
+in related literature.
+
+The \texttt{-O2} level compiler optimizations are turned on for both
 CPU and GPU code;
 no further optimization options are enabled in either case.
 Of course, we use double precision for all solvers.
@@ -57,7 +48,7 @@ All timings are averaged over 100 tridiagonal solves.
 
 \subsection{NEATO: global memory v/s shared memory performance}
 
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
 \includegraphics[width=300pt]{fig/global-vs-shared-2d.eps}
 \caption{Comparison of global memory and shared
@@ -66,7 +57,7 @@ All timings are averaged over 100 tridiagonal solves.
 \end{center}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
 \includegraphics[width=300pt]{fig/global-vs-shared-3d.eps}
 \caption{Comparison of global memory and shared memory
@@ -90,6 +81,24 @@ leads to poor shared memory performance.
 
 \subsection{Comparison of NEATO with Intel MKL and CUSPARSE solvers}
 
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/bench-2d.eps}
+\caption{Relative solver performance for 2-D problems. Relative time defined as:}
+Time taken by solver/Time taken by NEATO solver
+\label{fig:bench-2d}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/bench-3d.eps}
+\caption{Relative solver performance for 3-D problems. Relative time defined as:}
+Time taken by solver/Time taken by NEATO solver
+\label{fig:bench-3d}
+\end{center}
+\end{figure}
+
 In Fig. \ref{fig:bench-2d} and \ref{fig:bench-3d},
 we provide the relative performance of
 Intel MKL and CUSPARSE solvers and compare against
@@ -97,7 +106,7 @@ the NEATO shared memory implementation.
 The relative performance for
 each problem size is obtained by
 normalizing the solver timings
-by the timing for the fastest solver for that problem size.
+by the timing for the NEATO solver for that problem size.
 Table \ref{table:bench} shows the timings of the various
 solvers to solve different problem sizes.
 
@@ -111,7 +120,9 @@ solvers to solve different problem sizes.
 
 \section{Performance of compact finite difference application}
 
-The experiments were run on the
+The timings for the
+compact finite difference application
+were measured on the
 Clemson University Palmetto Cluster,
 using NVIDIA Tesla K20 and K40 GPUs.
 The K40 GPUs were used for the largest problem sizes.
@@ -135,6 +146,22 @@ global synchronization between the processes
 is typically performed before and after the evaluation of derivatives,
 and it is important to consider the related overhead.
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=300pt]{fig/profiling-1024-64.eps}
+\caption{Solving problem sized $1024^3$ on 64 GPUs}
+\label{fig:compact-profiling-1024-64}
+\end{center}
+\end{figure}
+%
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=300pt]{fig/profiling-2048-64.eps}
+\caption{Solving problem sized $2048^3$ on 64 GPUs}
+\label{fig:compact-profiling-2048-64}
+\end{center}
+\end{figure}
+%
 Figures \ref{fig:compact-profiling-1024-64}-\ref{fig:compact-profiling-2048-64}
 show the time taken by the different steps of
 the compact finite difference solver.
@@ -145,31 +172,9 @@ which justifies our efforts in optimizing the tridiagonal solver.
 For evaluation of the derivatives in the y- and z- directions,
 we note that a significant portion of the runtime is dedicated
 to performing permutations of the input and output data.
-We attribute this to our naive implementation of the
+We attribute this to our na\"{\i}ve implementation of the
 permutation kernels (no shared memory).
-Figures \ref{fig:strong-scaling-256}-\ref{fig:weak-scaling-256}
-show the strong and weak scaling of the compact finite difference solver
-for evaluating derivatives in all three coordinate directions.
-We note good scaling for both 2-D and 3-D cases.
-The strong scaling for 3-D problems is somewhat better
-as the GPU is kept busy for all problem sizes.
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=300pt]{fig/profiling-1024-64.eps}
-\caption{Solving problem sized $1024^3$ on 64 GPUs}
-\label{fig:compact-profiling-1024-64}
-\end{center}
-\end{figure}
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=300pt]{fig/profiling-2048-64.eps}
-\caption{Solving problem sized $2048^3$ on 64 GPUs}
-\label{fig:compact-profiling-2048-64}
-\end{center}
-\end{figure}
-
+%
 \begin{figure}
 \begin{center}
 \includegraphics[width=300pt]{fig/strong-scaling-256.eps}
@@ -177,7 +182,7 @@ as the GPU is kept busy for all problem sizes.
 \label{fig:strong-scaling-256}
 \end{center}
 \end{figure}
-
+%
 \begin{figure}
 \begin{center}
 \includegraphics[width=300pt]{fig/strong-scaling-512.eps}
@@ -185,7 +190,7 @@ as the GPU is kept busy for all problem sizes.
 \label{fig:strong-scaling-512}
 \end{center}
 \end{figure}
-
+%
 \begin{figure}
 \begin{center}
 \includegraphics[width=300pt]{fig/weak-scaling-128.eps}
@@ -193,7 +198,7 @@ as the GPU is kept busy for all problem sizes.
 \label{fig:weak-scaling-128}
 \end{center}
 \end{figure}
-
+%
 \begin{figure}
 \begin{center}
 \includegraphics[width=300pt]{fig/weak-scaling-256.eps}
@@ -201,4 +206,38 @@ as the GPU is kept busy for all problem sizes.
 \label{fig:weak-scaling-256}
 \end{center}
 \end{figure}
+%
+Figures \ref{fig:strong-scaling-256}-\ref{fig:weak-scaling-256}
+show the strong and weak scaling of the compact finite difference solver
+for evaluating derivatives in all three coordinate directions.
+We note good scaling for both 2-D and 3-D cases.
+The strong scaling for 3-D problems is somewhat better
+as the GPU is kept busy for all problem sizes.
+%
+\input{table/compact-refimpl-timings.tex}
+%
+\begin{figure}
+\begin{center}
+\includegraphics[width=300pt]{fig/compact-refimpl-speedups.eps}
+\caption{Speedups over reference implementation}
+\label{fig:compact-refimpl-speedups}
+\end{center}
+\end{figure}
+%
+We also compare the performance of our compact finite difference
+solver with the implementation by
+Mohd-Yusof et al. \cite{mohd2010adapting}.
+This implementation uses a
+distributed tridiagonal solver based on the LU algorithm
+to solve the linear systems.
+For comparing timings,
+we use the number of CPU sockets as the basis.
+Each CPU socket uses 8 CPU cores and 1 GPU.
+Thus we maintain a ratio of 1:8 between GPUs and CPU cores
+in our comparison.
+Table \ref{table:compact-refimpl-timings}
+shows timings for computing derivatives for problem
+sized up to $2048^3$,
+and Fig. \ref{fig:compact-refimpl-speedups}
+shows the respective speedup using our implementation.
 

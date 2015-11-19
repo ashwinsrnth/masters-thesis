@@ -1,0 +1,14 @@
+\begin{table}[]
+\centering
+\caption{Time (ms) to compute derivatives in $x$ direction - comparison with reference implementation \cite{mohd2010adapting}}
+\label{table:compact-refimpl-timings}
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+\multirow{2}{*}{Size} & \multicolumn{3}{c|}{Ref. impl, \#CPU cores} & \multicolumn{3}{c|}{NEATO-based, \#GPUs} \\ \cline{2-7}
+         & 8         & 64        & 512      & 1       & 8       & 64      \\ \hline
+$256^3$  & 79.5      & 20.8      & 11.1     & 19.9    & 5.17    & 2.79    \\ \hline
+$512^3$  & 556.8     & 146.5     & 29.2     & 164.5   & 23.24   & 5.62    \\ \hline
+$1024^3$ & 5188      & 1092      & 223.7    & -       & 174.9   & 24.49   \\ \hline
+$2048^3$ & -         & -         & 1741     & -       & -       & 297.07  \\ \hline
+\end{tabular}
+\end{table}

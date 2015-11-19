@@ -1,0 +1,191 @@
+[atrikut@node1660 lanl-implementation]$ mpiexec --mca pml ob1 -n 8 ./time_npts.run 1024 1024 1024 2 2 2
+--------------------------------------------------------------------------
+The library attempted to open the following supporting CUDA libraries,
+but each of them failed.  CUDA-aware support is disabled.
+libcuda.so.1: cannot open shared object file: No such file or directory
+libcuda.so.1: cannot open shared object file: No such file or directory
+--------------------------------------------------------------------------
+Precomputing coefficients
+Done precomputing.
+[node1660:11125] 7 more processes have sent help message help-mpi-common-cuda.txt / dlopen failed
+[node1660:11125] Set MCA parameter "orte_base_help_aggregate" to 0 to see all help / error messages
+LR sweep - computing phi and psi: 5.7870390415
+LR sweep - gathering phi and psi faces: 0.0451200008
+LR sweep - computing u_tilda: 0.0437071323
+LR sweep - computing u_globali: 0.7065970898
+R-L sweep - computing phi and psi: 1.2506771088
+R-L sweep - gathering phi and psi faces: 0.0381181240
+R-L sweep - computing x_tilda: 0.0096130371
+R-L sweep - computing x_global: 0.7378451824
+Time: 8.620178
+LR sweep - computing phi and psi: 2.3737778664
+LR sweep - gathering phi and psi faces: 0.1057908535
+LR sweep - computing u_tilda: 0.0460939407
+LR sweep - computing u_globali: 0.7259449959
+R-L sweep - computing phi and psi: 1.2774999142
+R-L sweep - gathering phi and psi faces: 0.0388460159
+R-L sweep - computing x_tilda: 0.0096578598
+R-L sweep - computing x_global: 0.7493550777
+Time: 5.328466
+LR sweep - computing phi and psi: 2.4027070999
+LR sweep - gathering phi and psi faces: 0.0438449383
+LR sweep - computing u_tilda: 0.0456209183
+LR sweep - computing u_globali: 0.7046210766
+R-L sweep - computing phi and psi: 1.2420568466
+R-L sweep - gathering phi and psi faces: 0.0383200645
+R-L sweep - computing x_tilda: 0.0096499920
+R-L sweep - computing x_global: 0.7416157722
+Time: 5.229866
+LR sweep - computing phi and psi: 2.3373298645
+LR sweep - gathering phi and psi faces: 0.0495569706
+LR sweep - computing u_tilda: 0.0457670689
+LR sweep - computing u_globali: 0.7038609982
+R-L sweep - computing phi and psi: 1.2368490696
+R-L sweep - gathering phi and psi faces: 0.0382108688
+R-L sweep - computing x_tilda: 0.0096888542
+R-L sweep - computing x_global: 0.7486450672
+Time: 5.171347
+LR sweep - computing phi and psi: 2.3768739700
+LR sweep - gathering phi and psi faces: 0.0433101654
+LR sweep - computing u_tilda: 0.1358370781
+LR sweep - computing u_globali: 0.7030282021
+R-L sweep - computing phi and psi: 1.2534968853
+R-L sweep - gathering phi and psi faces: 0.0385220051
+R-L sweep - computing x_tilda: 0.0098249912
+R-L sweep - computing x_global: 0.7327549458
+Time: 5.295456
+LR sweep - computing phi and psi: 2.3685448170
+LR sweep - gathering phi and psi faces: 0.0829122066
+LR sweep - computing u_tilda: 0.0450689793
+LR sweep - computing u_globali: 0.7175021172
+R-L sweep - computing phi and psi: 1.2598900795
+R-L sweep - gathering phi and psi faces: 0.0379619598
+R-L sweep - computing x_tilda: 0.0096449852
+R-L sweep - computing x_global: 0.7378408909
+Time: 5.260793
+LR sweep - computing phi and psi: 2.3357379436
+LR sweep - gathering phi and psi faces: 0.0448420048
+LR sweep - computing u_tilda: 0.0472638607
+LR sweep - computing u_globali: 0.7125248909
+R-L sweep - computing phi and psi: 1.2500810623
+R-L sweep - gathering phi and psi faces: 0.0385141373
+R-L sweep - computing x_tilda: 0.0096879005
+R-L sweep - computing x_global: 0.7383201122
+Time: 5.178408
+LR sweep - computing phi and psi: 2.3537259102
+LR sweep - gathering phi and psi faces: 0.0448098183
+LR sweep - computing u_tilda: 0.0457928181
+LR sweep - computing u_globali: 0.7100319862
+R-L sweep - computing phi and psi: 1.2337470055
+R-L sweep - gathering phi and psi faces: 0.0383248329
+R-L sweep - computing x_tilda: 0.0096139908
+R-L sweep - computing x_global: 0.7447681427
+Time: 5.182232
+LR sweep - computing phi and psi: 2.3912119865
+LR sweep - gathering phi and psi faces: 0.1869778633
+LR sweep - computing u_tilda: 0.0457899570
+LR sweep - computing u_globali: 0.7043969631
+R-L sweep - computing phi and psi: 1.2471458912
+R-L sweep - gathering phi and psi faces: 0.0383169651
+R-L sweep - computing x_tilda: 0.0096490383
+R-L sweep - computing x_global: 0.7381520271
+Time: 5.363452
+LR sweep - computing phi and psi: 2.3665480614
+LR sweep - gathering phi and psi faces: 0.1069419384
+LR sweep - computing u_tilda: 0.0458259583
+LR sweep - computing u_globali: 0.7207469940
+R-L sweep - computing phi and psi: 1.2253789902
+R-L sweep - gathering phi and psi faces: 0.0380070210
+R-L sweep - computing x_tilda: 0.0095789433
+R-L sweep - computing x_global: 0.7343759537
+Time: 5.248824
+LR sweep - computing phi and psi: 2.3625199795
+LR sweep - gathering phi and psi faces: 0.0435438156
+LR sweep - computing u_tilda: 0.0456929207
+LR sweep - computing u_globali: 0.7155799866
+R-L sweep - computing phi and psi: 1.2422220707
+R-L sweep - gathering phi and psi faces: 0.0384440422
+R-L sweep - computing x_tilda: 0.0095999241
+R-L sweep - computing x_global: 0.7378108501
+Time: 5.196828
+LR sweep - computing phi and psi: 2.3535139561
+LR sweep - gathering phi and psi faces: 0.0427610874
+LR sweep - computing u_tilda: 0.0462529659
+LR sweep - computing u_globali: 0.7057721615
+R-L sweep - computing phi and psi: 1.2232198715
+R-L sweep - gathering phi and psi faces: 0.0382919312
+R-L sweep - computing x_tilda: 0.0096979141
+R-L sweep - computing x_global: 0.7392580509
+Time: 5.160163
+LR sweep - computing phi and psi: 2.3925940990
+LR sweep - gathering phi and psi faces: 0.1018030643
+LR sweep - computing u_tilda: 0.0447909832
+LR sweep - computing u_globali: 0.7023389339
+R-L sweep - computing phi and psi: 1.2603199482
+R-L sweep - gathering phi and psi faces: 0.0380311012
+R-L sweep - computing x_tilda: 0.0096571445
+R-L sweep - computing x_global: 0.7383790016
+Time: 5.289375
+LR sweep - computing phi and psi: 2.3579211235
+LR sweep - gathering phi and psi faces: 0.1215729713
+LR sweep - computing u_tilda: 0.0462670326
+LR sweep - computing u_globali: 0.7079010010
+R-L sweep - computing phi and psi: 1.2477979660
+R-L sweep - gathering phi and psi faces: 0.0380849838
+R-L sweep - computing x_tilda: 0.0099849701
+R-L sweep - computing x_global: 0.7252049446
+Time: 5.256159
+LR sweep - computing phi and psi: 2.3702838421
+LR sweep - gathering phi and psi faces: 0.0960798264
+LR sweep - computing u_tilda: 0.0455479622
+LR sweep - computing u_globali: 0.7087500095
+R-L sweep - computing phi and psi: 1.2158749104
+R-L sweep - gathering phi and psi faces: 0.0380511284
+R-L sweep - computing x_tilda: 0.0096080303
+R-L sweep - computing x_global: 0.7335479259
+Time: 5.219171
+LR sweep - computing phi and psi: 2.3654370308
+LR sweep - gathering phi and psi faces: 0.0937640667
+LR sweep - computing u_tilda: 0.0442728996
+LR sweep - computing u_globali: 0.7156441212
+R-L sweep - computing phi and psi: 1.2293279171
+R-L sweep - gathering phi and psi faces: 0.0383360386
+R-L sweep - computing x_tilda: 0.0095889568
+R-L sweep - computing x_global: 0.7268519402
+Time: 5.224975
+LR sweep - computing phi and psi: 2.3445188999
+LR sweep - gathering phi and psi faces: 0.0432350636
+LR sweep - computing u_tilda: 0.0471410751
+LR sweep - computing u_globali: 0.7119410038
+R-L sweep - computing phi and psi: 1.2474641800
+R-L sweep - gathering phi and psi faces: 0.0382769108
+R-L sweep - computing x_tilda: 0.0095789433
+R-L sweep - computing x_global: 0.7481019497
+Time: 5.191799
+LR sweep - computing phi and psi: 2.4034228325
+LR sweep - gathering phi and psi faces: 0.1459519863
+LR sweep - computing u_tilda: 0.0462830067
+LR sweep - computing u_globali: 0.7120139599
+R-L sweep - computing phi and psi: 1.2331750393
+R-L sweep - gathering phi and psi faces: 0.0377779007
+R-L sweep - computing x_tilda: 0.0096220970
+R-L sweep - computing x_global: 0.7316930294
+Time: 5.321602
+LR sweep - computing phi and psi: 2.3628230095
+LR sweep - gathering phi and psi faces: 0.0428378582
+LR sweep - computing u_tilda: 0.0461559296
+LR sweep - computing u_globali: 0.7180898190
+R-L sweep - computing phi and psi: 1.2318818569
+R-L sweep - gathering phi and psi faces: 0.0378458500
+R-L sweep - computing x_tilda: 0.0099830627
+R-L sweep - computing x_global: 0.7375860214
+Time: 5.188633
+LR sweep - computing phi and psi: 2.3632690907
+LR sweep - gathering phi and psi faces: 0.0908980370
+LR sweep - computing u_tilda: 0.0438590050
+LR sweep - computing u_globali: 0.7066090107
+R-L sweep - computing phi and psi: 1.2356369495
+R-L sweep - gathering phi and psi faces: 0.0385460854
+R-L sweep - computing x_tilda: 0.0097849369
+R-L sweep - computing x_global: 0.7349750996
+Time: 5.225222

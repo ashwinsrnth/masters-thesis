@@ -1,0 +1,57 @@
+Solving for x_R: total:  0.0114891529083
+Solving the reduced system:  0.0340418815613
+Summing the solutions - total:  0.00148010253906
+Total time:  0.0470111370087
+Solving for x_R: total:  0.0111570358276
+Solving the reduced system:  0.00224995613098
+Summing the solutions - total:  0.000913143157959
+Total time:  0.0143201351166
+Solving for x_R: total:  0.00357604026794
+Solving the reduced system:  0.00769996643066
+Summing the solutions - total:  0.00111198425293
+Total time:  0.0123879909515
+Solving for x_R: total:  0.0110850334167
+Solving the reduced system:  0.00230312347412
+Summing the solutions - total:  0.000869035720825
+Total time:  0.0142571926117
+Solving for x_R: total:  0.0106830596924
+Solving the reduced system:  0.00252294540405
+Summing the solutions - total:  0.000842094421387
+Total time:  0.0140480995178
+Solving for x_R: total:  0.00995898246765
+Solving the reduced system:  0.00234007835388
+Summing the solutions - total:  0.00395798683167
+Total time:  0.0162570476532
+Solving for x_R: total:  0.00340294837952
+Solving the reduced system:  0.0104060173035
+Summing the solutions - total:  0.00098991394043
+Total time:  0.0147988796234
+Solving for x_R: total:  0.00359010696411
+Solving the reduced system:  0.0109689235687
+Summing the solutions - total:  0.00106406211853
+Total time:  0.0156230926514
+Solving for x_R: total:  0.0122520923615
+Solving the reduced system:  0.00213289260864
+Summing the solutions - total:  0.000853061676025
+Total time:  0.0152380466461
+Solving for x_R: total:  0.011531829834
+Solving the reduced system:  0.00224709510803
+Summing the solutions - total:  0.0011739730835
+Total time:  0.0149528980255
+Solving for x_R: total:  0.0116059780121
+Solving the reduced system:  0.00234317779541
+Summing the solutions - total:  0.00103092193604
+Total time:  0.0149800777435
+Solving for x_R: total:  0.00341296195984
+Solving the reduced system:  0.00723910331726
+Summing the solutions - total:  0.00102496147156
+Total time:  0.0116770267487
+Solving for x_R: total:  0.01025390625
+Solving the reduced system:  0.00212597846985
+Summing the solutions - total:  0.000838994979858
+Total time:  0.0132188796997
+Solving for x_R: total:  0.0108709335327
+Solving the reduced system:  0.0021231174469
+Summing the solutions - total:  0.000824928283691
+Total time:  0.0138189792633
+Solving for x_R: t

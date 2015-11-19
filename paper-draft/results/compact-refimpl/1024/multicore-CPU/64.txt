@@ -1,0 +1,35 @@
+[atrikut@node2015 compact]$ mpiexec --mca pml ob1 -n 64 python runExp.py 1024 1024 1024 4 4 4
+
+Solving for x_R: total:  0.108402013779
+Solving the reduced system:  0.0602478981018
+Summing the solutions - total:  0.0411281585693
+Total time:  0.20977807045
+Solving for x_R: total:  0.109436035156
+Solving the reduced system:  0.0545151233673
+Summing the solutions - total:  0.0427439212799
+Total time:  0.206695079803
+Solving for x_R: total:  0.109124898911
+Solving the reduced system:  0.0463900566101
+Summing the solutions - total:  0.0497939586639
+Total time:  0.205308914185
+Solving for x_R: total:  0.124655008316
+Solving the reduced system:  0.0368130207062
+Summing the solutions - total:  0.0544469356537
+Total time:  0.215914964676
+Solving for x_R: total:  0.116338968277
+Solving the reduced system:  0.0398681163788
+Summing the solutions - total:  0.0398738384247
+Total time:  0.19608092308
+Solving for x_R: total:  0.111960887909
+Solving the reduced system:  0.0427350997925
+Summing the solutions - total:  0.0393800735474
+Total time:  0.194076061249
+Solving for x_R: total:  0.108408927917
+Solving the reduced system:  0.0399429798126
+Summing the solutions - total:  0.0418899059296
+Total time:  0.19024181366
+Solving for x_R: total:  0.114185094833
+Solving the reduced system:  0.053004026413
+Summing the solutions - total:  0.0486989021301
+Total time:  0.215888023376
+Solving for x_R:

@@ -2,6 +2,13 @@
 
 We have presented an efficient approach for evaluating
 compact finite differences on GPU-accelerated clusters.
+At the core of our approach is a
+fast tridiagonal solver for the resulting linear systems.
+Here, we make use of the simple matrix structure
+to obtain better performance.
+The applicability of this strategy to the
+parallel cyclic reduction (PCR) algorithm,
+and to other hybrid approaches is yet to be studied.
 
 The integration of this approach to our
 current DNS codes is yet to be performed.
@@ -14,15 +21,6 @@ followed in the rest of the code
 have been covered in the current work,
 and fewer challenges are likely to be faced
 in this process.
-
-At the core of our approach is a
-fast tridiagonal solver for the resulting linear systems.
-Here, we make use of the simple matrix structure
-to obtain better performance.
-The applicability of this strategy to the
-parallel cyclic reduction (PCR) algorithm,
-and to other hybrid approaches is yet to be studied.
-
 Strategies for the evaluation of compact finite differences
 on other parallel architectures is of great interest,
 especially for the Intel Many Integrated Core (MIC)

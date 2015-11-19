@@ -1,0 +1,119 @@
+[atrikut@node1660 lanl-implementation]$ mpiexec --mca pml ob1 -n 8 ./time_npts.run 512 512 512 2 2 2
+--------------------------------------------------------------------------
+The library attempted to open the following supporting CUDA libraries,
+but each of them failed.  CUDA-aware support is disabled.
+libcuda.so.1: cannot open shared object file: No such file or directory
+libcuda.so.1: cannot open shared object file: No such file or directory
+--------------------------------------------------------------------------
+Precomputing coefficients
+Done precomputing.
+LR sweep - computing phi and psi: 0.2083368301
+LR sweep - gathering phi and psi faces: 0.0096719265
+LR sweep - computing u_tilda: 0.0168340206
+LR sweep - computing u_globali: 0.0800809860
+R-L sweep - computing phi and psi: 0.1375451088
+R-L sweep - gathering phi and psi faces: 0.0077390671
+R-L sweep - computing x_tilda: 0.0022230148
+R-L sweep - computing x_global: 0.1038048267
+Time: 0.566759
+LR sweep - computing phi and psi: 0.1998519897
+LR sweep - gathering phi and psi faces: 0.0094599724
+LR sweep - computing u_tilda: 0.0174047947
+LR sweep - computing u_globali: 0.0810608864
+R-L sweep - computing phi and psi: 0.1345939636
+R-L sweep - gathering phi and psi faces: 0.0076849461
+R-L sweep - computing x_tilda: 0.0022161007
+R-L sweep - computing x_global: 0.1014661789
+Time: 0.554242
+LR sweep - computing phi and psi: 0.2101218700
+LR sweep - gathering phi and psi faces: 0.0094399452
+LR sweep - computing u_tilda: 0.0171749592
+LR sweep - computing u_globali: 0.0803160667
+R-L sweep - computing phi and psi: 0.1445908546
+R-L sweep - gathering phi and psi faces: 0.0077629089
+R-L sweep - computing x_tilda: 0.0022459030
+R-L sweep - computing x_global: 0.0996699333
+Time: 0.571828
+LR sweep - computing phi and psi: 0.1960279942
+LR sweep - gathering phi and psi faces: 0.0094201565
+LR sweep - computing u_tilda: 0.0169692039
+LR sweep - computing u_globali: 0.0800900459
+R-L sweep - computing phi and psi: 0.1379139423
+R-L sweep - gathering phi and psi faces: 0.0076179504
+R-L sweep - computing x_tilda: 0.0022499561
+R-L sweep - computing x_global: 0.1013379097
+Time: 0.552140
+LR sweep - computing phi and psi: 0.2011039257
+LR sweep - gathering phi and psi faces: 0.0094828606
+LR sweep - computing u_tilda: 0.0175929070
+LR sweep - computing u_globali: 0.0779979229
+R-L sweep - computing phi and psi: 0.1368389130
+R-L sweep - gathering phi and psi faces: 0.0076961517
+R-L sweep - computing x_tilda: 0.0022740364
+R-L sweep - computing x_global: 0.1006190777
+Time: 0.554107
+LR sweep - computing phi and psi: 0.2124009132
+LR sweep - gathering phi and psi faces: 0.0094840527
+LR sweep - computing u_tilda: 0.0169789791
+LR sweep - computing u_globali: 0.0792338848
+R-L sweep - computing phi and psi: 0.1356499195
+R-L sweep - gathering phi and psi faces: 0.0077228546
+R-L sweep - computing x_tilda: 0.0023281574
+R-L sweep - computing x_global: 0.1022779942
+Time: 0.566615
+LR sweep - computing phi and psi: 0.2088489532
+LR sweep - gathering phi and psi faces: 0.0095040798
+LR sweep - computing u_tilda: 0.0166699886
+LR sweep - computing u_globali: 0.0790281296
+R-L sweep - computing phi and psi: 0.1368780136
+R-L sweep - gathering phi and psi faces: 0.0077707767
+R-L sweep - computing x_tilda: 0.0022389889
+R-L sweep - computing x_global: 0.1039190292
+Time: 0.565362
+LR sweep - computing phi and psi: 0.2136430740
+LR sweep - gathering phi and psi faces: 0.0096390247
+LR sweep - computing u_tilda: 0.0168969631
+LR sweep - computing u_globali: 0.0792269707
+R-L sweep - computing phi and psi: 0.1397819519
+R-L sweep - gathering phi and psi faces: 0.0076920986
+R-L sweep - computing x_tilda: 0.0022020340
+R-L sweep - computing x_global: 0.1024758816
+Time: 0.572091
+LR sweep - computing phi and psi: 0.2078139782
+LR sweep - gathering phi and psi faces: 0.0176310539
+LR sweep - computing u_tilda: 0.0169579983
+LR sweep - computing u_globali: 0.0784289837
+[node1660:10882] 7 more processes have sent help message help-mpi-common-cuda.txt / dlopen failed
+[node1660:10882] Set MCA parameter "orte_base_help_aggregate" to 0 to see all help / error messages
+R-L sweep - computing phi and psi: 0.1347961426
+R-L sweep - gathering phi and psi faces: 0.0076880455
+R-L sweep - computing x_tilda: 0.0022761822
+R-L sweep - computing x_global: 0.1014440060
+Time: 0.567554
+LR sweep - computing phi and psi: 0.2110440731
+LR sweep - gathering phi and psi faces: 0.0098488331
+LR sweep - computing u_tilda: 0.0178899765
+LR sweep - computing u_globali: 0.0820469856
+R-L sweep - computing phi and psi: 0.1365330219
+R-L sweep - gathering phi and psi faces: 0.0076909065
+R-L sweep - computing x_tilda: 0.0022079945
+R-L sweep - computing x_global: 0.1008241177
+Time: 0.568588
+LR sweep - computing phi and psi: 0.2065091133
+LR sweep - gathering phi and psi faces: 0.0093889236
+LR sweep - computing u_tilda: 0.0172479153
+LR sweep - computing u_globali: 0.0815548897
+R-L sweep - computing phi and psi: 0.1390430927
+R-L sweep - gathering phi and psi faces: 0.0076780319
+R-L sweep - computing x_tilda: 0.0022051334
+R-L sweep - computing x_global: 0.1006369591
+Time: 0.564766
+LR sweep - computing phi and psi: 0.2021100521
+LR sweep - gathering phi and psi faces: 0.0094859600
+LR sweep - computing u_tilda: 0.0179989338
+LR sweep - computing u_globali: 0.0804400444
+R-L sweep - computing phi and psi: 0.1411931515
+R-L sweep - gathering phi and psi faces: 0.0077729225
+R-L sweep - computing x_tilda: 0.0021889210
+R-L sweep - computing x_global: 0.1045219898
+Time: 0.566210

@@ -667,6 +667,31 @@ We list the primary considerations here:
         allocated for each block is kept minimum.
 \end{itemize}
 
+\subsection{Software for programming NVIDIA GPUs}
+
+As described,
+the CUDA programming interface
+allows developing general-purpose GPU applications---however,
+there are other options.
+Notably,
+the OpenACC \cite{openacc} toolkit allows
+portions of code to be offloaded to GPU accelerators
+simply by use of compiler directives.
+This makes porting existing applications
+extremely easy,
+and introduces almost no extra code.
+Some libraries for scientific computation,
+such as PETSc \cite{petsc-web-page},
+also allow the \emph{transparent} use of GPUs
+through their interfaces.
+We use the CUDA interface because
+it fully exposes the
+features of the underlying architecture
+that can be exploited.
+This is especially important due to the
+complex computational and memory access patterns involved
+in our algorithms.
+
 \section{Tridiagonal solvers for compact finite difference evaluation}
 
 As mentioned in \ref{sec:tridiagonal-compact-schemes},
