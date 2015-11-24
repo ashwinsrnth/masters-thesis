@@ -5,8 +5,8 @@
 *paper.pdf
 *report.pdf
 *thesis.pdf
+*presentation.pdf
 *converted-to.pdf
-*.png
 *.eps
 *.spl
 *~lock*
@@ -16,3 +16,5 @@
 *.lot
 *.lof
 *.toc
+*.nav
+*.snm
