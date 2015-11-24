@@ -109,6 +109,11 @@ normalizing the solver timings
 by the timing for the NEATO solver for that problem size.
 Table \ref{table:bench} shows the timings of the various
 solvers to solve different problem sizes.
+Note that data is missing for the CUSPARSE solver
+for the $512^3$ 3-D case,
+as the GPU was unable to accomodate this problem size---this
+is due to the large amount of scratch space required
+by the CUSPARSE implementation.
 
 \begin{sidewaystable}[]
 \scriptsize
@@ -146,6 +151,8 @@ global synchronization between the processes
 is typically performed before and after the evaluation of derivatives,
 and it is important to consider the related overhead.
 
+\subsection{Performance profiling}
+
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=300pt]{fig/profiling-1024-64.eps}
@@ -162,19 +169,20 @@ and it is important to consider the related overhead.
 \end{center}
 \end{figure}
 %
-Figures \ref{fig:compact-profiling-1024-64}-\ref{fig:compact-profiling-2048-64}
+Figures \ref{fig:compact-profiling-1024-64} - \ref{fig:compact-profiling-2048-64}
 show the time taken by the different steps of
 the compact finite difference solver.
 We note that for the larger problem size,
 the evaluation of the primary systems (using the NEATO solver)
 constitutes a larger majority of the total runtime,
 which justifies our efforts in optimizing the tridiagonal solver.
-For evaluation of the derivatives in the y- and z- directions,
+For evaluation of the derivatives in the $y-$ and $z-$ directions,
 we note that a significant portion of the runtime is dedicated
 to performing permutations of the input and output data.
 We attribute this to our na\"{\i}ve implementation of the
-permutation kernels (no shared memory).
-%
+permutation kernels (no shared memory usage).
+
+\subsection{Strong and weak scaling}
 \begin{figure}
 \begin{center}
 \includegraphics[width=300pt]{fig/strong-scaling-256.eps}
@@ -207,37 +215,48 @@ permutation kernels (no shared memory).
 \end{center}
 \end{figure}
 %
-Figures \ref{fig:strong-scaling-256}-\ref{fig:weak-scaling-256}
+Figures \ref{fig:strong-scaling-256} - \ref{fig:weak-scaling-256}
 show the strong and weak scaling of the compact finite difference solver
 for evaluating derivatives in all three coordinate directions.
+For the strong scaling measurement,
+we keep the problem size fixed
+and increase the number of GPUs used to solve the problem.
+For the weak scaling measurement,
+we keep the problem size \emph{per GPU}
+fixed, and increase the number of GPUs used.
 We note good scaling for both 2-D and 3-D cases.
 The strong scaling for 3-D problems is somewhat better
 as the GPU is kept busy for all problem sizes.
-%
+
+\subsection{Comparison with a CPU-only approach}
+
 \input{table/compact-refimpl-timings.tex}
 %
 \begin{figure}
 \begin{center}
 \includegraphics[width=300pt]{fig/compact-refimpl-speedups.eps}
-\caption{Speedups over reference implementation}
+\caption{Speedups over reference implementation
+    for computing derivative in the fastest coordinate direction}
 \label{fig:compact-refimpl-speedups}
 \end{center}
 \end{figure}
-%
+
 We also compare the performance of our compact finite difference
-solver with the implementation by
-Mohd-Yusof et al. \cite{mohd2010adapting}.
-This implementation uses a
-distributed tridiagonal solver based on the LU algorithm
-to solve the linear systems.
+solver with the approach described by
+Mohd-Yusof et al.\ \cite{mohd2010adapting},
+implemented for CPUs.
+The approach uses a distributed tridiagonal solver based on
+the LU decomposition specialized for tridiagonal systems.
+The problem is divided among individual CPU cores,
+communicating via MPI.
 For comparing timings,
 we use the number of CPU sockets as the basis.
 Each CPU socket uses 8 CPU cores and 1 GPU.
-Thus we maintain a ratio of 1:8 between GPUs and CPU cores
+Thus, we maintain a ratio of 1:8 between GPUs and CPU cores
 in our comparison.
 Table \ref{table:compact-refimpl-timings}
-shows timings for computing derivatives for problem
-sized up to $2048^3$,
+shows timings for computing derivatives
+in the fastest coordinate direction
+for problems sized up to $2048^3$,
 and Fig. \ref{fig:compact-refimpl-speedups}
 shows the respective speedup using our implementation.
-

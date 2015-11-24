@@ -28,7 +28,7 @@ making them fairly complex and expensive computationally.
 When solving for flows numerically,
 at each of the grid points in the computational domain,
 various data about the flow must be stored---for
-example, the geometric coordinates (x, y and z),
+example, the geometric coordinates ($x$, $y$ and $z$),
 pressure, temperature and velocities at that point.
 For even small problem sizes,
 the amount of memory required to store this data
@@ -358,7 +358,7 @@ The resulting tridiagonal system is then:
      \frac{5f_{n} - 4f_{n-1} - f_{n-2}}{2dx}
   \end{bmatrix}
 \end{equation}
-
+%
 Similar tridiagonal schemes are available
 to evaluate higher order derivatives.
 Compact schemes for
@@ -673,17 +673,25 @@ As described,
 the CUDA programming interface
 allows developing general-purpose GPU applications---however,
 there are other options.
-Notably,
-the OpenACC \cite{openacc} toolkit allows
-portions of code to be offloaded to GPU accelerators
-simply by use of compiler directives.
-This makes porting existing applications
-extremely easy,
+The OpenCL framework \cite{opencl}
+is used to write applications
+that can be ported across
+a variety architectures including NVIDIA GPUs.
 and introduces almost no extra code.
-Some libraries for scientific computation,
-such as PETSc \cite{petsc-web-page},
-also allow the \emph{transparent} use of GPUs
-through their interfaces.
+Several GPU accelerated libraries \cite{gpulibraries}
+allow existing applications to be ported to GPUs
+by offering compatibility with industry standard CPU libraries.
+The OpenACC \cite{openacc} toolkit allows
+portions of code to be offloaded to GPU accelerators
+simply by use of compiler directives,
+similar to OpenMP.
+This makes porting existing applications
+extremely easy.
+Many frameworks for scientific computing
+such at PETSc \cite{petsc-web-page}
+also allow the use of GPUs
+for most of their functionality.
+
 We use the CUDA interface because
 it fully exposes the
 features of the underlying architecture

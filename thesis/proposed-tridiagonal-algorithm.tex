@@ -178,7 +178,8 @@ the GPU's \emph{shared memory},
 and the other working directly with global memory.
 The GPU kernels for both implementations are relatively
 straightforward and compact,
-spanning no more than 100 lines of code.
+spanning no more than 100 lines of code
+(see Appendix).
 
 \subsection{Precomputing forward reduction coefficients}
 
@@ -202,7 +203,7 @@ forward reduction and backward substitution equations
 reveals that the actual amount of storage is somewhat less.
 For instance,
 the values $b_n^m$ are unused
-in Eqs (\ref{eqn:precomputed-forward-reduction-step})-
+in Eqs (\ref{eqn:precomputed-forward-reduction-step}) -
 (\ref{eqn:precomputed-backward-substitution-step-1}).
 The values $a_n^m$ and $b_n^m$ are
 required only for solving the $2-by-2$
