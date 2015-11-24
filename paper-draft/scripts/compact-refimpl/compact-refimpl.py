@@ -21,11 +21,11 @@ ind = np.arange(4)*2
 fig, ax = plt.subplots()
 width = 0.5
 
-speedup_1_bars = ax.bar(ind+0*width, speedup_1, width, color='dodgerblue')
-speedup_8_bars = ax.bar(ind+1*width, speedup_8, width, color='darkred')
-speedup_64_bars = ax.bar(ind+2*width, speedup_64, width, color='mediumpurple')
+speedup_1_bars = ax.bar(ind+0*width, speedup_1, width, color='c')
+speedup_8_bars = ax.bar(ind+1*width, speedup_8, width, color='m')
+speedup_64_bars = ax.bar(ind+2*width, speedup_64, width, color='y')
 
-ax.set_xticks(ind+2*width)
+ax.set_xticks(ind+1.5*width)
 ax.set_xticklabels(['$256^3$', '$512^3$',
     '$1024^3$', '$2048^3$'])
 ax.set_xlabel('Problem size')
