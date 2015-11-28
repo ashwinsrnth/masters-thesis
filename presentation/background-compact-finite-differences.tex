@@ -151,15 +151,6 @@ $i=1,2, \hdots n$ simultaneously.}
 
 \begin{frame}
     \begin{itemize}
-    \item Above scheme is 4th order accurate
-    \item Higher order accurate schemes can be derived
-        \begin{itemize}
-            \item in general, yield \emph{banded} linear systems
-        \end{itemize}
-    \item Tridiagonal schemes are generally sufficient
-        \begin{itemize}
-            \item up to 8th order accuracy
-        \end{itemize}
     \item {General form of compact schemes:
     \begin{align*}
         \begin{split}
@@ -171,6 +162,8 @@ $i=1,2, \hdots n$ simultaneously.}
             \hdots
         \end{split}
     \end{align*}}
+    \item In general, yield \emph{banded} linear systems
+    \item Tridiagonal schemes ($\beta=0$) are generally sufficient
     \end{itemize}
 \end{frame}
 
