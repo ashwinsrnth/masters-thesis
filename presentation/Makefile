@@ -12,3 +12,6 @@ clean:
 	rm -f *.blg
 	rm -f *.run.xml
 	rm -f *.vrb
+	rm -f *.bbl
+	rm -f *blx.bib
+	

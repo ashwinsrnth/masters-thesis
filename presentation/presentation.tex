@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[8pt]{beamer}
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{lmodern}
@@ -13,8 +13,9 @@
 \setbeamertemplate{itemize items}[default]
 \setbeamertemplate{caption}{\raggedright\insertcaption\par}
 \bibliography{bibliography.bib}
-
+\newcommand*{\boxedcolor}{red}
 \setcounter{tocdepth}{2}
+
 \begin{document}
 
 \title[Compact finite differences on GPUs]
@@ -34,6 +35,7 @@ and similar tridiagonal schemes on GPU-accelerated clusters}
 \end{frame}
 
 \input{motivation.tex}
+\input{introduction.tex}
 
 \iffalse
 \begin{frame}

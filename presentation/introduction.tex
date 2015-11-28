@@ -1,0 +1,181 @@
+\section{Background}
+
+\subsection{Compact finite difference schemes}
+
+\begin{frame}
+\frametitle{Evaluation of spatial derivatives}
+\pause
+\centering
+\includegraphics[width=200px]{img/discretize-function.eps}
+\begin{itemize}[<+->]
+    \item {Explicit schemes express
+        the derivative \emph{explicitly}
+        in terms of function values:
+        \begin{equation*}
+            f_i^\prime = \frac{f_{i+1} - f_{i-1}}{2dx}
+        \end{equation*}
+        }
+    \item {Compact schemes express
+        the derivative \emph{implicitly}:
+        \begin{equation*}
+            f_i^{\prime} + \frac{1}{4}(f^{\prime}_{i-1} + f^{\prime}_{i+1}) = \
+            \frac{3}{4}\frac{f_{i+1} - f_{i-1}}{dx}
+        \end{equation*}
+        }
+    \item Given the function values,
+        easy to compute the derivative using explicit schemes
+    \begin{itemize}
+        \item easily parallelized
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+For compact schemes,
+we write the expression for all points:
+
+\begin{align*}
+f_2^{\prime} + \frac{1}{4}(f^{\prime}_{1} + f^{\prime}_{3}) =
+    \frac{3}{4}\frac{f_{3} - f_{1}}{dx} \\
+%
+f_3^{\prime} + \frac{1}{4}(f^{\prime}_{2} + f^{\prime}_{4}) =
+    \frac{3}{4}\frac{f_{4} - f_{2}}{dx} \\
+%
+f_4^{\prime} + \frac{1}{4}(f^{\prime}_{3} + f^{\prime}_{5})
+    = \frac{3}{4}\frac{f_{5} - f_{3}}{dx} \\
+%
+\hdots
+%
+f_{n-1}^{\prime} + \frac{1}{4}(f^{\prime}_{n-2} + f^{\prime}_{n})
+    = \frac{3}{4}\frac{f_{n} - f_{n-2}}{dx}
+\end{align*}
+
+- special ``one-sided'' equations are needed near the boundaries:
+
+\begin{align*}
+f^{\prime}_1 + 2f^{\prime}_2 &= \frac{-5f_1 + 4f_2 + f_3}{dx} \\
+%
+f^{\prime}_{n} + 2f^{\prime}_{n-1}
+&=
+\frac{5f_{n} - 4f_{n-2} -  f_{n-1}}{dx}
+\end{align*}
+\end{frame}
+
+\begin{frame}
+\onslide<1->{The full set of equations is expressed succinctly as:}
+
+\only<1>{
+\begin{equation*}
+ \begin{bmatrix}
+     1&2\\
+     1/4&1&1/4\\
+     &1/4&1&1/4\\
+     &&1/4&1&1/4\\
+     &&&1/4&1&1/4\\
+     &&&&&\ddots\\
+     &&&&&&\ddots\\
+     &&&&&&&\ddots\\
+     &&&&&&&2&1
+  \end{bmatrix}
+  \begin{bmatrix}
+      f^{\prime}_1 \\
+      f^{\prime}_2 \\
+      f^{\prime}_3 \\
+      \vdots \\
+      \vdots \\
+      \vdots \\
+      \vdots \\
+      f^{\prime}_{n-1} \\
+      f^{\prime}_n
+   \end{bmatrix}
+ =
+ \begin{bmatrix}
+     \frac{-5f_1 + 4f_2 + f_3}{2dx}\\
+     \frac{3(f_{3} - f_{1})}{4dx}\\
+     \frac{3(f_{4} - f_{2})}{4dx}\\
+     \vdots\\
+     \vdots\\
+     \vdots\\
+     \vdots\\
+     \frac{3(f_{n} - f_{n-2})}{4dx}\\
+     \frac{5f_{n} - 4f_{n-1} - f_{n-2}}{2dx}
+  \end{bmatrix}
+\end{equation*}
+}
+
+\only<2>{
+\begin{equation*}
+ \begin{bmatrix}
+     1&2\\
+     1/4&1&1/4\\
+     &1/4&1&1/4\\
+     &&1/4&1&1/4\\
+     &&&1/4&1&1/4\\
+     &&&&&\ddots\\
+     &&&&&&\ddots\\
+     &&&&&&&\ddots\\
+     &&&&&&&2&1
+  \end{bmatrix}
+  \boxed{
+  \begin{bmatrix}
+      f^{\prime}_1 \\
+      f^{\prime}_2 \\
+      f^{\prime}_3 \\
+      \vdots \\
+      \vdots \\
+      \vdots \\
+      \vdots \\
+      f^{\prime}_{n-1} \\
+      f^{\prime}_n
+   \end{bmatrix}
+   }
+ =
+ \begin{bmatrix}
+     \frac{-5f_1 + 4f_2 + f_3}{2dx}\\
+     \frac{3(f_{3} - f_{1})}{4dx}\\
+     \frac{3(f_{4} - f_{2})}{4dx}\\
+     \vdots\\
+     \vdots\\
+     \vdots\\
+     \vdots\\
+     \frac{3(f_{n} - f_{n-2})}{4dx}\\
+     \frac{5f_{n} - 4f_{n-1} - f_{n-2}}{2dx}
+  \end{bmatrix}
+\end{equation*}
+}
+
+\onslide<2> {Solution yields the derivatives at all points
+$i=1,2, \hdots n$ simultaneously.}
+
+\end{frame}
+
+\begin{frame}
+    \begin{itemize}
+    \item Above scheme is 4th order accurate
+    \item Higher order accurate schemes can be derived
+        \begin{itemize}
+            \item in general, yield \emph{banded} linear systems
+        \end{itemize}
+    \item Tridiagonal schemes are generally sufficient
+        \begin{itemize}
+            \item up to 8th order accuracy
+        \end{itemize}
+    \item {General form of compact schemes:
+    \begin{align*}
+        \begin{split}
+            f_i^{\prime} + \alpha(f^{\prime}_{i-1} + f^{\prime}_{i+1}) + \
+            \beta(f^{\prime}_{i-2} + f^{\prime}_{i+2}) + \hdots  = \
+            a\frac{f_{i+1} - f_{i-1}}{dx} + \\
+            b\frac{f_{i+2} - f_{i-2}}{dx} + \
+            c\frac{f_{i+3} - f_{i-3}}{dx} + \
+            \hdots
+        \end{split}
+    \end{align*}}
+    \end{itemize}
+\end{frame}
+
+\subsection{Graphics processing units}
+
+\subsection{Tridiagonal solvers for the GPU}
+\subsection{}
+
