@@ -20,3 +20,4 @@
 *.snm
 *.vrb
 *blx.bib
+*tmp/

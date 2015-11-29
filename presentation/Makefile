@@ -1,5 +1,7 @@
 doc:
 	pdflatex -shell-escape presentation.tex
+	pdflatex -shell-escape presentation.tex
+	pdflatex -shell-escape presentation.tex
 	evince presentation.pdf&
 clean:
 	rm -f *.aux

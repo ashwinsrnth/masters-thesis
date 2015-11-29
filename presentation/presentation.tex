@@ -4,17 +4,20 @@
 \usepackage{lmodern}
 \usepackage{mathtools}
 \usepackage{minted}
-\usepackage[backend=biber]{biblatex}
+\usepackage[backend=bibtex]{biblatex}
+\usepackage{hyperref}
 
 \usetheme{CambridgeUS}
 \usecolortheme{seahorse}
 \setbeamercovered{dynamic}
 \usefonttheme{professionalfonts}
 \setbeamertemplate{itemize items}[default]
-\setbeamertemplate{caption}{\raggedright\insertcaption\par}
-\bibliography{bibliography.bib}
-\newcommand*{\boxedcolor}{red}
+\setbeamerfont{caption}{size=\footnotesize}
+\addbibresource{bibliography.bib}
 \setcounter{tocdepth}{2}
+
+\newcommand*{\Scale}[2][4]{\scalebox{#1}{$#2$}}%
+\newcommand*{\Resize}[2]{\resizebox{#1}{!}{$#2$}}%
 
 \begin{document}
 
@@ -35,8 +38,8 @@ and similar tridiagonal schemes on GPU-accelerated clusters}
 \end{frame}
 
 \input{motivation.tex}
-\input{background-compact-finite-differences.tex}
 \input{background-gpus.tex}
+\input{tridiagonal-solver.tex}
 
 \iffalse
 \begin{frame}

@@ -1,105 +1,137 @@
+
 \section{Motivation}
 
 \begin{frame}
-\frametitle{Direct Numerical Simulation}
-\pause
-\begin{columns}
-\begin{column}{0.5\textwidth}
+\frametitle{Introduction}
+DNS: An approach for numerically solving
+the Navier-Stokes equations
 \begin{itemize}
-    \item<2-> DNS: approach for solving
-        the Navier-Stokes equations
-    \item<3-> Aim: resolve all the spatial and temporal
-        features of the flow
-    \item<4-> Use a fine computational grid
-        to represent the flow domain;
-        some numerical method to solve N-S equations
-    \item<7-> Popular numerical methods:
-        \begin{itemize}
-            \item<8-> \alert<11> {finite difference methods}
-            \item<9-> spectral methods
-            \item<10-> finite element methods
-        \end{itemize}
+\item Extremely fine computational grids
+\item High-order accurate numerical schemes
+\item e.g., \emph{compact} finite
+    difference schemes for approximating derivatives
+\item High computational cost
+    \begin{itemize}
+    \item Feasible only for simple flows
+    \item Parallelism almost always required
+    \end{itemize}
 \end{itemize}
-\end{column}
-\begin{column}{0.5\textwidth}
-\vspace{1.5cm}
-\hspace{1cm}
-\includegraphics<4>[width=100px]
-    {img/simple-flow-domain.eps}
-\includegraphics<5>[width=100px]
-    {img/simple-grid.eps}   
-\includegraphics<6->[width=100px]
-    {img/simple-flow-solution.eps}   
-\end{column}
-\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Compact finite difference schemes}
+A class of high-order accurate finite difference schemes
+for evaluating spatial derivatives
+
+\centering
+\includegraphics[width=200px]{img/discretize-function.eps}
+
+\begin{itemize}
+\item {General form of compact schemes:
+\begin{align*}
+\begin{split}
+f_i^{\prime} + \alpha(f^{\prime}_{i-1} + f^{\prime}_{i+1}) + \
+\beta(f^{\prime}_{i-2} + f^{\prime}_{i+2}) + \hdots  = \
+a\frac{f_{i+1} - f_{i-1}}{dx} + \\
+b\frac{f_{i+2} - f_{i-2}}{dx} + \
+c\frac{f_{i+3} - f_{i-3}}{dx} + \
+    \hdots
+\end{split}
+\end{align*}}
+\item $\alpha$, $\beta$, $a$, $b$, $\hdots$ must
+    satisfy certain constraints
+\item Derivative defined \emph{implicitly}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\footnotesize
+Solution strategy
+\begin{itemize}
+\item {Consider the specific scheme:
+\begin{align*}
+f_i^{\prime} + \frac{1}{4}(f^{\prime}_{i-1} + f^{\prime}_{i+1}) = \
+\frac{3}{4}\frac{f_{i+1} - f_{i-1}}{dx}
+\end{align*}}
+
+\item {We write the expression for all points:
+\begin{align*}
+f_2^{\prime} + \frac{1}{4}(f^{\prime}_{1} + f^{\prime}_{3}) =
+    \frac{3}{4}\frac{f_{3} - f_{1}}{dx} \\
+%
+f_3^{\prime} + \frac{1}{4}(f^{\prime}_{2} + f^{\prime}_{4}) =
+    \frac{3}{4}\frac{f_{4} - f_{2}}{dx} \\
+%
+f_4^{\prime} + \frac{1}{4}(f^{\prime}_{3} + f^{\prime}_{5})
+    = \frac{3}{4}\frac{f_{5} - f_{3}}{dx} \\
+%
+\hdots
+%
+f_{n-1}^{\prime} + \frac{1}{4}(f^{\prime}_{n-2} + f^{\prime}_{n})
+    = \frac{3}{4}\frac{f_{n} - f_{n-2}}{dx}
+\end{align*}}
+
+\item {Special ``one-sided'' equations are needed near the boundaries:
+
+\begin{align*}
+f^{\prime}_1 + 2f^{\prime}_2 &= \frac{-5f_1 + 4f_2 + f_3}{dx} \\
+%
+f^{\prime}_{n} + 2f^{\prime}_{n-1}
+&=
+\frac{5f_{n} - 4f_{n-2} -  f_{n-1}}{dx}
+\end{align*}}
+
+\end{itemize}
 \end{frame}
 
 \begin{frame}[t]
-\frametitle{DNS: an expensive endaevour}
-\pause
-\begin{columns}[T]
-\begin{column}{0.5\textwidth}
-\begin{itemize}[<+->]
-    \item Requires very fine grids,
-        and expensive numerical schemes
-        \begin{itemize}[<+->]
-            \item impractical except for simple flows
-            \item parallel solution almost always required
-        \end{itemize}
-    \item Traditional workhorse for computation: CPU core
-    \item Algorithms exhibit fine-grained parallelism
-        \begin{itemize}[<+->]
-            \item Pointwise computations
-            \item Stencil computations
-        \end{itemize}
-    \item Well suited to graphics processing units (GPUs)
-\end{itemize}
-\end{column}
-\begin{column}{0.5\textwidth}
-    \centering
-    \only<4> {\includegraphics[height=175px]{img/tasks.eps}}
-    \only<5-6> {\includegraphics[height=175px]{img/cpu-tasks.eps}}
-    \only<7> {\includegraphics[height=175px]{img/pointwise.eps}}
-    \only<8> {\includegraphics[height=175px]{img/pointwise-stencil.eps}}
-    \only<9> {\includegraphics[height=175px]{img/gpu-tasks.eps}}
-\end{column}
-\end{columns}
-\end{frame}
+\footnotesize
+The full set of equations is expressed succinctly as:
+\begin{equation*}
+ \begin{bmatrix}
+     1&2\\
+     1/4&1&1/4\\
+     &1/4&1&1/4\\
+     &&1/4&1&1/4\\
+     &&&1/4&1&1/4\\
+     &&&&&\ddots\\
+     &&&&&&\ddots\\
+     &&&&&&&\ddots\\
+     &&&&&&&2&1
+  \end{bmatrix}
+  \boxed{
+  \begin{bmatrix}
+      f^{\prime}_1 \\
+      f^{\prime}_2 \\
+      f^{\prime}_3 \\
+      \vdots \\
+      \vdots \\
+      \vdots \\
+      \vdots \\
+      f^{\prime}_{n-1} \\
+      f^{\prime}_n
+   \end{bmatrix}
+   }
+ =
+ \begin{bmatrix}
+     \frac{-5f_1 + 4f_2 + f_3}{2dx}\\
+     \frac{3(f_{3} - f_{1})}{4dx}\\
+     \frac{3(f_{4} - f_{2})}{4dx}\\
+     \vdots\\
+     \vdots\\
+     \vdots\\
+     \vdots\\
+     \frac{3(f_{n} - f_{n-2})}{4dx}\\
+     \frac{5f_{n} - 4f_{n-1} - f_{n-2}}{2dx}
+  \end{bmatrix}
+\end{equation*}
 
-\begin{frame}
-\frametitle{Compact finite difference schemes}
-\pause
-\begin{columns}
-\begin{column}{0.5\textwidth}
-\begin{itemize}[<+->]
-    \item A class of high-order accurate finite difference schemes
-        for evaluating spatial derivatives
-    \item Much better at resolving high wavenumbers compared
-        to explicit schemes
-    \item Require less communication between parallel processes
+Solution yields the derivatives at all points
+$i=1,2, \hdots n$ simultaneously.
+\begin{itemize}
+\item In general, compact schemes yield banded systems
+\item Tridiagonal schemes generally sufficient
 \end{itemize}
-\end{column}
-\begin{column}{0.5\textwidth}
-    \visible<3->{\includegraphics[width=180px]{img/modified-wavenumbers.eps}}
-\end{column}
-\end{columns}
-\end{frame}
-
-\begin{frame}
-\frametitle{Compact finite difference schemes}
-\begin{alert}{Comes at a cost!}
-\pause
-\begin{itemize}[<+->]
-    \item Requires solution of \emph{banded} linear systems
-    \item Simplest case: tridiagonal systems
-    \item More expensive to evaluate than explicit schemes
-    \item Difficult to parallelize
-        \begin{itemize}[<+->]
-            \item Classical \emph{Thomas algorithm} exhibits
-                neither coarse-grained nor fine-grained parallelism
-        \end{itemize}
-\end{itemize}
-\end{alert}
 \end{frame}
 
 \begin{frame}
@@ -128,3 +160,4 @@
         finite differences on GPU-accelerated clusters
 \end{itemize}
 \end{frame}
+
