@@ -3,9 +3,11 @@
 \usepackage{tikz}
 \usepackage{lmodern}
 \usepackage{mathtools}
+\usepackage{amsmath,bm}
 \usepackage{minted}
 \usepackage[backend=bibtex]{biblatex}
 \usepackage{hyperref}
+\usepackage{multirow}
 
 \usetheme{CambridgeUS}
 \usecolortheme{seahorse}
@@ -18,6 +20,15 @@
 
 \newcommand*{\Scale}[2][4]{\scalebox{#1}{$#2$}}%
 \newcommand*{\Resize}[2]{\resizebox{#1}{!}{$#2$}}%
+%% Frame Title %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
@@ -40,6 +51,8 @@ and similar tridiagonal schemes on GPU-accelerated clusters}
 \input{motivation.tex}
 \input{background-gpus.tex}
 \input{tridiagonal-solver.tex}
+\input{compact-finite-difference-application.tex}
+\input{results.tex}
 
 \iffalse
 \begin{frame}

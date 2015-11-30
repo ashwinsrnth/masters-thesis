@@ -1,0 +1,131 @@
+\section{Results}
+
+\begin{frame}
+\frametitle{Overview of results}
+\begin{itemize}
+\item Results for tridiagonal solver
+\begin{itemize}
+    \item Global memory v/s shared memory implementations
+    \item Compared against library solvers
+        (multicore CPU and GPU)
+\end{itemize}
+\item Results for compact finite difference application
+\begin{itemize}
+    \item Profiling results
+    \item Scaling results
+    \item Comparison with CPU-only approach
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Global memory v/s shared memory implementations}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+\item For 2-D problems, shared memory clearly better
+\item For 3-D problems, shared memory speedup
+    is smaller
+\item Global memory makes better use of
+    GPU parallelism in 3-D case
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+\centering
+\includegraphics[width=140px]{img/global-vs-shared-2d.eps}
+
+\includegraphics[width=140px]{img/global-vs-shared-3d.eps}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Comparison with library solvers - timings}
+\begin{table}
+\resizebox{\textwidth}{!}{%
+\input{table/bench.tex}
+}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\frametitle{Comparison with library solvers - speedup}
+\centering
+\includegraphics[width=180px]{img/bench-2d.eps}
+\includegraphics[width=180px]{img/bench-3d.eps}
+\begin{table}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\frametitle{Note on speedups}
+\begin{itemize}
+\item Comparing against 8 CPU cores, speedups in the range 1-2x
+\item Solving the tridiagonal systems
+    is the \emph{least amenable to efficient parallel solution}
+\item Objective is to keep the problem on the GPU
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Compact finite difference evaluation - profiling}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+    \item Problem sizes: $1024^3$ and $2048^3$ on 64 GPUs
+    \item For larger problems, more time spent
+        on tridiagonal systems
+    \item Significant portion of time spent on
+        data permutation
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+\centering
+\includegraphics[width=170px]{img/profiling-1024-64.eps}
+
+\includegraphics[width=170px]{img/profiling-2048-64.eps}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Compact finite difference evaluation - strong scaling}
+\centering
+\includegraphics[width=180px]{img/strong-scaling-256.eps}
+\includegraphics[width=180px]{img/strong-scaling-512.eps}
+
+Problem sizes: $256^3$ and $512^3$
+\end{frame}
+
+\begin{frame}
+\frametitle{Compact finite difference evaluation - weak scaling}
+\centering
+\includegraphics[width=180px]{img/weak-scaling-128.eps}
+\includegraphics[width=180px]{img/weak-scaling-256.eps}
+
+Problem sizes: $128^3$ and $256^3$ \emph{per process}
+\end{frame}
+
+\begin{frame}
+\frametitle{Comparison with CPU-only approach}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+\item Reference implementation: approach in CFDNS code
+    (Los Alamos National Lab)
+\item Maintain a ratio of 8 CPU cores : 1 GPU in comparison
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+\centering
+\begin{table}
+\resizebox{0.75\textwidth}{!}{%
+\input{table/compact-refimpl-timings.tex}
+}
+\end{table}
+
+\includegraphics[width=140px]{img/compact-refimpl-speedups.eps}
+\end{column}
+\end{columns}
+\end{frame}
