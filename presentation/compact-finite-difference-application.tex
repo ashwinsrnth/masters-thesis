@@ -6,33 +6,21 @@
 \frametitle{Application to compact finite difference schemes}
 \begin{itemize}
 \item Compact finite difference evaluation involves two steps:
-    \begin{enumerate}
-        \item Evaluation of the right hand sides
-        \begin{itemize}
-            \item easily performed on the GPU
-        \end{itemize}
-        \item Solving the tridiagonal systems for all the grid lines
-    \end{enumerate}
+\begin{enumerate}
+\item Evaluation of the right hand sides
+\begin{itemize}
+    \item easily performed on the GPU
+\end{itemize}
+\item Solving the tridiagonal systems for all the grid lines
+\end{enumerate}
+\item Current efforts:
+\begin{itemize}
+    \item Tutkun et al. (2012)
+    \item Esfahanian et al. (2014)
+\end{itemize}
 \item Typical DNS problems too large to fit on a single GPU
 \item Need a strategy for multiple GPUs
 \end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Parallelization strategy: single GPU}
-\begin{columns}
-\begin{column}{0.5\textwidth}
-\begin{itemize}
-    \item Map grid lines to blocks
-    \item Solve multiple blocks simaltaneously
-    \item For other coordinate directions,
-        transpose the data (physically or logically)
-\end{itemize}
-\end{column}
-\begin{column}{0.5\textwidth}
-\includegraphics[width=150px]{img/compact-single-gpu.eps}
-\end{column}
-\end{columns}
 \end{frame}
 
 \begin{frame}
@@ -64,35 +52,13 @@
 \item No coordination between GPUs required
 \item \textbf{Physical} global transpose required
 \item Subdomains can become impractically slender
+\item Scalable approach needs a distributed tridiagonal solver
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
-\includegraphics[width=100px]{img/compact-distributed-restricted.eps}
-\end{column}
-\end{columns}
-\end{frame}
-
-\begin{frame}
-\frametitle{Parallelization strategy: multiple GPUs on distinct nodes}
-\centering
-\includegraphics[width=200px]{img/compact-restricted-transpose.eps}
-\end{frame}
-
-\begin{frame}
-\frametitle{Parallelization strategy: multiple GPUs on distinct nodes}
-\begin{columns}
-\begin{column}{0.5\textwidth}
-\begin{itemize}
-\item Need a distributed tridiagonal solver
-\item Can ease communication costs
-\item Remove restrictions on domain sizes
-\item Greatly increases overall complexity
-\item Especially difficult for GPUs
-\end{itemize}
-\end{column}
-\begin{column}{0.5\textwidth}
-\centering
-\includegraphics[width=100px]{img/compact-distributed-all.eps}
+    \only<1>{\includegraphics[width=100px]{img/compact-distributed-restricted.eps}}
+    \only<2>{\includegraphics[width=150px]{img/compact-restricted-transpose.eps}}
+    \only<3>{\includegraphics[width=120px]{img/compact-distributed-all.eps}}
 \end{column}
 \end{columns}
 \end{frame}
@@ -162,73 +128,37 @@ x^p = x_r^p + \
 \end{frame}
 
 \begin{frame}
-\begin{itemize}
-\item 3 local tridiagonal systems ($m$ equations)
-\item 1 ``global'' tridiagonal system ($2P-2$ equations)
-\item Must be done for each grid line
-\item Sufficient to consider a single line of processes
-\end{itemize}
-\begin{center}
-\includegraphics[height=100px]{img/single-line-of-processes.eps}
-\end{center}
-\end{frame}
-
-\begin{frame}
-\frametitle{Right hand side evaluation}
+\frametitle{Compact finite difference on multi-GPU system}
+\footnotesize
 \begin{columns}
 \begin{column}{0.5\textwidth}
+\begin{enumerate}
+\item Computing RHS for all local grid points - \textbf{requires communication}
 \begin{itemize}
-\item Stencil pattern: easily performed on GPU
-\item Each process communicates with its neighbours
-    (halo-swapping)
-\item NVIDIA GPUDirect technology for efficient
-    GPU-GPU communication
-\item Developed a tool to manage structured grid data
-    and transparently perform halo swaps
-    for multiple GPUs
+    \footnotesize
+    \item halo swaps with neighbouring GPUs
+    \item pointwise stencil
 \end{itemize}
+\item Solving local tridiagonal systems - no communication
+\item Assembling and solving reduced tridiagonal systems - \textbf{requires communication}
+\begin{itemize}
+    \footnotesize
+    \item global communication along line of GPUs
+    \item produces interleaved tridiagonal sysems - pThomas algorithm
+\end{itemize}
+\item Summing solutions from steps 2 and 3 - no communication
+\begin{itemize}
+    \footnotesize
+    \item pointwise sum
+\end{itemize}
+\item For other coordinate directions: \emph{local} permutation of data
+\end{enumerate}
 \end{column}
 \begin{column}{0.5\textwidth}
-\includegraphics[width=150px]{img/rhs-halos.eps}
+\only<1>{\includegraphics[width=150px]{img/rhs-halos.eps}}
+\only<2>{\includegraphics[width=150px]{img/constructing-reduced-system.eps}}
 \end{column}
 \end{columns}
 \end{frame}
 
-\begin{frame}
-\frametitle{Solving local systems}
-\begin{itemize}
-\item Local tridiagonal systems solved using
-    algorithm described in previous sections
-\item For 2-D problems,
-    $N_{rhs} = m$
-    for 3-D problems
-    $N_{rhs} = m^2$
-\end{itemize}
-\end{frame}
 
-\begin{frame}
-\frametitle{Constructing reduced system}
-\begin{columns}
-\begin{column}{0.5\textwidth}
-\begin{itemize}
-\item Involves global communication
-\item Produces tridiagonal system with
-    several right-hand sides
-\item Systems are \emph{interleaved}
-\item Solved by thread-parallel Thomas
-    (pThomas) algorithm
-\end{itemize}
-\end{column}
-\begin{column}{0.5\textwidth}
-\includegraphics[width=100px]{img/constructing-reduced-system.eps}
-\end{column}
-\end{columns}
-\end{frame}
-
-\begin{frame}
-\frametitle{Summing the solutions}
-\begin{itemize}
-\item Pointwise-parallel: perfect fit for GPU
-\item No communication involved
-\end{itemize}
-\end{frame}

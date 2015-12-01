@@ -51,9 +51,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.7"
-     inkscape:cx="251.69393"
-     inkscape:cy="630.28623"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="322.03659"
+     inkscape:cy="598.62149"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -1030,5 +1030,26 @@
            height="57.857143"
            x="77.85714"
            y="321.64789" /></flowRegion><flowPara
-         id="flowPara5752">Thread 3</flowPara></flowRoot>  </g>
+         id="flowPara5752">Thread 3</flowPara></flowRoot>    <path
+       style="fill:none;stroke:#000000;stroke-width:1.34358931px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 82.98178,297.019 591.1793,0 -13.4359,-13.4359"
+       id="path3245"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.34358931px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 674.16108,297.019 -13.4359,13.43589"
+       id="path3247"
+       inkscape:connector-curvature="0" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3249"
+       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Latin Modern Math;-inkscape-font-specification:Latin Modern Math"
+       transform="matrix(1.3435893,0,0,1.3435893,-158.86429,-95.79572)"><flowRegion
+         id="flowRegion3251"><rect
+           id="rect3253"
+           width="380"
+           height="51.428566"
+           x="260"
+           y="252.36218" /></flowRegion><flowPara
+         id="flowPara3255">Direction of derivative evaluation</flowPara></flowRoot>  </g>
 </svg>

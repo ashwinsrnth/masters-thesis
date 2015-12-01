@@ -3,7 +3,7 @@
 \begin{frame}
 \frametitle{Overview of results}
 \begin{itemize}
-\item Results for tridiagonal solver
+\item Results for tridiagonal solver (NEATO)
 \begin{itemize}
     \item Global memory v/s shared memory implementations
     \item Compared against library solvers
@@ -18,17 +18,27 @@
 \end{itemize}
 \end{frame}
 
-
 \begin{frame}
 \frametitle{Global memory v/s shared memory implementations}
+\footnotesize
 \begin{columns}
 \begin{column}{0.5\textwidth}
+
+\begin{block}{Benchmark details}
+\begin{itemize}
+\item Solving multiple tridiagonal systems on single GPU
+\item Upto $2048$ equations in $2048$ variables (2-D)
+    and $512^2$ equations in $512$ variables (3-D)
+\item GPU: NVIDIA Tesla K20
+\end{itemize}
+\end{block}
+
 \begin{itemize}
 \item For 2-D problems, shared memory clearly better
 \item For 3-D problems, shared memory speedup
     is smaller
-\item Global memory makes better use of
-    GPU parallelism in 3-D case
+\item Thread inactivity in shared memory leads
+    to reduced performance
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
@@ -40,8 +50,40 @@
 \end{columns}
 \end{frame}
 
+\begin{frame}{Comparison with library solvers}
+\footnotesize
+\begin{block}{Benchmark details}
+\begin{itemize}
+\item Solving multiple tridiagonal systems on single GPU and multicore CPU
+\item Upto $2048$ equations in $2048$ variables (2-D)
+    and $512^2$ equations in $512$ variables (3-D)
+\item GPU: NVIDIA Tesla K20
+\item CPU: Intel Xeon E5 v2
+\item Do \emph{not} include cost of CPU-GPU transfer
+\item Library solver details:
+\begin{itemize}
+    \footnotesize
+    \item Intel MKL \texttt{dgtsv} (Gaussian elimination with partial pivoting)
+    \item CUSPARSE \texttt{dgtsv} (Hybrid CR+PCR)
+\end{itemize}
+\item \texttt{-02} level compiler optimizations
+\item Double precision
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Comparison with library solvers - speedup}
+Speedups over library implementations:
+\begin{center}
+\includegraphics[width=180px]{img/bench-2d.eps}
+\includegraphics[width=180px]{img/bench-3d.eps}
+\end{center}
+\end{frame}
+
 \begin{frame}
 \frametitle{Comparison with library solvers - timings}
+Timings for various solvers:
 \begin{table}
 \resizebox{\textwidth}{!}{%
 \input{table/bench.tex}
@@ -50,22 +92,27 @@
 \end{frame}
 
 \begin{frame}
-\frametitle{Comparison with library solvers - speedup}
-\centering
-\includegraphics[width=180px]{img/bench-2d.eps}
-\includegraphics[width=180px]{img/bench-3d.eps}
-\begin{table}
-\end{table}
-\end{frame}
-
-\begin{frame}
 \frametitle{Note on speedups}
 \begin{itemize}
-\item Comparing against 8 CPU cores, speedups in the range 1-2x
+\item Faster than CUSPARSE in almost all cases
+\item Comparing against 8 CPU cores,
+    speedups over MKL in the range 1-2x
 \item Solving the tridiagonal systems
-    is the \emph{least amenable to efficient parallel solution}
+    \emph{least amenable to efficient parallel solution}
 \item Objective is to keep the problem on the GPU
+\item Multicore CPU performance flattens out
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Compact finite difference evaluation}
+\footnotesize
+\begin{block}{Benchmark details}
+\begin{itemize}
+\item Compact finite difference evaluation in 3-D for a function $f(x, y, z)$
+\item Problem size up to $2048^3$ on up to 64 GPUs and 512 CPU cores
+\item Tests performed on Palmetto cluster (Infiniband interconnect)
+\end{itemize}
+\end{block}
 \end{frame}
 
 \begin{frame}
@@ -73,11 +120,16 @@
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
-    \item Problem sizes: $1024^3$ and $2048^3$ on 64 GPUs
-    \item For larger problems, more time spent
-        on tridiagonal systems
-    \item Significant portion of time spent on
-        data permutation
+\item Problem sizes: $1024^3$ and $2048^3$ on 64 GPUs
+\item Most time spent on solving tridiagonal systems
+    \begin{itemize}
+        \item Justifies optimization effort
+    \end{itemize}
+\item Significant portion of time spent on
+    data permutation
+    \begin{itemize}
+        \item na\"{\i}ve implementation
+    \end{itemize}
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
@@ -112,9 +164,11 @@ Problem sizes: $128^3$ and $256^3$ \emph{per process}
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
-\item Reference implementation: approach in CFDNS code
+\item Reference implementation: CFDNS
     (Los Alamos National Lab)
-\item Maintain a ratio of 8 CPU cores : 1 GPU in comparison
+\item Uses LU algorithm
+\item Parallelized among individual cores
+\item Maintain a ratio of 8 CPU cores : 1 GPU for comparison
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
@@ -129,3 +183,23 @@ Problem sizes: $128^3$ and $256^3$ \emph{per process}
 \end{column}
 \end{columns}
 \end{frame}
+
+\begin{frame}
+\frametitle{Conclusions and future work}
+\begin{itemize}
+    \item Tridiagonal solver performance
+        is key in compact finite difference evaluation
+    \item Simple matrix structure can be exploited
+        in the cyclic reduction algorithm
+    \item Substantial speedups can be achieved
+        over CPU
+    \item Applicability to other algorithms: PCR, CR+PCR
+    \item Integration into current DNS code
+    \item Strategies for MIC architecures
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+    Thank you    
+\end{frame}
+

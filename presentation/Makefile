@@ -1,8 +1,11 @@
 doc:
 	pdflatex -shell-escape presentation.tex
 	pdflatex -shell-escape presentation.tex
-	pdflatex -shell-escape presentation.tex
 	evince presentation.pdf&
+backup:
+	pdflatex -shell-escape backups.tex
+	pdflatex -shell-escape backups.tex
+	evince backups.pdf
 clean:
 	rm -f *.aux
 	rm -f *.log
