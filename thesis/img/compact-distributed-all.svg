@@ -73,9 +73,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.9899495"
-     inkscape:cx="685.65707"
-     inkscape:cy="332.13918"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="262.70139"
+     inkscape:cy="564.87803"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -224,28 +224,7 @@
        id="path3184"
        d="m 201.04262,668.23973 127.07988,0 m -127.07986,31.76992 127.07988,0 m -127.07986,31.76992 127.07988,0 m -127.07986,31.76992 127.07988,0 m -127.07986,31.76992 127.07988,0 m -127.07996,-127.07968 8e-5,127.07968 m 31.76989,-127.07968 8e-5,127.07968 m 31.76989,-127.07968 8e-5,127.07968 m 31.76989,-127.07968 8e-5,127.07968 m 31.76989,-127.07968 8e-5,127.07968"
        style="fill:none;stroke:#000000;stroke-width:1.58849752px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 165.71429,154.66674 440,0 -10,-10"
-       id="path3245"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 605.71429,154.66674 -10,10"
-       id="path3247"
-       inkscape:connector-curvature="0" />
     <flowRoot
-       xml:space="preserve"
-       id="flowRoot3249"
-       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Latin Modern Math;-inkscape-font-specification:Latin Modern Math"
-       transform="translate(-14.285714,-137.69545)"><flowRegion
-         id="flowRegion3251"><rect
-           id="rect3253"
-           width="380"
-           height="51.428566"
-           x="260"
-           y="252.36218" /></flowRegion><flowPara
-         id="flowPara3255">Direction of derivative evalutaion</flowPara></flowRoot>    <flowRoot
        transform="translate(300.35397,195.81623)"
        style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Latin Modern Math;-inkscape-font-specification:Latin Modern Math"
        id="flowRoot4666"
@@ -504,25 +483,6 @@
          style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     </g>
     <g
-       transform="translate(-348,540)"
-       id="g8848">
-      <path
-         style="fill:none;stroke:#000000;stroke-width:1.77165353;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         d="m 534.45135,311.61163 10,-10 10,10"
-         id="path8850"
-         inkscape:connector-curvature="0" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path8852"
-         d="m 534.45135,339.92727 10,10 10,-10"
-         style="fill:none;stroke:#000000;stroke-width:1.77165353;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-      <path
-         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         d="m 544.45135,301.61163 0,47.99999"
-         id="path8854"
-         inkscape:connector-curvature="0" />
-    </g>
-    <g
        transform="matrix(0,1,-1,0,522.2208,373.31811)"
        id="g8856">
       <path
@@ -554,5 +514,24 @@
            y="832.36218" /></flowRegion><flowPara
          id="flowPara5793">Distributed GPUs -</flowPara><flowPara
          id="flowPara5327">inter-GPU communiction:</flowPara><flowPara
-         id="flowPara5797">via interconnect (MPI)</flowPara></flowRoot>  </g>
+         id="flowPara5797">via interconnect (MPI)</flowPara></flowRoot>    <g
+       transform="translate(-348,540)"
+       id="g8848">
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.77165353;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 534.45135,311.61163 10,-10 10,10"
+         id="path8850"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path8852"
+         d="m 534.45135,339.92727 10,10 10,-10"
+         style="fill:none;stroke:#000000;stroke-width:1.77165353;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 544.45135,301.61163 0,47.99999"
+         id="path8854"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
 </svg>
