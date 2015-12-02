@@ -30,7 +30,7 @@
 \item Derived from Gaussian elimination
 \item Requires $2n$ steps and $4n$ storage
 \item The most efficient sequential algorithm
-\item What about for GPUs?
+\item What about parallelization/GPUs?
     \begin{itemize}
         \item inherently sequential
         \item use multiple threads to solve
@@ -104,8 +104,8 @@
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
-\item $17$ operations per equation,
-    compared to $8$ in Thomas algorithm
+\item $17n$ operations,
+    compared to $8n$ in Thomas algorithm
 \item But exhibits more parallelism:
 \begin{itemize}
     \item Individual systems can be solved independently

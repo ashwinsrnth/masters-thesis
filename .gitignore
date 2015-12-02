@@ -21,3 +21,5 @@
 *.vrb
 *blx.bib
 *tmp/
+*run.xml
+*backups.pdf
