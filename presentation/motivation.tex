@@ -36,7 +36,8 @@ the Navier-Stokes equations
 for evaluating spatial derivatives
 \item Able to resolve high wavenumber fluctuations
 \item Currently used in our research code
-    and in CFDNS (Los Alamos National Lab)
+    and in CFDNS (Los Alamos National Lab --- sponsor)
+\item Consumes significant portion of runtime
 \item {General form of compact schemes:
 \begin{align*}
 \begin{split}
@@ -58,7 +59,8 @@ c\frac{f_{i+3} - f_{i-3}}{dx} + \
 \item Compact schemes require solution of \emph{banded}
     linear systems (tridiagonal, pentadiagonal)
 \item E.g., {$O(dx^4)$ Pad\'{e} scheme yields:
-\footnotesize
+\scalebox{0.75}{
+\vbox{
 \begin{equation*}
 \begin{bmatrix}
      1&2\\
@@ -96,28 +98,27 @@ c\frac{f_{i+3} - f_{i-3}}{dx} + \
      \frac{3(f_{n} - f_{n-2})}{4dx}\\
      \frac{5f_{n} - 4f_{n-1} - f_{n-2}}{2dx}
   \end{bmatrix}
-\end{equation*}}
+\end{equation*}}}}
+\item Relatively simple matrix structure
 \item Solution yields the derivative at
     all points $i=1, 2, \hdots n$ simultaneously
 \item Tridiagonal schemes generally sufficient
-\item Expensive, difficult to parallelize
+\item Expensive relative to explicit schemes; difficult to parallelize
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{Objectives}
-\begin{itemize}
+\begin{enumerate}
 \item Exploratory work for exploiting GPUs
     in current research code
     \begin{itemize}
     \item important step for our group: Palmetto cluster
     currently has 598 GPUs (and counting)
     \end{itemize}
-\item Develop an efficient GPU tridiagonal solver
+\item Develop an efficient GPU solution
     for compact finite difference evaluation
-\item Parallelize the compact finite difference evaluation---current
-    research code uses a sequential approach
-\end{itemize}
+\end{enumerate}
 \end{frame}
 
 \begin{frame}
@@ -135,4 +136,3 @@ c\frac{f_{i+3} - f_{i-3}}{dx} + \
     and multiple GPUs
 \end{itemize}
 \end{frame}
-
