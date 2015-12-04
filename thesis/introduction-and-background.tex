@@ -516,8 +516,7 @@ device's \emph{global memory}.
 Similarly, data from the device is read back into the host
 from global memory.
 This is done in the host-code
-using special functions provided by the CUDA API 
-(e.g., \texttt{cudaMemcpy}).
+using special functions provided by the CUDA API.
 Data transfer between the host and the device is
 extremely slow relative to data access within the device.
 This data transfer rate is limited by the bandwidth
@@ -1026,7 +1025,7 @@ Esfahanian et al. \cite{esfahanian2014efficient}
 avoid shared memory (and associated bank conflicts entirely)
 using a data rearrangement scheme to improve global memory access.
 Our approach takes a different route,
-and is focussed on exploiting the specific matrix structure
+and is focused on exploiting the specific matrix structure
 to reduce the number of computations and memory accesses
 performed by each thread
 at every cyclic reduction step.
