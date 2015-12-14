@@ -1,4 +1,4 @@
-\section{Developing a tridiagonal solver}
+\section{Developing a GPU tridiagonal solver}
 
 \begin{frame}
 \frametitle{Requirements of tridiagonal solver}
@@ -81,16 +81,16 @@
 \begin{column}{0.5\textwidth}
 \begin{itemize}
 \item Buzbee and Goleb (1970)
-\item \textbf{Forward reduction} ($log(n)-1$ steps):
+\item \textbf{Forward reduction} ($log_2(n)-1$ steps):
     \begin{itemize}
     \item Eliminate odd-indexed equations at each step
     \item Two-by-two system is left
     \end{itemize}
-\item \textbf{Backward substitution} ($log(n)-1$ steps):
+\item \textbf{Backward substitution} ($log_2(n)-1$ steps):
     \begin{itemize}
     \item Solve for odd-indexed equations using even-indexed values
     \end{itemize}
-\item Best case ($n$ parallel threads): requires $2log(n)-1$ steps
+\item Best case ($n$ parallel threads): requires $2log_2(n)-1$ steps
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
@@ -118,6 +118,8 @@
 \begin{column}{0.5\textwidth}
 \centering
 Forward reduction
+
+(diagonals $a$, $b$, $c$ and RHS $d$)
 \scalebox{0.8}{
 \vbox{
 \begin{align*} 
@@ -140,7 +142,6 @@ x_i &= \frac{d^{\prime}_i - a^{\prime}_ix_{i-1} - \
 \end{columns}
 \end{frame}
 
-
 \begin{frame}
 \frametitle{Issues in GPU implementation}
 \footnotesize
@@ -160,6 +161,8 @@ x_i &= \frac{d^{\prime}_i - a^{\prime}_ix_{i-1} - \
         \end{itemize}
     \item Shared memory \emph{bank conflicts}
         due to power-of-2 strides; reduced GPU occupancy
+    \item We provide both implementations:
+        global memory \emph{and} shared memory
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
@@ -208,10 +211,12 @@ Forward reduction
 \end{frame}
 
 \begin{frame}
+\frametitle{A novel approach}
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
 \item Diagonals are nearly constant (\emph{near-Toeplitz tridiagonal})
+\item Symmetry broken by boundary conditions
 \item Near-Toeplitz trdiagonal matrices occur in other numerical schemes
 \begin{itemize}
     \item Alternating direct implicit methods
@@ -219,7 +224,7 @@ Forward reduction
     \item Poisson solvers
     \item One-dimensional ODEs and PDEs
 \end{itemize}
-\item Symmetric: but may be broken by boundary conditions
+\item Can be stored compactly compared to general tridiagonal systems
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
@@ -248,6 +253,8 @@ Forward reduction
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
+\item Each forward reduction step reduces
+    a matrix of size $n$ to $n/2$
 \item {First reduction step: substitute:
     \scalebox{0.8}{
     \vbox{
@@ -287,6 +294,14 @@ Cyclic reduction reduced to:
 \vspace{1cm}
 
 \textbf{Forward reduction}
+
+\hspace{3.85cm} \sout{$k_1 = \frac{a_i}{b_{i-1}}, k_2 = \frac{c_i}{b_{i+1}}$}
+
+\hspace{3.85cm} \sout{$a^{\prime}_i = -a_{i-1}k_1$}
+
+\hspace{3.85cm} \sout{$b^{\prime}_i = b_i - c_{i-1}k_1 - a_{i+1}k_2$}
+
+\hspace{3.85cm} \sout{$c^{\prime}_i = -c_{i+1}k_2$} 
 \begin{align*}
 d^{\prime}_i = d_i - d_{i-1}k_1^{m}  - d_{i+1}k_2^{m}
 \end{align*}
@@ -297,6 +312,6 @@ x_i = \frac{d^{\prime}_i - a^mx_{i-1} - \
     c^{m}x_{i+1}}{b^m}
 \end{align*}
 
-where $a^m$, $b^m$ and $c^m$ are the precomputed
+where $k_1^m$, $k_2^m$, $a^m$, $b^m$ and $c^m$ are the precomputed
 coefficients for $i>1$ at the step $m$.
 \end{frame}

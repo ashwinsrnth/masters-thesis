@@ -23,6 +23,8 @@
 \begin{figure}
 \begin{center}
 \includegraphics[width=150px]{img/device-comparison.png}
+\caption{Design philosophies of CPU and GPU.\newline
+Credit: NVIDIA CUDA programming guide}
 \centering
 \end{center}
 \end{figure}
@@ -41,7 +43,7 @@
     synchronization
 \item Memory access:
     \begin{itemize}
-        \item Threads must access memory in \emph{coalesced}
+        \item Threads must access GPU memory (\emph{global} memory) in \emph{coalesced}
             fashion
         \item Threads must do enough work to hide
             memory access latency

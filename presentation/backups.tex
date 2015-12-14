@@ -156,8 +156,32 @@ Backward substitution
 x_i &= \frac{d^{\prime}_i - a^{\prime}_ix_{i-1} - \
     c^{\prime}_ix_{i+1}}{b^{\prime}_i}
 \end{align*}}}}
-
 \end{column}
 \end{columns}
 \end{frame}
 
+\begin{frame}
+\frametitle{Comparison with library solvers - timings}
+Timings for various solvers:
+\begin{table}
+\resizebox{\textwidth}{!}{%
+\input{table/bench.tex}
+}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\includegraphics[width=150px]{img/bank-conflicts.eps}
+\end{frame}
+
+\begin{frame}
+\centering
+\includegraphics[width=0.9\textwidth]{img/device-query.png}
+\end{frame}
+
+\begin{frame}
+\centering
+A\includegraphics[width=0.9\textwidth]{img/err-rates.png}
+\end{frame}
+
+\end{document}

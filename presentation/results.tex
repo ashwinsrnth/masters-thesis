@@ -2,11 +2,11 @@
 
 \begin{frame}
 \frametitle{Overview of results}
-\begin{itemize}
+\begin{enumerate}
 \item Results for tridiagonal solver (NEATO)
 \begin{itemize}
     \item Global memory v/s shared memory implementations
-    \item Compared against library solvers
+    \item Compared with library solvers
         (multicore CPU and GPU)
 \end{itemize}
 \item Results for compact finite difference application
@@ -15,7 +15,7 @@
     \item Scaling results
     \item Comparison with CPU-only approach
 \end{itemize}
-\end{itemize}
+\end{enumerate}
 \end{frame}
 
 \begin{frame}
@@ -27,8 +27,8 @@
 \begin{block}{Benchmark details}
 \begin{itemize}
 \item Solving multiple tridiagonal systems on single GPU
-\item Up to $2048$ equations in $2048$ variables (2-D)
-    and $512^2$ equations in $512$ variables (3-D)
+\item Up to $2048$ systems with $2048$ equations (2-D)
+    and $512^2$ systems with $512$ equations (3-D)
 \item GPU: NVIDIA Tesla K20
 \end{itemize}
 \end{block}
@@ -37,7 +37,7 @@
 \item For 2-D problems, shared memory clearly better
 \item For 3-D problems, shared memory speedup
     is smaller
-\item Thread inactivity in shared memory leads
+\item \textbf{Thread inactivity} in shared memory leads
     to reduced performance
 \end{itemize}
 \end{column}
@@ -68,6 +68,7 @@
 \end{itemize}
 \item \texttt{-02} level compiler optimizations
 \item Double precision
+\item Comparison with up to 16 CPU cores
 \end{itemize}
 \end{block}
 \end{frame}
@@ -75,37 +76,38 @@
 \begin{frame}
 \frametitle{Comparison with library solvers - speedup}
 Speedups over library implementations:
-\begin{center}
-\includegraphics[width=180px]{img/bench-2d.eps}
-\includegraphics[width=180px]{img/bench-3d.eps}
-\end{center}
+
+\begin{figure}
+\begin{minipage}{.45\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{img/bench-2d.eps}
+    \caption{2-D problems}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{img/bench-3d.eps}
+    \caption{3-D problems}
+\end{minipage}
+\end{figure}
 \end{frame}
 
 \begin{frame}
-\frametitle{Comparison with library solvers - timings}
-Timings for various solvers:
-\begin{table}
-\resizebox{\textwidth}{!}{%
-\input{table/bench.tex}
-}
-\end{table}
-\end{frame}
-
-\begin{frame}
-\frametitle{Note on speedups}
+\frametitle{Notes on speedups}
 \begin{itemize}
+ 
 \item Faster than CUSPARSE in almost all cases
-\item Comparing against 8 CPU cores,
-    speedups over MKL in the range 1-2x
+\begin{itemize}
+    \item Can accomodate larger problems than CUSPARSE
+\end{itemize}
+\item Multicore CPU performance flattens out
+\item Compared with 8 CPU cores, speedups over MKL in the range 1-2x
 \item Solving the tridiagonal systems
     \emph{least amenable to efficient parallel solution}
-\item Objective is to keep the problem on the GPU
-\item Multicore CPU performance flattens out
+\item Primary objective is to keep the problem on the GPU
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Compact finite difference evaluation}
-\footnotesize
 \begin{block}{Benchmark details}
 \begin{itemize}
 \item Compact finite difference evaluation in 3-D for a function $f(x, y, z)$
@@ -120,11 +122,12 @@ Timings for various solvers:
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
-\item Problem sizes: $1024^3$ and $2048^3$ on 64 GPUs
 \item Most time spent on solving tridiagonal systems
     \begin{itemize}
         \item Justifies optimization effort
     \end{itemize}
+\item Compute/communicate ratio increases with
+    problem size
 \item Significant portion of time spent on
     data permutation
     \begin{itemize}
@@ -134,29 +137,50 @@ Timings for various solvers:
 \end{column}
 \begin{column}{0.5\textwidth}
 \centering
-\includegraphics[width=170px]{img/profiling-1024-64.eps}
+\begin{figure}
+\centering
+\includegraphics[width=150px]{img/profiling-1024-64.eps}
 
-\includegraphics[width=170px]{img/profiling-2048-64.eps}
+\includegraphics[width=150px]{img/profiling-2048-64.eps}
+\caption{Problem sizes: $1024^3$ (above)
+    and $2048^3$ (below) - 64 GPUs}
+\end{figure}
 \end{column}
 \end{columns}
 \end{frame}
 
 \begin{frame}
 \frametitle{Compact finite difference evaluation - strong scaling}
+\begin{figure}
+\begin{minipage}{.45\textwidth}
 \centering
-\includegraphics[width=180px]{img/strong-scaling-256.eps}
-\includegraphics[width=180px]{img/strong-scaling-512.eps}
-
-Problem sizes: $256^3$ and $512^3$
+\includegraphics[width=\linewidth]{img/strong-scaling-256.eps}
+\caption{Problem size: $256^3$}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
+\centering
+\includegraphics[width=\linewidth]{img/strong-scaling-512.eps}
+\caption{Problem size: $512^3$}
+\end{minipage}
+\end{figure}
+\centering
 \end{frame}
 
 \begin{frame}
-\frametitle{Compact finite difference evaluation - weak scaling}
+\frametitle{Compact finite difference evaluation - strong scaling}
+\begin{figure}
+\begin{minipage}{.45\textwidth}
 \centering
-\includegraphics[width=180px]{img/weak-scaling-128.eps}
-\includegraphics[width=180px]{img/weak-scaling-256.eps}
-
-Problem sizes: $128^3$ and $256^3$ \emph{per process}
+\includegraphics[width=\linewidth]{img/weak-scaling-128.eps}
+\caption{Problem size \emph{per GPU}: $128^3$}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
+\centering
+\includegraphics[width=\linewidth]{img/weak-scaling-256.eps}
+\caption{Problem size \emph{per GPU}: $256^3$}
+\end{minipage}
+\end{figure}
+\centering
 \end{frame}
 
 \begin{frame}
@@ -169,6 +193,8 @@ Problem sizes: $128^3$ and $256^3$ \emph{per process}
 \item Uses LU algorithm
 \item Parallelized among individual cores
 \item Maintain a ratio of 8 CPU cores : 1 GPU for comparison
+\item Speedups  in the range 3-9x
+\item NEATO has strong potential for GPU-based clusters
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
@@ -179,7 +205,7 @@ Problem sizes: $128^3$ and $256^3$ \emph{per process}
 }
 \end{table}
 
-\includegraphics[width=140px]{img/compact-refimpl-speedups.eps}
+\includegraphics[width=160px]{img/compact-refimpl-speedups.eps}
 \end{column}
 \end{columns}
 \end{frame}

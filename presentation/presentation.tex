@@ -8,7 +8,7 @@
 \usepackage[backend=bibtex]{biblatex}
 \usepackage{hyperref}
 \usepackage{multirow}
-
+\usepackage{ulem}
 \usetheme{CambridgeUS}
 \usecolortheme{seahorse}
 \setbeamercovered{dynamic}
@@ -17,17 +17,11 @@
 \setbeamerfont{caption}{size=\footnotesize}
 \addbibresource{bibliography.bib}
 \setcounter{tocdepth}{2}
-
+\setbeamertemplate{caption}{\raggedright\insertcaption\par}
+\normalem
 \newcommand*{\Scale}[2][4]{\scalebox{#1}{$#2$}}%
 \newcommand*{\Resize}[2]{\resizebox{#1}{!}{$#2$}}%
-%% Frame Title %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\AtBeginSection[]
-%{
-%  \begin{frame}
-%    \frametitle{Table of Contents}
-%    \tableofcontents[currentsection]
-%  \end{frame}
-%}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
@@ -54,6 +48,15 @@ and similar tridiagonal schemes on GPU-accelerated clusters}
 \end{frame}
 
 \input{motivation.tex}
+
+%% Frame Title %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\AtBeginSection[]
+{
+ \begin{frame}<beamer>
+ \tableofcontents[currentsection]
+ \end{frame}
+}
+
 \input{background-gpus.tex}
 \input{tridiagonal-solver.tex}
 \input{compact-finite-difference-application.tex}
