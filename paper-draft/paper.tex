@@ -11,10 +11,17 @@
 \begin{document}
 
 \begin{frontmatter}
-\author{Author names}
-\title{A fast GPU solver for near-Toeplitz tridiagonal systems}
-\maketitle
+\author{Ashwin Srinath \fnref{fn1}}
+\author{Daniel Livescu \fnref{fn2}}
+\author{Richard S. Miller \fnref{fn1}\corref{cor1}}
+ 
+\fntext[fn1]{Department of Mechanical Engineering, Clemson University, Clemson, SC 29634-0921}
+\fntext[fn2]{Los Alamos National Laboratory, Los Alamos, NM 87544, USA}
+\cortext[cor1]{Corresponding author. Email address: rm@clemson.edu}
 
+\title{Solution of near-Toeplitz tridiagonal systems on
+GPU-accelerated clusters}
+  
 \begin{abstract}
 In this paper, we consider the solution of linear
 systems of the form $A\bm{x} = \bm{d}$,
@@ -33,15 +40,15 @@ Our solver is able to outperform
 the NVIDIA CUSPARSE and
 multi-core Intel MKL tridiagonal solvers
 (on up to 16 cores).
-We also describe the implementation of a multi-GPU solver
-using MPI and CUDA,
-and show scalability for up to 64 GPUs
-for a 3-D compact finite difference application.
+Further, we present a parallelization strategy
+for GPU-accelerated clusters,
+and show scalability of a compact finite difference applications
+for up to 64 GPUs on the Clemson University Palmetto cluster.
+
 \end{abstract}
 
 \end{frontmatter}
-    
-%---------------------------------------------------------------------%
+  %---------------------------------------------------------------------%
 \section{Introduction}
 %---------------------------------------------------------------------%
 
@@ -108,11 +115,11 @@ and make no attempt to take advantage of
 the known structure of the tridiagonal matrix.
 The contribution of this paper is twofold:
 First, we describe the implementation of a GPU solver
-for the specific case of near-Toeplitz systems
+for the specific case of \emph{near-Toeplitz} tridiagonal systems
 that uses the known structure to reduce
 computations and memory accesses.
-Secondly, we describe the implementation for
-multi-GPU clusters using MPI and CUDA,
+Second, we describe the implementation for
+multi-GPU clusters, i.e., a distributed memory environment,
 and apply it to the evaluation of compact finite differences.
 
 This paper is organized as follows:
@@ -121,7 +128,7 @@ reviews the cyclic reduction algorithm,
 and its implementation on GPUs.
 We also provide some relevant details about GPU architecture here.
 Section \ref{sec:proposed-algorithm}
-describes our proposed solver for near-Toeplitz tridiagonal systems.
+describes our proposed solver for \emph{near-Toeplitz} tridiagonal systems.
 Section \ref{sec:gpu-implementation}
 discusses the implementation of the algorithm on GPUs.
 Section \ref{sec:results-single-gpu}
@@ -169,7 +176,7 @@ and application to the solution of compact finite differences.
 \end{equation}
 
 Cyclic reduction is applicable to the solution of
-general linear systems of the form $A\bm{x} = \bm{d}$,
+linear systems of the form $A\bm{x} = \bm{d}$,
 where $A$ is a tridiagonal matrix with diagonals
 $\bm{a}$, $\bm{b}$ and $\bm{c}$
 [Eq. (\ref{eqn:general-tridiagonal-system})].
@@ -240,7 +247,7 @@ for massively parallel architectures like GPUs.
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=250pt]{img/cyclic-reduction.eps}
+\includegraphics[height=200pt]{img/cyclic-reduction.eps}
 \end{center}
 \caption{Cyclic reduction.}
 \label{fig:cyclic-reduction}
@@ -254,7 +261,7 @@ We provide the pertinent details here
 and refer to \cite{GPUcomputingera} for a more complete picture.
 Our tests are performed on the NVIDIA Tesla K20 and K40 GPUs,
 built on the ``Kepler'' architecture,
-an overview of which is available at \cite{Keplerwhitepaper}.
+an overview of which is available in \cite{Keplerwhitepaper}.
 
 Applications that use the GPU include special
 pieces of code that are executed on the GPU,
@@ -360,12 +367,12 @@ cyclic reduction leads to \emph{bank conflicts}
 \cite{Zhang2010FTS}.
 
 Much work has been done on optimizing cyclic reduction performance
-ong GPUs.
+on GPUs.
 Zhang et al. \cite{Zhang2010FTS} propose a
 \emph{hybrid} solver
 that uses both cyclic reduction and parallel cyclic reduction
 to reduce bank conflicts.
-G{\"o}dekke et al. \cite{GoSt11CR}
+G{\"o}ddeke et al. \cite{GoSt11CR}
 use a method of separately storing
 the even and odd indexed equations
 to arrive at a bank-conflict free solver
@@ -377,11 +384,11 @@ describe the method of
 \emph{register packing}---performing more computations
 on \emph{registers}, rather than shared memory---as
 a means to reduce shared memory usage in cyclic reduction.
-Esfahanian et. al, \cite{esfahanian2014efficient}
+Esfahanian et al., \cite{esfahanian2014efficient}
 avoid shared memory (and associated bank conflicts entirely)
 using a data rearrangement scheme to improve global memory access.
 Our approach takes a different route,
-and is focussed on near-Toeplitz systems---exploiting
+and is focused on \emph{near-Toeplitz} systems---exploiting
 the relatively simple matrix structure
 to reduce the number of computations and memory accesses
 performed by each thread
@@ -389,7 +396,7 @@ at every cyclic reduction step.
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=200pt]{img/forward-reduction-step.eps}
+\includegraphics[height=150pt]{img/forward-reduction-step.eps}
 \end{center}
 \caption{Updating $\bm{b}$ in the first forward reduction step.}
 \label{fig:forward-reduction-step}
@@ -403,7 +410,7 @@ The method is based on precomputing elements
 appearing in the forward reduction phase
 so that they can be reused for multiple right hand sides.
 While this can be done for general tridiagonal systems,
-the applicability to near-Toeplitz systems is
+the applicability to \emph{near-Toeplitz} tridiagonal systems is
 of particular interest due to the lower storage costs.
 In Fig. \ref{fig:forward-reduction-step},
 we list the updates to
@@ -413,7 +420,7 @@ for a general tridiagonal matrix.
 Similar equations can be written describing
 the updates to $a_i$ and  $c_i$.
 
-When the matrix $A$ is near-Toeplitz tridiagonal,
+When the matrix $A$ is \emph{near-Toeplitz} tridiagonal,
 if we substitute in the Eqs.
 Eqs. (\ref{eqn:forward-reduction-1}) -
 (\ref{eqn:forward-reduction-3}):
@@ -427,7 +434,7 @@ Eqs. (\ref{eqn:forward-reduction-1}) -
 we observe that the resulting coefficients
 $a_i^\prime$, $b_i^\prime$ and $c_i^\prime$
 correspond to the coefficients of a tridiagonal matrix with
-exactly the near-Toeplitz structure of $A$.
+exactly the \emph{near-Toeplitz} structure of $A$.
 This form-preserving property of cyclic reduction
 has been reported for block Toeplitz tridiagonal systems
 by Bini et al \cite{bini}.
@@ -446,12 +453,12 @@ it is seen that the space required for storing each of the
 forward reduction coefficients
 $a_i^\prime$, $b_i^\prime$, $c_i^\prime$,
 $k_{1,i}$ and $k_{2,i}$
-for a near-Toeplitz matrix
+for a \emph{near-Toeplitz} tridiagonal matrix
 is, at most, $log_2n-2 + 2(log_2n-1)$.
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=250pt]{img/cyclic-reduction-precomputing.eps}
+\includegraphics[height=200pt]{img/cyclic-reduction-precomputing.eps}
 \end{center}
 \caption{Storing forward reduction coefficients
     from each reduction step $m$.}
@@ -488,7 +495,7 @@ with the solution values.
 %----------------------------------------------------------------------%
 
 In this section, we describe the implementation of a GPU solver
-for solving a given near-Toeplitz tridiagonal system
+for solving a given \emph{near-Toeplitz} tridiagonal system
 for $N_{rhs}$ right hand sides.
 Our implementation uses the NVIDIA CUDA platform for writing GPU kernels,
 interfaced via the Python library PyCUDA \cite{kloeckner_pycuda_2012}.
@@ -604,24 +611,24 @@ due the reduced number of computations performed.
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=300pt]{fig/bench-2d.eps}
-\caption{Relative solver performance for 2-D problems. Relative time defined as:}
-$\frac{\text{Time taken by solver}}{\text{Time taken by NEATO solver}}$
-\label{fig:bench-2d}
+\includegraphics[width=1.0\linewidth]{fig/global-vs-shared-2d.eps}
+\caption{Comparison of global memory and shared
+    memory implementations of NEATO (2D problems).}
+\label{fig:global-vs-shared-2d}
 \end{center}
 \end{figure}
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=300pt]{fig/bench-3d.eps}
-\caption{Relative solver performance for 3-D problems. Relative time defined as:}
-$\frac{\text{Time taken by solver}}{\text{Time taken by NEATO solver}}$
-\label{fig:bench-3d}
+\includegraphics[width=1.0\linewidth]{fig/global-vs-shared-3d.eps}
+\caption{Comparison of global memory and shared memory
+    implementations of NEATO (3D problems).}
+\label{fig:global-vs-shared-3d}
 \end{center}
 \end{figure}
 
 In this section we present a performance overview
-of our Near-Toeplitz tridiagonal solver (NEATO)
+of our \emph{near-Toeplitz} tridiagonal solver (NEATO):
 against a multi-threaded Intel MKL solver and
 the CUSPARSE GPU solver
 (\texttt{dgtsv} and \texttt{dgtsvStridedBatch} respectively).
@@ -645,7 +652,7 @@ NVIDIA Tesla K20 Accelerator.
 When measuring GPU performance (both CUSPARSE and NEATO),
 we do \emph{not} include the cost
 of data transfer between the CPU and GPU.
-\texttt{-O2} level compiler optimizations are turned on for both
+\texttt{-O2} level compiler optimizations are enabled for both
 CPU and GPU code;
 no further optimization options are enabled in either case.
 Of course, we use double precision for all solvers.
@@ -659,19 +666,19 @@ All timings are averaged over 100 tridiagonal solves.
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=1.0\linewidth]{fig/global-vs-shared-2d.eps}
-\caption{Comparison of global memory and shared
-    memory implementations of NEATO (2D problems).}
-\label{fig:global-vs-shared-2d}
+\includegraphics[width=300pt]{fig/bench-2d.eps}
+\caption{Relative solver performance for 2-D problems. Relative time defined as:}
+\text{Time taken by solver}/\text{Time taken by NEATO solver}
+\label{fig:bench-2d}
 \end{center}
 \end{figure}
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=1.0\linewidth]{fig/global-vs-shared-3d.eps}
-\caption{Comparison of global memory and shared memory
-    implementations of NEATO (3D problems).}
-\label{fig:global-vs-shared-3d}
+\includegraphics[width=300pt]{fig/bench-3d.eps}
+\caption{Relative solver performance for 3-D problems. Relative time defined as:}
+$\text{Time taken by solver}/\text{Time taken by NEATO solver}$
+\label{fig:bench-3d}
 \end{center}
 \end{figure}
 
@@ -722,6 +729,12 @@ solvers to solve different problem sizes.
 \end{center}
 \end{figure}
 
+In this section, we present performance details
+for evaluating derivatives of a function $f(x, y, z)$
+using a compact finite difference scheme.
+The numerical algorithm and computational domain are
+discussed below:
+
 \subsection{Numerical algorithm}
 
 In a uniformly spaced one-dimensional grid with spacing $dx$,
@@ -765,7 +778,7 @@ at $f^{\prime}_1$:
 \end{equation}
 %
 This boundary treatment maintains the tridiagonal identity
-of the system to be solved, which then has the near-Toeplitz form:
+of the system to be solved, which then has the form:
 
 \begin{equation} \label{eqn:compact-tridiagonal-system}
  \begin{bmatrix}
@@ -820,19 +833,19 @@ Eq. (\ref{eqn:compact-tridiagonal-system}).
 Solving for the all derivatives in the $x$ direction then involves
 solving this tridiagonal system for $ny \times nz$ right hand sides.
 Some work has been done on the solution of these
-tridiagonal systems using GPUs---Tutkun et. al
+tridiagonal systems using GPUs---Tutkun et al.
 \cite{tutkun2012gpu} compute the inverse of the coefficient matrix,
 and use the GPU to multiply the inverse with the right-hand sides.
 Wei et al. \cite{wei2013parallelizing}
 use the parallel cyclic reduction (PCR) algorithm
 to solve similar systems appearing in
 the 2-D ADI problem.
-More recently, Esfahanian et. al \cite{esfahanian2014efficient}
+More recently, Esfahanian et al. \cite{esfahanian2014efficient}
 use a variant of cyclic reduction with
 data rearrangements kernels for better global memory access patterns.
 Our approach uses the NEATO solver described above
 to solve for the right hand sides at each grid line,
-which takes advantage of the known near-Toepltiz structure
+which takes advantage of the known structure
 of the coefficient matrix arising
 in the compact finite difference scheme.
 
@@ -1026,14 +1039,24 @@ from the solution of the reduced system.
 
 \subsection{GPU implementation}
 
+\begin{figure}
+\begin{center}
+\includegraphics[trim={0cm 8cm 0cm 8cm},clip,width=500pt]{img/compact-algorithm.pdf}
+\centering
+\caption{Algorithm for evaluating compact finite differences on multiple GPUs,
+(right: CUDA kernels and MPI calls used)}
+\label{fig:compact-algorithm}
+\end{center}
+\end{figure}
+
 We present a specialization of the above algorithm
-applied to the distributed near-Toeplitz systems that
+applied to the distributed tridiagonal systems that
 appear in compact finite difference evaluations,
 and adapted for GPUs.
-Our algorithm is outlined in \ref{fig:compact-algorithm},
+Our algorithm is outlined in Fig. \ref{fig:compact-algorithm},
 and is described for the case of evaluating derivatives
 in the direction along which successive
-function values in a subdomain are stored contigiously in memory,
+function values in a subdomain are stored contiguously in memory,
 i.e., the ``fastest'' coordinate direction.
 Each step of the algorithm must be implemented on the GPU
 to avoid data transfer to and from the CPU,
@@ -1048,16 +1071,6 @@ Python library.
 The purpose of each CUDA kernel and MPI call used
 is described in Table \ref{table:compact-algorithm}.
 
-\begin{figure}
-\begin{center}
-\includegraphics[trim={0 7cm 0 7cm},clip,width=500pt]{img/compact-algorithm.pdf}
-\centering
-\caption{Algorithm for evaluating compact finite differences on multiple GPUs,
-(right: CUDA kernels and MPI calls used)}
-\label{fig:compact-algorithm}
-\end{center}
-\end{figure}
-
 \begin{table}[]
 \centering
 \caption{Purpose of kernels and MPI calls in compact finite difference application}
@@ -1071,7 +1084,7 @@ ISend, IRecv        & Perform halo swaps with i-1 and i+1 processes \\ \hline
 computeRHSKernel    & Apply pointwise stencil operator to compute
                       RHS at each grid point in the subdomain,
                       using the halo values near the boundaries\\ \hline
-NEATO               & Solve the primary near-Toeplitz tridiagonal systems
+NEATO               & Solve the primary tridiagonal systems
                       for the computed right hand sides, giving $x_r$ \\ \hline
 copyFacesKernel     & Copy the left and right faces of $x_r$
                       into a single contiguous array \\ \hline
@@ -1139,7 +1152,7 @@ to assemble the right-hand sides of the reduced system
 This communication strategy has the effect of
 producing right hand sides aligned along the
 ``slowest'' co-ordinate direction, i.e.,
-the right hand side values for neighbouring grid points
+the right hand side values for neighboring grid points
 are located far apart in memory.
 As the reduced systems are quite small relative to the primary systems,,
 we use a convenient, but rather inefficient
@@ -1157,11 +1170,15 @@ For evaluation of compact finite differences in other
 coordinate directions,
 a local permutation of the data is performed on the input data
 (function values)
-before applying the above algorithm.
+before applying the above algorithm,
 and again on the output data
 (derivative values).
 
 \subsection{Results}
+
+Here, we provide performance results for
+evaluating derivatives using the above approach
+for large, distributed problems.
 
 The experiments were run on the
 Clemson University Palmetto Cluster,
@@ -1184,7 +1201,7 @@ for measuring the compact finite difference solver performance,
 we set up and solve the problem for the entire computational domain.
 In the context of a larger simulation,
 global synchronization between the processes
-is typically performed before and after the evalaution of derivatives,
+is typically performed before and after the evaluation of derivatives,
 and it is important to consider the related overhead.
 
 Figures \ref{fig:compact-profiling-1024-64}-\ref{fig:compact-profiling-2048-64}
@@ -1256,7 +1273,7 @@ as the GPU is kept busy for all problem sizes.
 
 \section{Conclusions}
 
-We present a GPU solver for near-Toeplitz tridiagonal systems
+We present a GPU solver for \emph{near-Toeplitz} tridiagonal systems
 based on the cyclic reduction algorithm,
 that is applicable to several numerical schemes
 in computational fluid dynamics.
