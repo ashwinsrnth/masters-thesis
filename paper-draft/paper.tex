@@ -6,7 +6,9 @@
 \usepackage{minted}
 \usepackage{xcolor}
 \usepackage{multirow}
+\usepackage{color,soul}
 \usepackage{rotating}
+
 
 \begin{document}
 
@@ -236,14 +238,12 @@ And for $i=1$, the backward substitution step is instead:
 x_1 = \frac{d^{\prime}_1 - c^{\prime}_1x_{2}}{b^{\prime}_1}
 \end{align}
 
-Thus, in the best case ($n$ parallel processors),
-cyclic reduction requires 
-$2log_2(n) - 1$ steps.
-For even moderately large $n$,
-this is significantly smaller than
-the $2n$ steps required by the classical Thomas algorithm.
-This makes cyclic reduction a good fit
-for massively parallel architectures like GPUs.
+\hl{
+Thus, cyclic reduction requires \emph{significantly} fewer steps
+($2log_2(n) - 1$) compared to Thomas algorithm ($2n$).
+Each step in cyclic reduction consists of operations on several indices
+that can each be done in parallel,
+making it a good fit for massively parallel architectures such as GPUs.}
 
 \begin{figure}
 \begin{center}
@@ -926,7 +926,7 @@ r_3^p \\
 r_4^p \\
 \vdots \\
 r_m^p
-\end{bmatrix} & \label{eqn:primary-system-expanded} \\
+\end{bmatrix} & \label{eqn:primary-system-expanded} 
 \end{align}
 
 \begin{align}
@@ -954,7 +954,7 @@ u_m^p
 0 \\
 \vdots \\
 0
-\end{bmatrix} & \label{eqn:secondary-system-1-expanded} \\
+\end{bmatrix} & \label{eqn:secondary-system-1-expanded} 
 \end{align}
 %
 \begin{align}
@@ -1115,8 +1115,10 @@ the secondary systems
  Eq. (\ref{eqn:secondary-system-2-expanded})]
 are dependent only on $\bm{a}$, $\bm{b}$ and $\bm{c}$,
 the tridiagonal coefficients of the global tridiagonal system.
-These are the same for all local grid lines,
-so they are solved for a single local grid line in each subdomain.
+\hl{These are the same for all local grid lines,
+so they are \emph{precomputed} -
+solved \emph{once} for a single local grid line in each subdomain.
+This is done on the CPU.}
 
 The primary system [Eq. (\ref{eqn:primary-system-expanded})] must be solved
 for each of the local grid lines in a subdomain,
