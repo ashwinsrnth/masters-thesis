@@ -4,11 +4,12 @@
 \usepackage{rotating}
 \usepackage{multirow}
 \usepackage{caption}
+\usepackage{cite}
 
 \begin{document}
 
-\title{A novel strategy for compact finite difference evaluation
-on GPU-accelerated clusters}
+\title{A NOVEL STRATEGY FOR COMPACT FINITE DIFFERENCE EVALUATION
+ON GPU-ACCELERATED CLUSTERS}
 
 \author[1]{\underline{Ashwin Srinath}}
 \author[2]{Daniel Livescu}
@@ -33,7 +34,7 @@ algorithm becomes feasible and efficient.
 We demonstrate that an implementation using our approach
 is able to outperform
 the NVIDIA CUSPARSE and multithreaded Intel MKL solvers
-on GPU and CPU respectively.
+on GPU and CPU, respectively.
 We apply this tridiagonal solver
 to the solution of
 compact finite differences on multiple GPUs
@@ -42,15 +43,14 @@ and show scaling for up to 64 GPUs.
 
 \end{abstract}
 
-\section{Introduction}
-
-Compact finite difference schemes are widely used
+Compact finite difference schemes
+\cite{lele1992compact,kennedy1994several}
+are widely used
 in computational fluid dynamics (CFD)
 for their ability to resolve the high-wavenumber fluctuations
 associated with turbulent flows.
-In CFD codes that a finite difference approach,
-the evaluation of the derivatives using compact schemes
-generally constitutes a significant portion of the runtime.
+In CFD codes using compact schemes,
+this generally constitutes a significant portion of the runtime.
 The high computational cost associated with
 compact finite difference schemes arises from the fact that they require
 the solution of tridiagonal linear systems.
@@ -67,10 +67,18 @@ we develop an algorithm to solve the tridiagonal systems
 arising in compact finite difference evaluation
 and similar numerical schemes.
 Our approach is based on \emph{cyclic reduction},
-an extremely successfull algorithm for solving multiple
+an extremely successful algorithm for solving multiple
 tridiagonal systems on GPUs.
 Our work fills two existing gaps in the literature.
-First, we develop an approach for \emph{multiple} GPUs
+First,
+whereas current efforts to develop tridiagonal solvers
+are focused on single GPUs (e.g., 
+\cite{GoSt11CR,
+davidson2011register,
+esfahanian2014efficient,
+tutkun2012gpu,
+zhao2015efficiently})
+we develop an approach for \emph{multiple} GPUs
 in a distributed system (GPU-accelerated clusters).
 Second, we specialize the cyclic reduction for the case
 of \emph{near-Toeplitz} tridiagonal systems,
@@ -78,59 +86,45 @@ a special class of systems arising in numerical schemes
 such as compact finite differences,
 alternating direction implicit methods,
 line relaxation methods, and others.
-    
-\section{Approach}
 
 If $f_i$ represents the value of
-a uniformly sampled function evaluated at the $i^{th}$ sample point,
+a uniformly sampled function with spacing $dx$,
+evaluated at the $i^{th}$ sample point,
 the first derivative $f^{\prime}_i$ can be approximated from
 a relation of the form:
-
 %
 \begin{equation}
 \begin{split}
     f_i^{\prime} + \
-    \alpha(f^{\prime}_{i-1} + f^{\prime}_{i+1}) + \
-    \beta(f^{\prime}_{i-2} + f^{\prime}_{i+2}) + \
-    \hdots
+    \alpha(f^{\prime}_{i-1} + f^{\prime}_{i+1})
     = 
-    a\frac{f_{i+1} - f_{i-1}}{h} + \
-    b\frac{f_{i+2} - f_{i-2}}{h} + \\
-    c\frac{f_{i+3} - f_{i-3}}{h} + \
+    a\frac{f_{i+1} - f_{i-1}}{dx} + \
+    b\frac{f_{i+2} - f_{i-2}}{dx} + \
+    c\frac{f_{i+3} - f_{i-3}}{dx} + \
     \hdots
 \end{split}
 \label{eqn:general-compact}
 \end{equation}
 %
-
 The derivative is defined implicitly,
 requiring the solution of a linear system to solve for
 the derivative at all points $i$ simultaneously.
-Of particular interest are schemes that yield
-\emph{tridiagonal} systems ($\beta=0$).
 An example of such a scheme is the fourth-order accurate
 Pad\'{e} scheme, which yields the following system:
-
+%
 \begin{equation}
  \label{eqn:compact-tridiagonal-system}
  \begin{bmatrix}
      1&2\\
      1/4&1&1/4\\
-     &1/4&1&1/4\\
-     &&1/4&1&1/4\\
-     &&&1/4&1&1/4\\
-     &&&&&\ddots\\
-     &&&&&&\ddots\\
-     &&&&&&&\ddots\\
-     &&&&&&&2&1
+     &&\ddots\\
+     &&&\ddots\\
+     &&&&\ddots\\
+     &&&&2&1
   \end{bmatrix}
   \begin{bmatrix}
       f^{\prime}_1 \\
-
       f^{\prime}_2 \\
-      f^{\prime}_3 \\
-      \vdots \\
-      \vdots \\
       \vdots \\
       \vdots \\
       f^{\prime}_{n-1} \\
@@ -140,16 +134,13 @@ Pad\'{e} scheme, which yields the following system:
  \begin{bmatrix}
      \frac{-5f_1 + 4f_2 + f_3}{2dx}\\
      \frac{3(f_{3} - f_{1})}{4dx}\\
-     \frac{3(f_{4} - f_{2})}{4dx}\\
-     \vdots\\
-     \vdots\\
      \vdots\\
      \vdots\\
      \frac{3(f_{n} - f_{n-2})}{4dx}\\
      \frac{5f_{n} - 4f_{n-1} - f_{n-2}}{2dx}
   \end{bmatrix}
 \end{equation}
-
+%
 We note the \emph{near-Toeplitz} nature of the tridiagonal system,
 i.e., constant diagonal coefficients except near the boundaries.
 The cyclic reduction algorithm consists of two phases,
@@ -161,7 +152,9 @@ At each step of the \emph{backward substitution} phase,
 the odd-indexed equations are solved from the known solutions
 of the even-indexed equations.
 Cyclic reduction is well-suited to highly threaded processors
-such as GPUs, as the individual equations can be processed in parallel.
+such as GPUs \cite{Zhang2010FTS},
+as the individual equations can be processed in parallel.
+\pagebreak
 
 When cyclic reduction is applied to
 \emph{near-Toeplitz} tridiagonal systems,
@@ -180,13 +173,12 @@ GPU architecture-specific issues relating to
 memory access patterns.
 To extend the above approach to multiple GPUs,
 we adapt the algorithm described by Mattor et. al
+\cite{mattor1995algorithm}
 to GPUs.
 Our implementation ensures that
 each step of this algorithm is performed on the GPU,
 avoiding memory transfers to and from the CPU entirely.
-
-\section{Results}
-
+%
 \begin{figure}
 \centering
 \begin{minipage}[b]{0.45\textwidth}
@@ -205,7 +197,8 @@ Relative solver time defined as:}
 Time taken by solver/Time taken by NEATO solver
 \label{fig:bench}
 \end{figure}
-
+%
+\iffalse
 \begin{figure}
 \centering
 \begin{minipage}[b]{0.45\textwidth}
@@ -213,7 +206,6 @@ Time taken by solver/Time taken by NEATO solver
 \includegraphics[width=220pt]{fig/strong-scaling-512.eps}
 \end{center}
 \end{minipage}
-%
 \begin{minipage}[b]{0.45\textwidth}
 \begin{center}
 \includegraphics[width=220pt]{fig/weak-scaling-256.eps}
@@ -224,38 +216,32 @@ Time taken by solver/Time taken by NEATO solver
     Problem sizes $512^3$ and $2048^3$ respectively.}
 \label{fig:scaling}
 \end{figure}
-
-In Figure \ref{fig:bench},
+\fi
+%
+In Fig. \ref{fig:bench},
 we compare the performance of our GPU tridiagonal solver
 for near-Toeplitz systems (NEATO),
 with the equivalent library solvers from
 Intel MKL (CPU) and NVIDIA CUSPARSE (GPU).
 Here we solve the tridiagonal system in
-Equation \ref{eqn:compact-tridiagonal-system}
+Eq. (\ref{eqn:compact-tridiagonal-system})
 for sizes $N$ and multiple right hand sides $N_{rhs}$.
 We present results for two cases, $N_{rhs}=N$,
 (representative of 2-D problems)
 and $N_{rhs}=N^2$ (3-D problems).
-In Figure \ref{fig:scaling},
-we present the strong and weak scaling for a
+On the GPU, we are consistently able to
+obtain better performance than the CUSPARSE solver.
+Our GPU solver also outperforms the MKL solver
+running on up to 16 CPU cores for large 3-D problems.
+We have also investigated the strong and weak scaling for a
 multi-GPU compact finite difference application.
 Here, we solve for the derivatives of a 3-D function
 in a domain distributed among multiple GPUs in a cluster.
-Derivatives in the non-contiguous directions are solved
-using a \emph{local} data rearrangement approach.
+We are able to show both strong and weak scaling for up to 64 GPUs
+(the largest problem investigated).
 
-\section{Conclusions}
+\bibliographystyle{unsrt}
+\bibliography{bibliography}
 
-We have present an algorithm
-for efficiently solving a common class of
-tridiagonal linear systems
-based on the cyclic reduction algorithm for GPUs,
-Our solver gives better performance than
-the current multicore Intel MKL and CUSPARSE solvers
-Additionally, we describe an implementation of our solver
-for GPU clusters,
-and provide performance results for a
-compact finite difference application,
-run on up to 64 GPUs.lusters.
 
 \end{document}
