@@ -242,8 +242,26 @@ x_1 = \frac{d^{\prime}_1 - c^{\prime}_1x_{2}}{b^{\prime}_1}
 Thus, cyclic reduction requires \emph{significantly} fewer steps
 ($2log_2(n) - 1$) compared to Thomas algorithm ($2n$).
 Each step in cyclic reduction consists of operations on several indices
-that can each be done in parallel,
-making it a good fit for massively parallel architectures such as GPUs.}
+that can each be done independently,
+suggesting a parallel (multi-threaded) approach.
+When solving linear systems with the same matrix but several right hand sides,
+a thread-parallel Thomas algorithm in which
+each thread solves an independent system may be considered.
+Mattor et al. suggest that this may be a more efficient use
+of parallelization compared to cyclic reduction,
+due to the smaller amount of work required per thread.
+However, using cyclic reduction for solving the independent systems
+exposes a larger amount of parallelism -
+which is important for good performance on GPUs.
+When the number of systems to be solved is small
+(as is the case in 2-D problems and small 3-D problems),
+the thread-parallel Thomas algorithm under-utilizes the GPU.
+For larger problems,
+successive threads access far-apart memory locations,
+leading to poor GPU performance.
+Thus, we argue that cyclic reduction is a better fit for
+massively parallel architectures such as GPUs.
+}
 
 \begin{figure}
 \begin{center}
