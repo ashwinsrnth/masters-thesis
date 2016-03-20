@@ -7,7 +7,7 @@
 *thesis.pdf
 *presentation.pdf
 *converted-to.pdf
-*.eps
+*/img/*.eps
 *.spl
 *~lock*
 *.bbl
