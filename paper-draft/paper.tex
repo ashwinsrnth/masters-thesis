@@ -717,6 +717,16 @@ normalizing the solver timings
 by the timing for the fastest solver for that problem size.
 Table \ref{table:bench} shows the timings of the various
 solvers to solve different problem sizes.
+\hl{
+We note that NEATO performs
+at least as well as the Intel MKL on 8-16 cores
+for most cases,
+and outperforms CUSPARSE in almost all cases.
+This is primarily because NEATO is able to take advantage
+of the known matrix coefficients,
+while the CUSPARSE implementation is for the more
+general tridigaonal case.
+}
 
 \begin{sidewaystable}[]
 \scriptsize
@@ -1126,8 +1136,8 @@ the secondary systems
 are dependent only on $\bm{a}$, $\bm{b}$ and $\bm{c}$,
 the tridiagonal coefficients of the global tridiagonal system.
 \hl{These are the same for all local grid lines,
-so they are \emph{precomputed} -
-solved \emph{once} for a single local grid line in each subdomain.}
+so they are solved \emph{once} for a single local grid line in each subdomain.
+The results are stored on the GPU and reused for other grid lines.}
 
 The primary system [Eq. (\ref{eqn:primary-system-expanded})] must be solved
 for each of the local grid lines in a subdomain,
@@ -1288,10 +1298,15 @@ We present a GPU solver for \emph{near-Toeplitz} tridiagonal systems
 based on the cyclic reduction algorithm,
 that is applicable to several numerical schemes
 in computational fluid dynamics.
-Our solver gives better performance than
-the current multicore Intel MKL and CUSPARSE solvers
+\hl{Our solver is able to take advantage of the
+special structure of these systems
+to reduce the number of computations performed and
+improve memory access patterns.
+Thus, we are able to show better performance
+compared to the Intel MKL and NVIDIA CUSPARSE solvers
+on multi-core CPUs and GPUs respectively.}
 Additionally, we describe an implementation of our solver
-for GPU clusters,
+for multi-GPU clusters,
 and provide performance results for a
 compact finite difference application,
 run on up to 64 GPUs.
